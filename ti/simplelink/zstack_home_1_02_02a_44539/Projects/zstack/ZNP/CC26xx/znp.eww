@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<workspace>
+  <project>
+    <path>$WS_DIR$\znp.ewp</path>
+  </project>
+  <batchBuild>
+    <batchDefinition>
+      <name>All</name>
+      <member>
+        <project>znp</project>
+        <configuration>Coordinator - Pro</configuration>
+      </member>
+      <member>
+        <project>znp</project>
+        <configuration>Coordinator - Pro Secure</configuration>
+      </member>
+      <member>
+        <project>znp</project>
+        <configuration>Coordinator - Pro Secure Link Key Join</configuration>
+      </member>
+      <member>
+        <project>znp</project>
+        <configuration>End Device - Pro</configuration>
+      </member>
+      <member>
+        <project>znp</project>
+        <configuration>End Device - Pro Secure</configuration>
+      </member>
+      <member>
+        <project>znp</project>
+        <configuration>End Device - Pro Secure Link Key Join</configuration>
+      </member>
+      <member>
+        <project>znp</project>
+        <configuration>Router - Pro</configuration>
+      </member>
+      <member>
+        <project>znp</project>
+        <configuration>Router - Pro Secure</configuration>
+      </member>
+      <member>
+        <project>znp</project>
+        <configuration>Router - Pro Secure Link Key Join</configuration>
+      </member>
+    </batchDefinition>
+  </batchBuild>
+</workspace>
+
+

@@ -1,0 +1,47 @@
+\subsection{G\-P\-I\-O\-\_\-\-Callbacks Struct Reference}
+\label{struct_g_p_i_o___callbacks}\index{G\-P\-I\-O\-\_\-\-Callbacks@{G\-P\-I\-O\-\_\-\-Callbacks}}
+
+
+G\-P\-I\-O callback structure.  
+
+
+
+
+{\ttfamily \#include $<$G\-P\-I\-O.\-h$>$}
+
+\subsubsection*{Data Fields}
+\begin{DoxyCompactItemize}
+\item 
+uint32\-\_\-t \hyperlink{struct_g_p_i_o___callbacks_a9d5a44874bdf49a24cc8cf54f9b8446f}{port}
+\item 
+unsigned int \hyperlink{struct_g_p_i_o___callbacks_a88b6e3699c7f43dafede6c5218879266}{int\-Num}
+\item 
+void $\ast$ \hyperlink{struct_g_p_i_o___callbacks_ab51375f9fd94a988557ce02e2d59c1f1}{hwi\-Struct}
+\item 
+void($\ast$ \hyperlink{struct_g_p_i_o___callbacks_a73498caaad6418a4e155eac032809a12}{callback\-Fxn} \mbox{[}8\mbox{]})(void)
+\end{DoxyCompactItemize}
+
+
+\subsubsection{Detailed Description}
+G\-P\-I\-O callback structure. 
+
+This structure contains pointers to the callback functions that will be called when an interrupt occurs. Each function pointer in the callback\-Fxn array corresponds to a pin in the specified port (pin 0 to index 0 and so on). A \hyperlink{struct_g_p_i_o___callbacks}{G\-P\-I\-O\-\_\-\-Callbacks} structure must be present for each port that has one or more pins that use G\-P\-I\-O interrupts. This structure must exist and be persistent before it can be passed to the \hyperlink{_g_p_i_o_8h_af00c188a9e451094c5de1109141f30db}{G\-P\-I\-O\-\_\-setup\-Callbacks()} A\-P\-I. 
+
+\subsubsection{Field Documentation}
+\index{G\-P\-I\-O\-\_\-\-Callbacks@{G\-P\-I\-O\-\_\-\-Callbacks}!port@{port}}
+\index{port@{port}!GPIO_Callbacks@{G\-P\-I\-O\-\_\-\-Callbacks}}
+\paragraph[{port}]{\setlength{\rightskip}{0pt plus 5cm}uint32\-\_\-t G\-P\-I\-O\-\_\-\-Callbacks\-::port}\label{struct_g_p_i_o___callbacks_a9d5a44874bdf49a24cc8cf54f9b8446f}
+G\-P\-I\-O port \index{G\-P\-I\-O\-\_\-\-Callbacks@{G\-P\-I\-O\-\_\-\-Callbacks}!int\-Num@{int\-Num}}
+\index{int\-Num@{int\-Num}!GPIO_Callbacks@{G\-P\-I\-O\-\_\-\-Callbacks}}
+\paragraph[{int\-Num}]{\setlength{\rightskip}{0pt plus 5cm}unsigned int G\-P\-I\-O\-\_\-\-Callbacks\-::int\-Num}\label{struct_g_p_i_o___callbacks_a88b6e3699c7f43dafede6c5218879266}
+G\-P\-I\-O interrupt number \index{G\-P\-I\-O\-\_\-\-Callbacks@{G\-P\-I\-O\-\_\-\-Callbacks}!hwi\-Struct@{hwi\-Struct}}
+\index{hwi\-Struct@{hwi\-Struct}!GPIO_Callbacks@{G\-P\-I\-O\-\_\-\-Callbacks}}
+\paragraph[{hwi\-Struct}]{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ G\-P\-I\-O\-\_\-\-Callbacks\-::hwi\-Struct}\label{struct_g_p_i_o___callbacks_ab51375f9fd94a988557ce02e2d59c1f1}
+Pointer to a family specific Hwi\-\_\-\-Struct Array of callbacks, one per pin \index{G\-P\-I\-O\-\_\-\-Callbacks@{G\-P\-I\-O\-\_\-\-Callbacks}!callback\-Fxn@{callback\-Fxn}}
+\index{callback\-Fxn@{callback\-Fxn}!GPIO_Callbacks@{G\-P\-I\-O\-\_\-\-Callbacks}}
+\paragraph[{callback\-Fxn}]{\setlength{\rightskip}{0pt plus 5cm}void($\ast$ G\-P\-I\-O\-\_\-\-Callbacks\-::callback\-Fxn\mbox{[}8\mbox{]})(void)}\label{struct_g_p_i_o___callbacks_a73498caaad6418a4e155eac032809a12}
+
+
+The documentation for this struct was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{_g_p_i_o_8h}{G\-P\-I\-O.\-h}\end{DoxyCompactItemize}

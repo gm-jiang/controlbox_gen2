@@ -1,0 +1,388 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head><title>module ti.drivers.WiFi</title>
+<meta name="googlebot" content="noindex,nofollow">
+<link rel="stylesheet" type="text/css" href="../../src.css"/>
+</head>
+<body>
+<pre class=src>
+     1    <span class="comment">/*
+</span>     2    <span class="comment"> * Copyright (c) 2014, Texas Instruments Incorporated
+</span>     3    <span class="comment"> * All rights reserved.
+</span>     4    <span class="comment"> *
+</span>     5    <span class="comment"> * Redistribution and use in source and binary forms, with or without
+</span>     6    <span class="comment"> * modification, are permitted provided that the following conditions
+</span>     7    <span class="comment"> * are met:
+</span>     8    <span class="comment"> *
+</span>     9    <span class="comment"> * *  Redistributions of source code must retain the above copyright
+</span>    10    <span class="comment"> *    notice, this list of conditions and the following disclaimer.
+</span>    11    <span class="comment"> *
+</span>    12    <span class="comment"> * *  Redistributions in binary form must reproduce the above copyright
+</span>    13    <span class="comment"> *    notice, this list of conditions and the following disclaimer in the
+</span>    14    <span class="comment"> *    documentation and/or other materials provided with the distribution.
+</span>    15    <span class="comment"> *
+</span>    16    <span class="comment"> * *  Neither the name of Texas Instruments Incorporated nor the names of
+</span>    17    <span class="comment"> *    its contributors may be used to endorse or promote products derived
+</span>    18    <span class="comment"> *    from this software without specific prior written permission.
+</span>    19    <span class="comment"> *
+</span>    20    <span class="comment"> * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+</span>    21    <span class="comment"> * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+</span>    22    <span class="comment"> * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+</span>    23    <span class="comment"> * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+</span>    24    <span class="comment"> * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+</span>    25    <span class="comment"> * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+</span>    26    <span class="comment"> * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+</span>    27    <span class="comment"> * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+</span>    28    <span class="comment"> * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+</span>    29    <span class="comment"> * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+</span>    30    <span class="comment"> * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+</span>    31    <span class="comment"> */</span>
+    32    <span class="comment">/*
+</span>    33    <span class="comment"> *  ======== WiFi.xdc ========
+</span>    34    <span class="comment"> */</span>
+    35    <span class=key>package</span> ti.drivers;
+    36    import xdc.rov.ViewInfo;
+    37    
+    38    <span class="xdoc">/*!
+</span>    39    <span class="xdoc"> *  ======== WiFi ========
+</span>    40    <span class="xdoc"> *  WiFi module configuration
+</span>    41    <span class="xdoc"> */</span>
+    42    @NoRuntime
+    43    @HeaderName(<span class="string">""</span>)
+    44    @Template(<span class="string">"./WiFi.xdt"</span>)
+    45    <span class=key>module</span> WiFi {
+    46    
+    47        <span class="xdoc">/*!
+</span>    48    <span class="xdoc">     *  ======== DeviceType ========
+</span>    49    <span class="xdoc">     *  WiFi device selection options
+</span>    50    <span class="xdoc">     *
+</span>    51    <span class="xdoc">     *  This enumeration defines all supported WiFi device types
+</span>    52    <span class="xdoc">     *  provided by the product.  You can select the device type by setting
+</span>    53    <span class="xdoc">     *  the {<b>@link</b> #deviceType WiFi.deviceType} configuration parameter.
+</span>    54    <span class="xdoc">     *
+</span>    55    <span class="xdoc">     *  <b>@field(DeviceType_SimpleLink_CC3000)</b> The library supplied is prebuilt
+</span>    56    <span class="xdoc">     *  with the SimpleLink CC3000 Host Driver.
+</span>    57    <span class="xdoc">     *
+</span>    58    <span class="xdoc">     *  <b>@field(DeviceType_SimpleLink_CC3100)</b> The library supplied is prebuilt
+</span>    59    <span class="xdoc">     *  with the SimpleLink CC3100 Host Driver.
+</span>    60    <span class="xdoc">     */</span>
+    61        <span class=key>enum</span> DeviceType {
+    62            DeviceType_SimpleLink_CC3000,        <span class="xdoc">/*! SimpleLink CC3000 Wi-Fi Module */</span>
+    63            DeviceType_SimpleLink_CC3100         <span class="xdoc">/*! SimpleLink CC3100 Wi-Fi Module */</span>
+    64        };
+    65    
+    66        <span class="xdoc">/*!
+</span>    67    <span class="xdoc">     *  ======== deviceType ========
+</span>    68    <span class="xdoc">     *  WiFi Device type
+</span>    69    <span class="xdoc">     *
+</span>    70    <span class="xdoc">     *  WiFi support is provided in the form of a libraries that are linked
+</span>    71    <span class="xdoc">     *  with your application.  Several libraries are provided with the
+</span>    72    <span class="xdoc">     *  WiFi product to support the various devices. This configuration
+</span>    73    <span class="xdoc">     *  parameter allows you to select the proper library for the WiFi
+</span>    74    <span class="xdoc">     *  device to use.
+</span>    75    <span class="xdoc">     *
+</span>    76    <span class="xdoc">     *  The default value of deviceType is
+</span>    77    <span class="xdoc">     *  {<b>@link</b> #DeviceType_SimpleLink_CC3000 WiFi_DeviceType_SimpleLink_CC3000}.
+</span>    78    <span class="xdoc">     *  For a complete list of options and what they offer see
+</span>    79    <span class="xdoc">     *  {<b>@link</b> #DeviceType}.
+</span>    80    <span class="xdoc">     */</span>
+    81        <span class=key>metaonly</span> <span class=key>config</span> DeviceType deviceType = DeviceType_SimpleLink_CC3000;
+    82    
+    83        <span class="xdoc">/*!
+</span>    84    <span class="xdoc">     *  ======== LibType ========
+</span>    85    <span class="xdoc">     *  WiFi library selection options
+</span>    86    <span class="xdoc">     *
+</span>    87    <span class="xdoc">     *  This enumeration defines all the WiFi library type
+</span>    88    <span class="xdoc">     *  provided by the product.  You can select the library type by setting
+</span>    89    <span class="xdoc">     *  the {<b>@link</b> #libType WiFi.libType} configuration parameter.
+</span>    90    <span class="xdoc">     *
+</span>    91    <span class="xdoc">     *  <b>@field(LibType_Instrumented)</b> The library supplied is prebuilt with
+</span>    92    <span class="xdoc">     *  logging and assertions enabled.
+</span>    93    <span class="xdoc">     *
+</span>    94    <span class="xdoc">     *  <b>@field(LibType_NonInstrumented)</b> The library supplied is prebuilt
+</span>    95    <span class="xdoc">     *  with logging and assertions disabled.
+</span>    96    <span class="xdoc">     */</span>
+    97        <span class=key>enum</span> LibType {
+    98            LibType_Instrumented,           <span class="xdoc">/*! instrumented */</span>
+    99            LibType_NonInstrumented         <span class="xdoc">/*! non-instrumented */</span>
+   100        };
+   101    
+   102        <span class="xdoc">/*!
+</span>   103    <span class="xdoc">     *  ======== libType ========
+</span>   104    <span class="xdoc">     *  WiFi Library type
+</span>   105    <span class="xdoc">     *
+</span>   106    <span class="xdoc">     *  The WiFi runtime is provided in the form of a library that is
+</span>   107    <span class="xdoc">     *  linked with your application.  Several forms of this library are
+</span>   108    <span class="xdoc">     *  provided with the WiFi product. This configuration parameter
+</span>   109    <span class="xdoc">     *  allows you to select the form of WiFi to use.
+</span>   110    <span class="xdoc">     *
+</span>   111    <span class="xdoc">     *  The default value of libType is
+</span>   112    <span class="xdoc">     *  {<b>@link</b> #LibType_Instrumented WiFi_LibType_Instrumented}.  For a
+</span>   113    <span class="xdoc">     *  complete list of options and what they offer see {<b>@link</b> #LibType}.
+</span>   114    <span class="xdoc">     */</span>
+   115        <span class=key>metaonly</span> <span class=key>config</span> LibType libType = LibType_Instrumented;
+   116    
+   117        <span class="xdoc">/*!
+</span>   118    <span class="xdoc">     *  ======== HDType ========
+</span>   119    <span class="xdoc">     *  WiFi Host Driver selection options
+</span>   120    <span class="xdoc">     *
+</span>   121    <span class="xdoc">     *  <b>@field(HDType_SingleThread)</b> The library supplied is prebuilt with
+</span>   122    <span class="xdoc">     *  a version of the WiFi device's Host Driver that may only be called from
+</span>   123    <span class="xdoc">     *  a single task.
+</span>   124    <span class="xdoc">     *
+</span>   125    <span class="xdoc">     *  <b>@field(HDType_MultiThread)</b> The library supplied is prebuilt with
+</span>   126    <span class="xdoc">     *  a version of the WiFi device's Host Driver that is safe to call from
+</span>   127    <span class="xdoc">     *  multiple tasks, but consumes more resources than the single-thread
+</span>   128    <span class="xdoc">     *  version.
+</span>   129    <span class="xdoc">     */</span>
+   130        <span class=key>enum</span> HDType {
+   131            HDType_SingleThread,       <span class="xdoc">/*! single-thread */</span>
+   132            HDType_MultiThread         <span class="xdoc">/*! multi-thread */</span>
+   133        };
+   134    
+   135        <span class="xdoc">/*!
+</span>   136    <span class="xdoc">     *  ======== hdType ========
+</span>   137    <span class="xdoc">     *  WiFi Host Driver type
+</span>   138    <span class="xdoc">     *
+</span>   139    <span class="xdoc">     *  The WiFi runtime is provided in the form of a library that is
+</span>   140    <span class="xdoc">     *  linked with your application. Several forms of this library are
+</span>   141    <span class="xdoc">     *  provided with the WiFi product. This configuration parameter
+</span>   142    <span class="xdoc">     *  allows you to select the form of WiFi to use.
+</span>   143    <span class="xdoc">     *
+</span>   144    <span class="xdoc">     *  The default value of hdType is
+</span>   145    <span class="xdoc">     *  {<b>@link</b> #HDType_SingleThread WiFi_HDType_SingleThread}.  For a
+</span>   146    <span class="xdoc">     *  complete list of options and what they offer see {<b>@link</b> #HDType}.
+</span>   147    <span class="xdoc">     */</span>
+   148        <span class=key>metaonly</span> <span class=key>config</span> HDType hdType = HDType_SingleThread;
+   149    
+   150        <span class="xdoc">/*!
+</span>   151    <span class="xdoc">     *  TX payload size
+</span>   152    <span class="xdoc">     *
+</span>   153    <span class="xdoc">     *  Used to calculate the size of wlan_tx_buff[]--the buffer used to send
+</span>   154    <span class="xdoc">     *  data and commands to the Wi-Fi device. The maximum permitted size is
+</span>   155    <span class="xdoc">     *  1460 bytes. Devices with limited memory may not be able to allocate the
+</span>   156    <span class="xdoc">     *  maximum payload size; smaller values can be used.
+</span>   157    <span class="xdoc">     */</span>
+   158        <span class=key>metaonly</span> <span class=key>config</span> <span class=key>int</span> txPayloadSize = 1460;
+   159    
+   160        <span class="xdoc">/*!
+</span>   161    <span class="xdoc">     *  RX payload size
+</span>   162    <span class="xdoc">     *
+</span>   163    <span class="xdoc">     *  Used to calculate the size of wlan_rx_buff[]--the buffer used to
+</span>   164    <span class="xdoc">     *  receive data and events from the Wi-Fi device. The maximum permitted
+</span>   165    <span class="xdoc">     *  size is 1460 bytes.Devices with limited memory may not be able to
+</span>   166    <span class="xdoc">     *  allocate the maximum payload size; smaller values can be used.
+</span>   167    <span class="xdoc">     */</span>
+   168        <span class=key>metaonly</span> <span class=key>config</span> <span class=key>int</span> rxPayloadSize = 1460;
+   169    
+   170        <span class="xdoc">/*!
+</span>   171    <span class="xdoc">     *  SelectThread priority
+</span>   172    <span class="xdoc">     *
+</span>   173    <span class="xdoc">     *  The SelectThread is a task created by the multi-thread version of the
+</span>   174    <span class="xdoc">     *  host driver to prevent long host driver calls such as recv() and
+</span>   175    <span class="xdoc">     *  accept() from preventing other tasks from making host driver API calls
+</span>   176    <span class="xdoc">     *  while they wait for a response.
+</span>   177    <span class="xdoc">     *
+</span>   178    <span class="xdoc">     *  You may select the Task priority as you would for any other Task
+</span>   179    <span class="xdoc">     *  instance.
+</span>   180    <span class="xdoc">     */</span>
+   181        <span class=key>metaonly</span> <span class=key>config</span> Int selectThreadPriority = 1;
+   182    
+   183        <span class="xdoc">/*!
+</span>   184    <span class="xdoc">     *  SpawnTask priority
+</span>   185    <span class="xdoc">     *
+</span>   186    <span class="xdoc">     *  The SpawnTask is a task created for the host driver to allow the
+</span>   187    <span class="xdoc">     *  execution of functions in a temporary context.
+</span>   188    <span class="xdoc">     */</span>
+   189        <span class=key>metaonly</span> <span class=key>config</span> Int spawnTaskPriority = 3;
+   190    
+   191        <span class="xdoc">/*!
+</span>   192    <span class="xdoc">     *  <b>@_nodoc</b>
+</span>   193    <span class="xdoc">     *  ======== WiFiTivaCC3000_State ========
+</span>   194    <span class="xdoc">     *  Must match the WiFiTivaCC3000_State enum defined in
+</span>   195    <span class="xdoc">     *  WiFiTivaCC3000.h
+</span>   196    <span class="xdoc">     */</span>
+   197        <span class=key>enum</span> WiFiTivaCC3000_State {
+   198            STATE_POWERUP,
+   199            STATE_INITIALIZED,
+   200            STATE_IDLE,
+   201            STATE_WRITE_FIRST_PART,
+   202            STATE_WRITE_EOT,
+   203            STATE_READ_IRQ,
+   204            STATE_READ_FIRST_PART,
+   205            STATE_READ_EOT
+   206        };
+   207    
+   208        <span class="xdoc">/*!
+</span>   209    <span class="xdoc">     *  <b>@_nodoc</b>
+</span>   210    <span class="xdoc">     *  ======== WiFiMSP430CC3000_State ========
+</span>   211    <span class="xdoc">     *  Must match the WiFiMSP430CC3000_State enum defined in
+</span>   212    <span class="xdoc">     *  WiFiMSP430CC3000.h
+</span>   213    <span class="xdoc">     */</span>
+   214        <span class=key>enum</span> WiFiMSP430CC3000_State {
+   215            WiFiMSP430CC3000_STATE_POWERUP,
+   216            WiFiMSP430CC3000_STATE_INITIALIZED,
+   217            WiFiMSP430CC3000_STATE_IDLE,
+   218            WiFiMSP430CC3000_STATE_WRITE_EOT,
+   219            WiFiMSP430CC3000_STATE_READ_IRQ,
+   220            WiFiMSP430CC3000_STATE_READ_EOT
+   221        };
+   222    
+   223        <span class="xdoc">/*!
+</span>   224    <span class="xdoc">     *  <b>@_nodoc</b>
+</span>   225    <span class="xdoc">     *  ======== WiFi_Config ========
+</span>   226    <span class="xdoc">     *  Structure must match the WiFi_Config structure defined in WiFi.h
+</span>   227    <span class="xdoc">     */</span>
+   228        <span class=key>struct</span> WiFi_Config {
+   229            Void               *fxnTablePtr;
+   230            Void               *object;
+   231            Void               *hwAttrs;
+   232        };
+   233    
+   234        <span class="xdoc">/*!
+</span>   235    <span class="xdoc">     *  <b>@_nodoc</b>
+</span>   236    <span class="xdoc">     *  ======== WiFiTivaCC3000_HWAttrs ========
+</span>   237    <span class="xdoc">     *  Structure must match the WiFiTivaCC3000_HWAttrs structure defined
+</span>   238    <span class="xdoc">     *  in wifi/WiFiTivaCC3000.h
+</span>   239    <span class="xdoc">     */</span>
+   240        <span class=key>struct</span> WiFiTivaCC3000_HWAttrs {
+   241            ULong        irqPort;
+   242            Bits32       irqPin;
+   243            Int          irqIntNum;
+   244    
+   245            ULong        csPort;
+   246            Bits32       csPin;
+   247    
+   248            ULong        enPort;
+   249            Bits32       enPin;
+   250        };
+   251    
+   252        <span class="xdoc">/*!
+</span>   253    <span class="xdoc">     *  <b>@_nodoc</b>
+</span>   254    <span class="xdoc">     *  ======== WiFiMSP430CC3000_HWAttrs ========
+</span>   255    <span class="xdoc">     *  Structure must match the WiFiMSP430CC3000_HWAttrs structure defined
+</span>   256    <span class="xdoc">     *  in wifi/WiFiMSP430CC3000.h
+</span>   257    <span class="xdoc">     */</span>
+   258        <span class=key>struct</span> WiFiMSP430CC3000_HWAttrs {
+   259            ULong        irqPort;
+   260            Bits32       irqPin;
+   261    
+   262            ULong        csPort;
+   263            Bits32       csPin;
+   264    
+   265            ULong        enPort;
+   266            Bits32       enPin;
+   267        };
+   268    
+   269        <span class="xdoc">/*!
+</span>   270    <span class="xdoc">     *  <b>@_nodoc</b>
+</span>   271    <span class="xdoc">     *  ======== WiFiTivaCC3000_Object ========
+</span>   272    <span class="xdoc">     *  Structure must match the WiFiTivaCC3000_Object structure defined
+</span>   273    <span class="xdoc">     *  in wifi/WiFiTivaCC3000.h
+</span>   274    <span class="xdoc">     */</span>
+   275        <span class=key>struct</span> WiFiTivaCC3000_Object {
+   276            Ptr                         writeCompleteSem;
+   277            Ptr                         hwiIrq;
+   278            Ptr                         spiHandle;
+   279            Ptr                         spiRxHandler;
+   280            WiFiTivaCC3000_State        spiState;
+   281            <span class="comment">/* SPI_Transaction          transaction; */</span>
+   282        };
+   283    
+   284        <span class="xdoc">/*!
+</span>   285    <span class="xdoc">     *  <b>@_nodoc</b>
+</span>   286    <span class="xdoc">     *  ======== WiFiMSP430CC3000_Object ========
+</span>   287    <span class="xdoc">     *  Structure must match the WiFiMSP430CC3000_Object structure defined
+</span>   288    <span class="xdoc">     *  in wifi/WiFiMSP430CC3000.h
+</span>   289    <span class="xdoc">     */</span>
+   290        <span class=key>struct</span> WiFiMSP430CC3000_Object {
+   291            Ptr                         writeCompleteSem;
+   292            Ptr                         spiHandle;
+   293            Ptr                         spiRxHandler;
+   294            WiFiMSP430CC3000_State      spiState;
+   295            <span class="comment">/* SPI_Transaction          transaction; */</span>
+   296        };
+   297    
+   298        <span class="xdoc">/*!
+</span>   299    <span class="xdoc">     *  <b>@_nodoc</b>
+</span>   300    <span class="xdoc">     *  ======== WiFiCC3100_SPI_State ========
+</span>   301    <span class="xdoc">     *  Must match the WiFiCC3100_SPI_State enum defined in
+</span>   302    <span class="xdoc">     *  WiFiCC3100.h
+</span>   303    <span class="xdoc">     */</span>
+   304        <span class=key>enum</span> WiFiCC3100_SPI_State {
+   305            WiFiCC3100_SPI_UNINITIALIZED = 0,
+   306            WiFiCC3100_SPI_IDLE,
+   307            WiFiCC3100_SPI_READ_EOT,
+   308            WiFiCC3100_SPI_READ_MSG,
+   309            WiFiCC3100_SPI_WRITE_EOT,
+   310            WiFiCC3100_SPI_WRITE_MSG
+   311        };
+   312    
+   313        <span class="xdoc">/*!
+</span>   314    <span class="xdoc">     *  <b>@_nodoc</b>
+</span>   315    <span class="xdoc">     *  ======== WiFiCC3100_HWAttrs ========
+</span>   316    <span class="xdoc">     *  Structure must match the WiFiCC3100_HWAttrs structure defined
+</span>   317    <span class="xdoc">     *  in wifi/WiFiCC3100.h
+</span>   318    <span class="xdoc">     */</span>
+   319        <span class=key>struct</span> WiFiCC3100_HWAttrs {
+   320            ULong    irqPort;
+   321            ULong    irqPin;
+   322            ULong    irqIntNum;
+   323    
+   324            ULong    csPort;
+   325            ULong    csPin;
+   326    
+   327            ULong    enPort;
+   328            ULong    enPin;
+   329        };
+   330    
+   331        <span class="xdoc">/*!
+</span>   332    <span class="xdoc">     *  <b>@_nodoc</b>
+</span>   333    <span class="xdoc">     *  ======== WiFiCC3100_Object ========
+</span>   334    <span class="xdoc">     *  Structure must match the WiFiCC3100_Object structure defined
+</span>   335    <span class="xdoc">     *  in wifi/WiFiCC3100.h
+</span>   336    <span class="xdoc">     */</span>
+   337        <span class=key>struct</span> WiFiCC3100_Object {
+   338            Ptr       wifiHwi;
+   339            Ptr       spiHandle;
+   340    
+   341            Void      (*wifiIntFxn)();
+   342    
+   343            Ptr       readSemaphore;
+   344            Ptr       writeSemaphore;
+   345    
+   346            WiFiCC3100_SPI_State spiState;
+   347    
+   348            <span class=key>bool</span>      isOpen;
+   349        };
+   350    
+   351        <span class="xdoc">/*!
+</span>   352    <span class="xdoc">     *  <b>@_nodoc</b>
+</span>   353    <span class="xdoc">     *  ======== BasicView ========
+</span>   354    <span class="xdoc">     */</span>
+   355        <span class=key>metaonly</span> <span class=key>struct</span> BasicView {
+   356            String              functionTable;
+   357            String              wifiHandle;
+   358            String              spiHandle;
+   359            String              spiState;
+   360        };
+   361    
+   362        <span class="xdoc">/*!
+</span>   363    <span class="xdoc">     *  <b>@_nodoc</b>
+</span>   364    <span class="xdoc">     *  ======== rovViewInfo ========
+</span>   365    <span class="xdoc">     */</span>
+   366        @Facet
+   367        <span class=key>metaonly</span> <span class=key>config</span> ViewInfo.Instance rovViewInfo =
+   368            ViewInfo.create({
+   369                viewMap: [
+   370                    [<span class="string">'Basic'</span>,
+   371                        {
+   372                            type: ViewInfo.MODULE_DATA,
+   373                            viewInitFxn: <span class="string">'viewInitBasic'</span>,
+   374                            structName: <span class="string">'BasicView'</span>
+   375                        }
+   376                    ]
+   377                ]
+   378            });
+   379    }
+</pre>
+</body></html>

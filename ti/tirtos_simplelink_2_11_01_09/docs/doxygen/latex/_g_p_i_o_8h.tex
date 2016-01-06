@@ -1,0 +1,458 @@
+\subsection{G\-P\-I\-O.\-h File Reference}
+\label{_g_p_i_o_8h}\index{G\-P\-I\-O.\-h@{G\-P\-I\-O.\-h}}
+
+
+\subsubsection{Detailed Description}
+G\-P\-I\-O driver. ============================================================================
+
+The G\-P\-I\-O header file should be included in an application as follows\-: 
+\begin{DoxyCode}
+*  #include <ti/drivers/GPIO.h>
+*  
+\end{DoxyCode}
+
+
+\subsubsection*{Operation}
+
+The G\-P\-I\-O module allows you to manage General Purpose I/\-O pins and ports via simple and portable A\-P\-Is. The application needs to supply a \hyperlink{struct_g_p_i_o___config}{G\-P\-I\-O\-\_\-\-Config} structure to the module. The application needs to initialize the G\-P\-I\-O hardware peripherals, setup the pins used and call \hyperlink{_g_p_i_o_8h_a75690af9e89afd801dc40b20b5c813f1}{G\-P\-I\-O\-\_\-init()}. Once that is completed the other A\-P\-Is can be used to access the pins.
+
+Asserts are used to verify that the driver has only been initialized once, is reading/writing a valid index, and is writing to an output pin.
+
+The following is an example of the code that must be implemented to use L\-D2 without interrupts on a T\-M\-D\-X\-D\-O\-C\-K\-H52\-C1 board.
+
+Board header\-: 
+\begin{DoxyCode}
+*  \textcolor{comment}{// LEDs on TMDXDOCKH52C1 are active low}
+*  #define TMDXDOCKH52C1\_LED\_OFF (~0)
+*  #define TMDXDOCKH52C1\_LED\_ON  (0)
+*
+*  \textcolor{comment}{// Enum of LED names on the TMDXDOCKH52C1 dev board}
+*  \textcolor{keyword}{typedef} \textcolor{keyword}{enum} TMDXDOCKH52C1\_GPIOName \{
+*      TMDXDOCKH52C1\_LD2 = 0,
+*
+*      TMDXDOCKH52C1\_GPIOCOUNT
+*  \} TMDXDOCKH52C1\_GPIOName;
+*  
+\end{DoxyCode}
+
+
+Board initialization code\-: 
+\begin{DoxyCode}
+*  \textcolor{comment}{// GPIO configuration structures}
+*  \textcolor{keyword}{const} GPIO_HWAttrs gpioHWAttrs[TMDXDOCKH52C1\_GPIOCOUNT] = \{
+*      \{GPIO\_PORTC\_BASE, GPIO\_PIN\_6, GPIO_OUTPUT\},
+*  \};
+*
+*  \textcolor{keyword}{const} GPIO_Config GPIO\_config[] = \{
+*     \{&gpioHWAttrs[0]\},
+*     \{NULL\},
+* \};
+*
+*  \textcolor{comment}{// Initialize peripheral and pins using MWare APIs}
+*  \textcolor{keywordtype}{void} TMDXDOCKH52C1\_initGPIO(\textcolor{keywordtype}{void})
+*  \{
+*      GPIOPinTypeGPIOOutput(GPIO\_PORTC\_BASE, GPIO\_PIN\_6);
+*
+*      \textcolor{comment}{//Once GPIO\_init() is called, GPIO\_config cannot be changed}
+*      GPIO_init();
+*  \}
+*  
+\end{DoxyCode}
+
+
+Application code\-: 
+\begin{DoxyCode}
+*  TMDXDOCKH52C1\_initGeneral(); \textcolor{comment}{// Initialize general board specific settings}
+*  TMDXDOCKH52C1\_initGPIO(); \textcolor{comment}{// Setup GPIO and initialize the driver}
+*  GPIO_write(TMDXDOCKH52C1\_LED, TMDXDOCKH52C1\_LED\_ON); \textcolor{comment}{// Turn on LED}
+*  
+\end{DoxyCode}
+
+
+\paragraph*{G\-P\-I\-O interrupts}
+
+To use G\-P\-I\-O interrupts on input pins use the following board initalization code.
+
+
+\begin{DoxyCode}
+*  \textcolor{comment}{// Callback function prototype for GPIO interrupts}
+*  \textcolor{keywordtype}{void} buttonFxn();
+*
+*  \textcolor{comment}{// GPIO configuration structures}
+*  \textcolor{keyword}{const} GPIO_HWAttrs gpioHWAttrs[TMDXDOCKH52C1\_GPIOCOUNT] = \{
+*      \{GPIO\_PORTB\_BASE, GPIO\_PIN\_4, GPIO_INPUT\},
+*  \};
+*
+*  \textcolor{comment}{//Memory for the GPIO module to construct a Hwi}
+*  Hwi\_Struct callbackHwi;
+*
+*  \textcolor{comment}{// GPIO callback structure to set callbacks for GPIO interrupts.}
+*  \textcolor{comment}{// Pin 0 corresponds to callback function at index 0 and so on.}
+*  \textcolor{keyword}{const} GPIO_Callbacks TMDXDOCKH52C1\_gpioPortBCallbacks = \{
+*      GPIO\_PORTB\_BASE, INT\_GPIOB, &callbackHwi,
+*      \{NULL, NULL, NULL, NULL, buttonFxn, NULL, NULL, NULL\}
+*  \};
+*  \textcolor{keyword}{const} GPIO_Config GPIO\_config[] = \{
+*      \{&gpioHWAttrs[0]\},
+*      \{NULL\},
+*  \};
+*
+*  \textcolor{comment}{// Initialize peripheral and pins using MWare APIs}
+*  \textcolor{keywordtype}{void} TMDXDOCKH52C1\_initGPIO(\textcolor{keywordtype}{void})
+*  \{
+*      GPIOPinTypeGPIOInput(GPIO\_PORTB\_BASE, GPIO\_PIN\_4);
+*      GPIOPadConfigSet(GPIO\_PORTB\_BASE, GPIO\_PIN\_4, GPIO\_PIN\_TYPE\_STD\_WPU);
+*
+*      \textcolor{comment}{//Once GPIO\_init() is called, GPIO\_config cannot be changed}
+*      GPIO_init();
+*  \}
+*  
+\end{DoxyCode}
+
+
+Application code\-: 
+\begin{DoxyCode}
+*  \textcolor{comment}{// Callback function for GPIO interrupts}
+*  \textcolor{keywordtype}{void} buttonFxn()
+*  \{
+*      ....
+*  \}
+*
+*  \textcolor{keywordtype}{int} main(\textcolor{keywordtype}{void})
+*  \{
+*      TMDXDOCKH52C1\_initGeneral(); \textcolor{comment}{// Initialize general board specific settings}
+*      TMDXDOCKH52C1\_initGPIO(); \textcolor{comment}{// Setup GPIO and initialize the driver}
+*
+*      GPIO_setupCallbacks(&TMDXDOCKH52C1\_gpioPortBCallbacks); \textcolor{comment}{// Setup interrupts}
+*
+*      GPIO_enableInt(TMDXDOCKH52C1\_BUTTON, GPIO_INT_RISING); \textcolor{comment}{// Enable interrupts}
+*  \}
+*  
+\end{DoxyCode}
+
+
+Keep in mind that the callback functions will be called in the context of an interrupt service routine and should be designed accordingly. Also, it is the user's responsibility to call \hyperlink{_g_p_i_o_8h_ad890aa2518ec2f4c88419dc4036b6197}{G\-P\-I\-O\-\_\-clear\-Int()} to allow further interrupt to occur. The callback setup is not supported for all platforms.
+
+\subsubsection*{Instrumentation}
+
+The G\-P\-I\-O driver interface produces log statements if instrumentation is enabled.
+
+\begin{TabularC}{2}
+\hline
+\rowcolor{lightgray}{\bf Diagnostics Mask }&{\bf Log details  }\\\cline{1-2}
+Diags\-\_\-\-U\-S\-E\-R1 &basic operations performed \\\cline{1-2}
+\end{TabularC}
+
+
+{\ttfamily \#include $<$stdint.\-h$>$}\\*
+Include dependency graph for G\-P\-I\-O.\-h\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=85pt]{_g_p_i_o_8h__incl}
+\end{center}
+\end{figure}
+\subsubsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{struct_g_p_i_o___callbacks}{G\-P\-I\-O\-\_\-\-Callbacks}
+\begin{DoxyCompactList}\small\item\em G\-P\-I\-O callback structure. \end{DoxyCompactList}\item 
+struct \hyperlink{struct_g_p_i_o___h_w_attrs}{G\-P\-I\-O\-\_\-\-H\-W\-Attrs}
+\begin{DoxyCompactList}\small\item\em G\-P\-I\-O Hardware attributes. \end{DoxyCompactList}\item 
+struct \hyperlink{struct_g_p_i_o___config}{G\-P\-I\-O\-\_\-\-Config}
+\begin{DoxyCompactList}\small\item\em G\-P\-I\-O Global configuration. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef enum \hyperlink{_g_p_i_o_8h_a0c1bff6c02d7155b78f07abd8c31722f}{G\-P\-I\-O\-\_\-\-Direction} \hyperlink{_g_p_i_o_8h_aa0ecedf7ce14ed787c307c4da0715223}{G\-P\-I\-O\-\_\-\-Direction}
+\begin{DoxyCompactList}\small\item\em G\-P\-I\-O direction indictator. \end{DoxyCompactList}\item 
+typedef enum \hyperlink{_g_p_i_o_8h_abf424f4c82447febc105783bb24d66b0}{G\-P\-I\-O\-\_\-\-Int\-Type} \hyperlink{_g_p_i_o_8h_a4aacf71cd31c688c4a6d449989c7cbc6}{G\-P\-I\-O\-\_\-\-Int\-Type}
+\begin{DoxyCompactList}\small\item\em G\-P\-I\-O interrupt type. \end{DoxyCompactList}\item 
+typedef struct \hyperlink{struct_g_p_i_o___callbacks}{G\-P\-I\-O\-\_\-\-Callbacks} \hyperlink{_g_p_i_o_8h_aef0e65e0a1d0f0451cafdf0e6db272bf}{G\-P\-I\-O\-\_\-\-Callbacks}
+\begin{DoxyCompactList}\small\item\em G\-P\-I\-O callback structure. \end{DoxyCompactList}\item 
+typedef struct \hyperlink{struct_g_p_i_o___h_w_attrs}{G\-P\-I\-O\-\_\-\-H\-W\-Attrs} \hyperlink{_g_p_i_o_8h_ae4ec83381a72983648e99e3e60552781}{G\-P\-I\-O\-\_\-\-H\-W\-Attrs}
+\begin{DoxyCompactList}\small\item\em G\-P\-I\-O Hardware attributes. \end{DoxyCompactList}\item 
+typedef struct \hyperlink{struct_g_p_i_o___config}{G\-P\-I\-O\-\_\-\-Config} \hyperlink{_g_p_i_o_8h_a2c53b92a39d3be9df0c416318a360482}{G\-P\-I\-O\-\_\-\-Config}
+\begin{DoxyCompactList}\small\item\em G\-P\-I\-O Global configuration. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsubsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \hyperlink{_g_p_i_o_8h_a0c1bff6c02d7155b78f07abd8c31722f}{G\-P\-I\-O\-\_\-\-Direction} \{ \\*
+\hyperlink{_g_p_i_o_8h_a0c1bff6c02d7155b78f07abd8c31722faa248e73c1faee9c6f072fd91569cf516}{G\-P\-I\-O\-\_\-\-O\-U\-T\-P\-U\-T}, 
+\\*
+\hyperlink{_g_p_i_o_8h_a0c1bff6c02d7155b78f07abd8c31722faa1ea38ffc304a6c32480a65b5fec7302}{G\-P\-I\-O\-\_\-\-I\-N\-P\-U\-T}
+ \}
+\begin{DoxyCompactList}\small\item\em G\-P\-I\-O direction indictator. \end{DoxyCompactList}\item 
+enum \hyperlink{_g_p_i_o_8h_abf424f4c82447febc105783bb24d66b0}{G\-P\-I\-O\-\_\-\-Int\-Type} \{ \\*
+\hyperlink{_g_p_i_o_8h_abf424f4c82447febc105783bb24d66b0ade1d8166f9c074ae582544391e7ac7f8}{G\-P\-I\-O\-\_\-\-I\-N\-T\-\_\-\-F\-A\-L\-L\-I\-N\-G} = 0, 
+\\*
+\hyperlink{_g_p_i_o_8h_abf424f4c82447febc105783bb24d66b0abd74c575d6e2c772ec9205c9509913ab}{G\-P\-I\-O\-\_\-\-I\-N\-T\-\_\-\-R\-I\-S\-I\-N\-G} = 1, 
+\\*
+\hyperlink{_g_p_i_o_8h_abf424f4c82447febc105783bb24d66b0a6bcaacff5846db83efc1b62e95691e48}{G\-P\-I\-O\-\_\-\-I\-N\-T\-\_\-\-B\-O\-T\-H\-\_\-\-E\-D\-G\-E\-S} = 2, 
+\\*
+\hyperlink{_g_p_i_o_8h_abf424f4c82447febc105783bb24d66b0af4dfbf12ab52e3d51a70f9d82b867e37}{G\-P\-I\-O\-\_\-\-I\-N\-T\-\_\-\-L\-O\-W} = 3, 
+\\*
+\hyperlink{_g_p_i_o_8h_abf424f4c82447febc105783bb24d66b0adf097efcf757be9ab3159169c0d3e649}{G\-P\-I\-O\-\_\-\-I\-N\-T\-\_\-\-H\-I\-G\-H} = 4
+ \}
+\begin{DoxyCompactList}\small\item\em G\-P\-I\-O interrupt type. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{_g_p_i_o_8h_a987466bc80d2f5133a05795ad69a1d5f}{G\-P\-I\-O\-\_\-hwi\-Int\-Fxn} (uintptr\-\_\-t callbacks)
+\item 
+void \hyperlink{_g_p_i_o_8h_ad890aa2518ec2f4c88419dc4036b6197}{G\-P\-I\-O\-\_\-clear\-Int} (unsigned int index)
+\begin{DoxyCompactList}\small\item\em Clears the G\-P\-I\-O interrupt flag. \end{DoxyCompactList}\item 
+void \hyperlink{_g_p_i_o_8h_a37f548f4dabd9ee12e3ba4805ce1680e}{G\-P\-I\-O\-\_\-disable\-Int} (unsigned int index)
+\begin{DoxyCompactList}\small\item\em Disables G\-P\-I\-O interrupts. \end{DoxyCompactList}\item 
+void \hyperlink{_g_p_i_o_8h_afbda626cf60f986601cb9270f0dd9702}{G\-P\-I\-O\-\_\-enable\-Int} (unsigned int index, \hyperlink{_g_p_i_o_8h_abf424f4c82447febc105783bb24d66b0}{G\-P\-I\-O\-\_\-\-Int\-Type} int\-Type)
+\begin{DoxyCompactList}\small\item\em Enables G\-P\-I\-O interrupts. \end{DoxyCompactList}\item 
+void \hyperlink{_g_p_i_o_8h_a75690af9e89afd801dc40b20b5c813f1}{G\-P\-I\-O\-\_\-init} (void)
+\begin{DoxyCompactList}\small\item\em Initializes the G\-P\-I\-O module. \end{DoxyCompactList}\item 
+void \hyperlink{_g_p_i_o_8h_af00c188a9e451094c5de1109141f30db}{G\-P\-I\-O\-\_\-setup\-Callbacks} (\hyperlink{struct_g_p_i_o___callbacks}{G\-P\-I\-O\-\_\-\-Callbacks} const $\ast$callbacks)
+\begin{DoxyCompactList}\small\item\em Initializes G\-P\-I\-O interrupts. \end{DoxyCompactList}\item 
+uint32\-\_\-t \hyperlink{_g_p_i_o_8h_a6facb3b05248e72f214e3f74ec9b25a6}{G\-P\-I\-O\-\_\-read} (unsigned int index)
+\begin{DoxyCompactList}\small\item\em Reads the value of a G\-P\-I\-O pin. \end{DoxyCompactList}\item 
+void \hyperlink{_g_p_i_o_8h_a5653fbc35078d9140ede8afef074d878}{G\-P\-I\-O\-\_\-toggle} (unsigned int index)
+\begin{DoxyCompactList}\small\item\em Toggles the current state of a G\-P\-I\-O. \end{DoxyCompactList}\item 
+void \hyperlink{_g_p_i_o_8h_ab561efc784812728c819decc5e9d85af}{G\-P\-I\-O\-\_\-write} (unsigned int index, uint32\-\_\-t value)
+\begin{DoxyCompactList}\small\item\em Writes the value to a G\-P\-I\-O pin. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsubsection{Typedef Documentation}
+\index{G\-P\-I\-O.\-h@{G\-P\-I\-O.\-h}!G\-P\-I\-O\-\_\-\-Direction@{G\-P\-I\-O\-\_\-\-Direction}}
+\index{G\-P\-I\-O\-\_\-\-Direction@{G\-P\-I\-O\-\_\-\-Direction}!GPIO.h@{G\-P\-I\-O.\-h}}
+\paragraph[{G\-P\-I\-O\-\_\-\-Direction}]{\setlength{\rightskip}{0pt plus 5cm}typedef enum {\bf G\-P\-I\-O\-\_\-\-Direction}  {\bf G\-P\-I\-O\-\_\-\-Direction}}\label{_g_p_i_o_8h_aa0ecedf7ce14ed787c307c4da0715223}
+
+
+G\-P\-I\-O direction indictator. 
+
+\index{G\-P\-I\-O.\-h@{G\-P\-I\-O.\-h}!G\-P\-I\-O\-\_\-\-Int\-Type@{G\-P\-I\-O\-\_\-\-Int\-Type}}
+\index{G\-P\-I\-O\-\_\-\-Int\-Type@{G\-P\-I\-O\-\_\-\-Int\-Type}!GPIO.h@{G\-P\-I\-O.\-h}}
+\paragraph[{G\-P\-I\-O\-\_\-\-Int\-Type}]{\setlength{\rightskip}{0pt plus 5cm}typedef enum {\bf G\-P\-I\-O\-\_\-\-Int\-Type}  {\bf G\-P\-I\-O\-\_\-\-Int\-Type}}\label{_g_p_i_o_8h_a4aacf71cd31c688c4a6d449989c7cbc6}
+
+
+G\-P\-I\-O interrupt type. 
+
+\index{G\-P\-I\-O.\-h@{G\-P\-I\-O.\-h}!G\-P\-I\-O\-\_\-\-Callbacks@{G\-P\-I\-O\-\_\-\-Callbacks}}
+\index{G\-P\-I\-O\-\_\-\-Callbacks@{G\-P\-I\-O\-\_\-\-Callbacks}!GPIO.h@{G\-P\-I\-O.\-h}}
+\paragraph[{G\-P\-I\-O\-\_\-\-Callbacks}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf G\-P\-I\-O\-\_\-\-Callbacks}  {\bf G\-P\-I\-O\-\_\-\-Callbacks}}\label{_g_p_i_o_8h_aef0e65e0a1d0f0451cafdf0e6db272bf}
+
+
+G\-P\-I\-O callback structure. 
+
+This structure contains pointers to the callback functions that will be called when an interrupt occurs. Each function pointer in the callback\-Fxn array corresponds to a pin in the specified port (pin 0 to index 0 and so on). A \hyperlink{struct_g_p_i_o___callbacks}{G\-P\-I\-O\-\_\-\-Callbacks} structure must be present for each port that has one or more pins that use G\-P\-I\-O interrupts. This structure must exist and be persistent before it can be passed to the \hyperlink{_g_p_i_o_8h_af00c188a9e451094c5de1109141f30db}{G\-P\-I\-O\-\_\-setup\-Callbacks()} A\-P\-I. \index{G\-P\-I\-O.\-h@{G\-P\-I\-O.\-h}!G\-P\-I\-O\-\_\-\-H\-W\-Attrs@{G\-P\-I\-O\-\_\-\-H\-W\-Attrs}}
+\index{G\-P\-I\-O\-\_\-\-H\-W\-Attrs@{G\-P\-I\-O\-\_\-\-H\-W\-Attrs}!GPIO.h@{G\-P\-I\-O.\-h}}
+\paragraph[{G\-P\-I\-O\-\_\-\-H\-W\-Attrs}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf G\-P\-I\-O\-\_\-\-H\-W\-Attrs}  {\bf G\-P\-I\-O\-\_\-\-H\-W\-Attrs}}\label{_g_p_i_o_8h_ae4ec83381a72983648e99e3e60552781}
+
+
+G\-P\-I\-O Hardware attributes. 
+
+This structure characterizes a particular general purpose input/output pin. A G\-P\-I\-O is identified to be a particular pin on a particular G\-P\-I\-O port. The G\-P\-I\-O driver associates a G\-P\-I\-O port/pin pair with a input/output direction.
+
+Using this information, the G\-P\-I\-O driver can perform basic pin read and write operations. \index{G\-P\-I\-O.\-h@{G\-P\-I\-O.\-h}!G\-P\-I\-O\-\_\-\-Config@{G\-P\-I\-O\-\_\-\-Config}}
+\index{G\-P\-I\-O\-\_\-\-Config@{G\-P\-I\-O\-\_\-\-Config}!GPIO.h@{G\-P\-I\-O.\-h}}
+\paragraph[{G\-P\-I\-O\-\_\-\-Config}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf G\-P\-I\-O\-\_\-\-Config}  {\bf G\-P\-I\-O\-\_\-\-Config}}\label{_g_p_i_o_8h_a2c53b92a39d3be9df0c416318a360482}
+
+
+G\-P\-I\-O Global configuration. 
+
+
+
+\subsubsection{Enumeration Type Documentation}
+\index{G\-P\-I\-O.\-h@{G\-P\-I\-O.\-h}!G\-P\-I\-O\-\_\-\-Direction@{G\-P\-I\-O\-\_\-\-Direction}}
+\index{G\-P\-I\-O\-\_\-\-Direction@{G\-P\-I\-O\-\_\-\-Direction}!GPIO.h@{G\-P\-I\-O.\-h}}
+\paragraph[{G\-P\-I\-O\-\_\-\-Direction}]{\setlength{\rightskip}{0pt plus 5cm}enum {\bf G\-P\-I\-O\-\_\-\-Direction}}\label{_g_p_i_o_8h_a0c1bff6c02d7155b78f07abd8c31722f}
+
+
+G\-P\-I\-O direction indictator. 
+
+\begin{Desc}
+\item[Enumerator]\par
+\begin{description}
+\index{G\-P\-I\-O\-\_\-\-O\-U\-T\-P\-U\-T@{G\-P\-I\-O\-\_\-\-O\-U\-T\-P\-U\-T}!G\-P\-I\-O.\-h@{G\-P\-I\-O.\-h}}\index{G\-P\-I\-O.\-h@{G\-P\-I\-O.\-h}!G\-P\-I\-O\-\_\-\-O\-U\-T\-P\-U\-T@{G\-P\-I\-O\-\_\-\-O\-U\-T\-P\-U\-T}}\item[{\em 
+G\-P\-I\-O\-\_\-\-O\-U\-T\-P\-U\-T\label{_g_p_i_o_8h_a0c1bff6c02d7155b78f07abd8c31722faa248e73c1faee9c6f072fd91569cf516}
+}]Denotes a G\-P\-I\-O pin is output. \index{G\-P\-I\-O\-\_\-\-I\-N\-P\-U\-T@{G\-P\-I\-O\-\_\-\-I\-N\-P\-U\-T}!G\-P\-I\-O.\-h@{G\-P\-I\-O.\-h}}\index{G\-P\-I\-O.\-h@{G\-P\-I\-O.\-h}!G\-P\-I\-O\-\_\-\-I\-N\-P\-U\-T@{G\-P\-I\-O\-\_\-\-I\-N\-P\-U\-T}}\item[{\em 
+G\-P\-I\-O\-\_\-\-I\-N\-P\-U\-T\label{_g_p_i_o_8h_a0c1bff6c02d7155b78f07abd8c31722faa1ea38ffc304a6c32480a65b5fec7302}
+}]Denotes a G\-P\-I\-O pin is input. \end{description}
+\end{Desc}
+\index{G\-P\-I\-O.\-h@{G\-P\-I\-O.\-h}!G\-P\-I\-O\-\_\-\-Int\-Type@{G\-P\-I\-O\-\_\-\-Int\-Type}}
+\index{G\-P\-I\-O\-\_\-\-Int\-Type@{G\-P\-I\-O\-\_\-\-Int\-Type}!GPIO.h@{G\-P\-I\-O.\-h}}
+\paragraph[{G\-P\-I\-O\-\_\-\-Int\-Type}]{\setlength{\rightskip}{0pt plus 5cm}enum {\bf G\-P\-I\-O\-\_\-\-Int\-Type}}\label{_g_p_i_o_8h_abf424f4c82447febc105783bb24d66b0}
+
+
+G\-P\-I\-O interrupt type. 
+
+\begin{Desc}
+\item[Enumerator]\par
+\begin{description}
+\index{G\-P\-I\-O\-\_\-\-I\-N\-T\-\_\-\-F\-A\-L\-L\-I\-N\-G@{G\-P\-I\-O\-\_\-\-I\-N\-T\-\_\-\-F\-A\-L\-L\-I\-N\-G}!G\-P\-I\-O.\-h@{G\-P\-I\-O.\-h}}\index{G\-P\-I\-O.\-h@{G\-P\-I\-O.\-h}!G\-P\-I\-O\-\_\-\-I\-N\-T\-\_\-\-F\-A\-L\-L\-I\-N\-G@{G\-P\-I\-O\-\_\-\-I\-N\-T\-\_\-\-F\-A\-L\-L\-I\-N\-G}}\item[{\em 
+G\-P\-I\-O\-\_\-\-I\-N\-T\-\_\-\-F\-A\-L\-L\-I\-N\-G\label{_g_p_i_o_8h_abf424f4c82447febc105783bb24d66b0ade1d8166f9c074ae582544391e7ac7f8}
+}]Interrupt on falling edge \index{G\-P\-I\-O\-\_\-\-I\-N\-T\-\_\-\-R\-I\-S\-I\-N\-G@{G\-P\-I\-O\-\_\-\-I\-N\-T\-\_\-\-R\-I\-S\-I\-N\-G}!G\-P\-I\-O.\-h@{G\-P\-I\-O.\-h}}\index{G\-P\-I\-O.\-h@{G\-P\-I\-O.\-h}!G\-P\-I\-O\-\_\-\-I\-N\-T\-\_\-\-R\-I\-S\-I\-N\-G@{G\-P\-I\-O\-\_\-\-I\-N\-T\-\_\-\-R\-I\-S\-I\-N\-G}}\item[{\em 
+G\-P\-I\-O\-\_\-\-I\-N\-T\-\_\-\-R\-I\-S\-I\-N\-G\label{_g_p_i_o_8h_abf424f4c82447febc105783bb24d66b0abd74c575d6e2c772ec9205c9509913ab}
+}]Interrupt on rising edge \index{G\-P\-I\-O\-\_\-\-I\-N\-T\-\_\-\-B\-O\-T\-H\-\_\-\-E\-D\-G\-E\-S@{G\-P\-I\-O\-\_\-\-I\-N\-T\-\_\-\-B\-O\-T\-H\-\_\-\-E\-D\-G\-E\-S}!G\-P\-I\-O.\-h@{G\-P\-I\-O.\-h}}\index{G\-P\-I\-O.\-h@{G\-P\-I\-O.\-h}!G\-P\-I\-O\-\_\-\-I\-N\-T\-\_\-\-B\-O\-T\-H\-\_\-\-E\-D\-G\-E\-S@{G\-P\-I\-O\-\_\-\-I\-N\-T\-\_\-\-B\-O\-T\-H\-\_\-\-E\-D\-G\-E\-S}}\item[{\em 
+G\-P\-I\-O\-\_\-\-I\-N\-T\-\_\-\-B\-O\-T\-H\-\_\-\-E\-D\-G\-E\-S\label{_g_p_i_o_8h_abf424f4c82447febc105783bb24d66b0a6bcaacff5846db83efc1b62e95691e48}
+}]Interrupt on both edges \index{G\-P\-I\-O\-\_\-\-I\-N\-T\-\_\-\-L\-O\-W@{G\-P\-I\-O\-\_\-\-I\-N\-T\-\_\-\-L\-O\-W}!G\-P\-I\-O.\-h@{G\-P\-I\-O.\-h}}\index{G\-P\-I\-O.\-h@{G\-P\-I\-O.\-h}!G\-P\-I\-O\-\_\-\-I\-N\-T\-\_\-\-L\-O\-W@{G\-P\-I\-O\-\_\-\-I\-N\-T\-\_\-\-L\-O\-W}}\item[{\em 
+G\-P\-I\-O\-\_\-\-I\-N\-T\-\_\-\-L\-O\-W\label{_g_p_i_o_8h_abf424f4c82447febc105783bb24d66b0af4dfbf12ab52e3d51a70f9d82b867e37}
+}]Interrupt on low level \index{G\-P\-I\-O\-\_\-\-I\-N\-T\-\_\-\-H\-I\-G\-H@{G\-P\-I\-O\-\_\-\-I\-N\-T\-\_\-\-H\-I\-G\-H}!G\-P\-I\-O.\-h@{G\-P\-I\-O.\-h}}\index{G\-P\-I\-O.\-h@{G\-P\-I\-O.\-h}!G\-P\-I\-O\-\_\-\-I\-N\-T\-\_\-\-H\-I\-G\-H@{G\-P\-I\-O\-\_\-\-I\-N\-T\-\_\-\-H\-I\-G\-H}}\item[{\em 
+G\-P\-I\-O\-\_\-\-I\-N\-T\-\_\-\-H\-I\-G\-H\label{_g_p_i_o_8h_abf424f4c82447febc105783bb24d66b0adf097efcf757be9ab3159169c0d3e649}
+}]Interrupt on high level \end{description}
+\end{Desc}
+
+
+\subsubsection{Function Documentation}
+\index{G\-P\-I\-O.\-h@{G\-P\-I\-O.\-h}!G\-P\-I\-O\-\_\-hwi\-Int\-Fxn@{G\-P\-I\-O\-\_\-hwi\-Int\-Fxn}}
+\index{G\-P\-I\-O\-\_\-hwi\-Int\-Fxn@{G\-P\-I\-O\-\_\-hwi\-Int\-Fxn}!GPIO.h@{G\-P\-I\-O.\-h}}
+\paragraph[{G\-P\-I\-O\-\_\-hwi\-Int\-Fxn}]{\setlength{\rightskip}{0pt plus 5cm}void G\-P\-I\-O\-\_\-hwi\-Int\-Fxn (
+\begin{DoxyParamCaption}
+\item[{uintptr\-\_\-t}]{callbacks}
+\end{DoxyParamCaption}
+)}\label{_g_p_i_o_8h_a987466bc80d2f5133a05795ad69a1d5f}
+\index{G\-P\-I\-O.\-h@{G\-P\-I\-O.\-h}!G\-P\-I\-O\-\_\-clear\-Int@{G\-P\-I\-O\-\_\-clear\-Int}}
+\index{G\-P\-I\-O\-\_\-clear\-Int@{G\-P\-I\-O\-\_\-clear\-Int}!GPIO.h@{G\-P\-I\-O.\-h}}
+\paragraph[{G\-P\-I\-O\-\_\-clear\-Int}]{\setlength{\rightskip}{0pt plus 5cm}void G\-P\-I\-O\-\_\-clear\-Int (
+\begin{DoxyParamCaption}
+\item[{unsigned int}]{index}
+\end{DoxyParamCaption}
+)}\label{_g_p_i_o_8h_ad890aa2518ec2f4c88419dc4036b6197}
+
+
+Clears the G\-P\-I\-O interrupt flag. 
+
+Clears the G\-P\-I\-O interrupt for the specified index. For edge-\/triggered interrupts, this function must be called to allow any further interrupts.
+
+
+\begin{DoxyParams}{Parameters}
+{\em index} & G\-P\-I\-O index \\
+\hline
+\end{DoxyParams}
+\index{G\-P\-I\-O.\-h@{G\-P\-I\-O.\-h}!G\-P\-I\-O\-\_\-disable\-Int@{G\-P\-I\-O\-\_\-disable\-Int}}
+\index{G\-P\-I\-O\-\_\-disable\-Int@{G\-P\-I\-O\-\_\-disable\-Int}!GPIO.h@{G\-P\-I\-O.\-h}}
+\paragraph[{G\-P\-I\-O\-\_\-disable\-Int}]{\setlength{\rightskip}{0pt plus 5cm}void G\-P\-I\-O\-\_\-disable\-Int (
+\begin{DoxyParamCaption}
+\item[{unsigned int}]{index}
+\end{DoxyParamCaption}
+)}\label{_g_p_i_o_8h_a37f548f4dabd9ee12e3ba4805ce1680e}
+
+
+Disables G\-P\-I\-O interrupts. 
+
+Disables interrupts for the specified G\-P\-I\-O index.
+
+
+\begin{DoxyParams}{Parameters}
+{\em index} & G\-P\-I\-O index \\
+\hline
+\end{DoxyParams}
+\index{G\-P\-I\-O.\-h@{G\-P\-I\-O.\-h}!G\-P\-I\-O\-\_\-enable\-Int@{G\-P\-I\-O\-\_\-enable\-Int}}
+\index{G\-P\-I\-O\-\_\-enable\-Int@{G\-P\-I\-O\-\_\-enable\-Int}!GPIO.h@{G\-P\-I\-O.\-h}}
+\paragraph[{G\-P\-I\-O\-\_\-enable\-Int}]{\setlength{\rightskip}{0pt plus 5cm}void G\-P\-I\-O\-\_\-enable\-Int (
+\begin{DoxyParamCaption}
+\item[{unsigned int}]{index, }
+\item[{{\bf G\-P\-I\-O\-\_\-\-Int\-Type}}]{int\-Type}
+\end{DoxyParamCaption}
+)}\label{_g_p_i_o_8h_afbda626cf60f986601cb9270f0dd9702}
+
+
+Enables G\-P\-I\-O interrupts. 
+
+Enables G\-P\-I\-O interrupts for the selected index to occur when the action specified by int\-Type occurs.
+
+
+\begin{DoxyParams}{Parameters}
+{\em index} & G\-P\-I\-O index \\
+\hline
+{\em int\-Type} & Pin event that causes an interrupt \\
+\hline
+\end{DoxyParams}
+\index{G\-P\-I\-O.\-h@{G\-P\-I\-O.\-h}!G\-P\-I\-O\-\_\-init@{G\-P\-I\-O\-\_\-init}}
+\index{G\-P\-I\-O\-\_\-init@{G\-P\-I\-O\-\_\-init}!GPIO.h@{G\-P\-I\-O.\-h}}
+\paragraph[{G\-P\-I\-O\-\_\-init}]{\setlength{\rightskip}{0pt plus 5cm}void G\-P\-I\-O\-\_\-init (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}\label{_g_p_i_o_8h_a75690af9e89afd801dc40b20b5c813f1}
+
+
+Initializes the G\-P\-I\-O module. 
+
+The application provided {\itshape G\-P\-I\-O\-\_\-config} must be initialized before the \hyperlink{_g_p_i_o_8h_a75690af9e89afd801dc40b20b5c813f1}{G\-P\-I\-O\-\_\-init()} function is called. The {\itshape G\-P\-I\-O\-\_\-config} must be persistent and not changed after \hyperlink{_g_p_i_o_8h_a75690af9e89afd801dc40b20b5c813f1}{G\-P\-I\-O\-\_\-init()} is called \index{G\-P\-I\-O.\-h@{G\-P\-I\-O.\-h}!G\-P\-I\-O\-\_\-setup\-Callbacks@{G\-P\-I\-O\-\_\-setup\-Callbacks}}
+\index{G\-P\-I\-O\-\_\-setup\-Callbacks@{G\-P\-I\-O\-\_\-setup\-Callbacks}!GPIO.h@{G\-P\-I\-O.\-h}}
+\paragraph[{G\-P\-I\-O\-\_\-setup\-Callbacks}]{\setlength{\rightskip}{0pt plus 5cm}void G\-P\-I\-O\-\_\-setup\-Callbacks (
+\begin{DoxyParamCaption}
+\item[{{\bf G\-P\-I\-O\-\_\-\-Callbacks} const $\ast$}]{callbacks}
+\end{DoxyParamCaption}
+)}\label{_g_p_i_o_8h_af00c188a9e451094c5de1109141f30db}
+
+
+Initializes G\-P\-I\-O interrupts. 
+
+Uses the \hyperlink{struct_g_p_i_o___callbacks}{G\-P\-I\-O\-\_\-\-Callbacks} structure to create the hardware interrupts needed by G\-P\-I\-O. callbacks must be persistent before this function can be called. This function must be called before before \hyperlink{_g_p_i_o_8h_afbda626cf60f986601cb9270f0dd9702}{G\-P\-I\-O\-\_\-enable\-Int()}.
+
+This function is not thread-\/safe. Multiple threads should not call this at the same time.
+
+This function is not supported on all platforms.
+
+
+\begin{DoxyParams}{Parameters}
+{\em callbacks} & \hyperlink{struct_g_p_i_o___callbacks}{G\-P\-I\-O\-\_\-\-Callbacks} structure for the port being set up \\
+\hline
+\end{DoxyParams}
+\index{G\-P\-I\-O.\-h@{G\-P\-I\-O.\-h}!G\-P\-I\-O\-\_\-read@{G\-P\-I\-O\-\_\-read}}
+\index{G\-P\-I\-O\-\_\-read@{G\-P\-I\-O\-\_\-read}!GPIO.h@{G\-P\-I\-O.\-h}}
+\paragraph[{G\-P\-I\-O\-\_\-read}]{\setlength{\rightskip}{0pt plus 5cm}uint32\-\_\-t G\-P\-I\-O\-\_\-read (
+\begin{DoxyParamCaption}
+\item[{unsigned int}]{index}
+\end{DoxyParamCaption}
+)}\label{_g_p_i_o_8h_a6facb3b05248e72f214e3f74ec9b25a6}
+
+
+Reads the value of a G\-P\-I\-O pin. 
+
+The value returned will either be a zero or non-\/zero bit packed value of the pin(s) read.
+
+
+\begin{DoxyParams}{Parameters}
+{\em index} & G\-P\-I\-O index\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Bit packed value of the G\-P\-I\-O pin(s) 
+\end{DoxyReturn}
+\index{G\-P\-I\-O.\-h@{G\-P\-I\-O.\-h}!G\-P\-I\-O\-\_\-toggle@{G\-P\-I\-O\-\_\-toggle}}
+\index{G\-P\-I\-O\-\_\-toggle@{G\-P\-I\-O\-\_\-toggle}!GPIO.h@{G\-P\-I\-O.\-h}}
+\paragraph[{G\-P\-I\-O\-\_\-toggle}]{\setlength{\rightskip}{0pt plus 5cm}void G\-P\-I\-O\-\_\-toggle (
+\begin{DoxyParamCaption}
+\item[{unsigned int}]{index}
+\end{DoxyParamCaption}
+)}\label{_g_p_i_o_8h_a5653fbc35078d9140ede8afef074d878}
+
+
+Toggles the current state of a G\-P\-I\-O. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em index} & G\-P\-I\-O index \\
+\hline
+\end{DoxyParams}
+\index{G\-P\-I\-O.\-h@{G\-P\-I\-O.\-h}!G\-P\-I\-O\-\_\-write@{G\-P\-I\-O\-\_\-write}}
+\index{G\-P\-I\-O\-\_\-write@{G\-P\-I\-O\-\_\-write}!GPIO.h@{G\-P\-I\-O.\-h}}
+\paragraph[{G\-P\-I\-O\-\_\-write}]{\setlength{\rightskip}{0pt plus 5cm}void G\-P\-I\-O\-\_\-write (
+\begin{DoxyParamCaption}
+\item[{unsigned int}]{index, }
+\item[{uint32\-\_\-t}]{value}
+\end{DoxyParamCaption}
+)}\label{_g_p_i_o_8h_ab561efc784812728c819decc5e9d85af}
+
+
+Writes the value to a G\-P\-I\-O pin. 
+
+Value is a bit representation of the pin(s) to be changed. Only the pins specified by index will be written. If the index is for pin 2, it can be written high by passing in 0x04 or $\sim$1 as the value. In general $\sim$1 and 0 should be used for single pins or multiple pins with the same value. Only when writing multiple pins with different values should you use a bit represented value.
+
+
+\begin{DoxyParams}{Parameters}
+{\em index} & G\-P\-I\-O index \\
+\hline
+{\em value} & Value of the pin(s) \\
+\hline
+\end{DoxyParams}

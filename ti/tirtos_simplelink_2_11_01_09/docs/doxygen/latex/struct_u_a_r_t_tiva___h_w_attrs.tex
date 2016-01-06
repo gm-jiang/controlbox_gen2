@@ -1,0 +1,57 @@
+\subsection{U\-A\-R\-T\-Tiva\-\_\-\-H\-W\-Attrs Struct Reference}
+\label{struct_u_a_r_t_tiva___h_w_attrs}\index{U\-A\-R\-T\-Tiva\-\_\-\-H\-W\-Attrs@{U\-A\-R\-T\-Tiva\-\_\-\-H\-W\-Attrs}}
+
+
+U\-A\-R\-T\-Tiva Hardware attributes.  
+
+
+
+
+{\ttfamily \#include $<$U\-A\-R\-T\-Tiva.\-h$>$}
+
+\subsubsection*{Data Fields}
+\begin{DoxyCompactItemize}
+\item 
+unsigned int \hyperlink{struct_u_a_r_t_tiva___h_w_attrs_abecf13eceeaf44f1781aa2bfae1edad4}{base\-Addr}
+\item 
+unsigned int \hyperlink{struct_u_a_r_t_tiva___h_w_attrs_a3353583599880bab5429fcbbd189f89c}{int\-Num}
+\end{DoxyCompactItemize}
+
+
+\subsubsection{Detailed Description}
+U\-A\-R\-T\-Tiva Hardware attributes. 
+
+These fields are used by driverlib A\-P\-Is and therefore must be populated by driverlib macro definitions. For Tiva\-Ware these definitions are found in\-:
+\begin{DoxyItemize}
+\item inc/hw\-\_\-memmap.\-h
+\item inc/hw\-\_\-ints.\-h
+\end{DoxyItemize}
+
+A sample structure is shown below\-: 
+\begin{DoxyCode}
+*  \textcolor{keyword}{const} UARTTiva_HWAttrs uartTivaHWAttrs[] = \{
+*      \{
+*          UART1\_BASE,
+*          INT\_UART1
+*      \},
+*      \{
+*          UART3\_BASE,
+*          INT\_UART3
+*      \},
+*  \};
+*  
+\end{DoxyCode}
+ 
+
+\subsubsection{Field Documentation}
+\index{U\-A\-R\-T\-Tiva\-\_\-\-H\-W\-Attrs@{U\-A\-R\-T\-Tiva\-\_\-\-H\-W\-Attrs}!base\-Addr@{base\-Addr}}
+\index{base\-Addr@{base\-Addr}!UARTTiva_HWAttrs@{U\-A\-R\-T\-Tiva\-\_\-\-H\-W\-Attrs}}
+\paragraph[{base\-Addr}]{\setlength{\rightskip}{0pt plus 5cm}unsigned int U\-A\-R\-T\-Tiva\-\_\-\-H\-W\-Attrs\-::base\-Addr}\label{struct_u_a_r_t_tiva___h_w_attrs_abecf13eceeaf44f1781aa2bfae1edad4}
+U\-A\-R\-T Peripheral's base address \index{U\-A\-R\-T\-Tiva\-\_\-\-H\-W\-Attrs@{U\-A\-R\-T\-Tiva\-\_\-\-H\-W\-Attrs}!int\-Num@{int\-Num}}
+\index{int\-Num@{int\-Num}!UARTTiva_HWAttrs@{U\-A\-R\-T\-Tiva\-\_\-\-H\-W\-Attrs}}
+\paragraph[{int\-Num}]{\setlength{\rightskip}{0pt plus 5cm}unsigned int U\-A\-R\-T\-Tiva\-\_\-\-H\-W\-Attrs\-::int\-Num}\label{struct_u_a_r_t_tiva___h_w_attrs_a3353583599880bab5429fcbbd189f89c}
+U\-A\-R\-T Peripheral's interrupt vector 
+
+The documentation for this struct was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{_u_a_r_t_tiva_8h}{U\-A\-R\-T\-Tiva.\-h}\end{DoxyCompactItemize}

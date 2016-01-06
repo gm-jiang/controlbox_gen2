@@ -1,0 +1,57 @@
+\subsection{U\-A\-R\-T\-C\-C3200\-\_\-\-H\-W\-Attrs Struct Reference}
+\label{struct_u_a_r_t_c_c3200___h_w_attrs}\index{U\-A\-R\-T\-C\-C3200\-\_\-\-H\-W\-Attrs@{U\-A\-R\-T\-C\-C3200\-\_\-\-H\-W\-Attrs}}
+
+
+U\-A\-R\-T\-C\-C3200 Hardware attributes.  
+
+
+
+
+{\ttfamily \#include $<$U\-A\-R\-T\-C\-C3200.\-h$>$}
+
+\subsubsection*{Data Fields}
+\begin{DoxyCompactItemize}
+\item 
+unsigned int \hyperlink{struct_u_a_r_t_c_c3200___h_w_attrs_a559d6e21a7f9950e0d3e9d42413d47ea}{base\-Addr}
+\item 
+unsigned int \hyperlink{struct_u_a_r_t_c_c3200___h_w_attrs_a45e245f429f6bba9b77223bdcd58f2a2}{int\-Num}
+\end{DoxyCompactItemize}
+
+
+\subsubsection{Detailed Description}
+U\-A\-R\-T\-C\-C3200 Hardware attributes. 
+
+These fields are used by driverlib A\-P\-Is and therefore must be populated by driverlib macro definitions. For C\-C3200\-Ware these definitions are found in\-:
+\begin{DoxyItemize}
+\item inc/hw\-\_\-memmap.\-h
+\item inc/hw\-\_\-ints.\-h
+\end{DoxyItemize}
+
+A sample structure is shown below\-: 
+\begin{DoxyCode}
+*  \textcolor{keyword}{const} UARTCC3200_HWAttrs uartCC3200HWAttrs[] = \{
+*      \{
+*          UARTA0\_BASE,
+*          INT\_UARTA0
+*      \},
+*      \{
+*          UARTA1\_BASE,
+*          INT\_UARTA1
+*      \},
+*  \};
+*  
+\end{DoxyCode}
+ 
+
+\subsubsection{Field Documentation}
+\index{U\-A\-R\-T\-C\-C3200\-\_\-\-H\-W\-Attrs@{U\-A\-R\-T\-C\-C3200\-\_\-\-H\-W\-Attrs}!base\-Addr@{base\-Addr}}
+\index{base\-Addr@{base\-Addr}!UARTCC3200_HWAttrs@{U\-A\-R\-T\-C\-C3200\-\_\-\-H\-W\-Attrs}}
+\paragraph[{base\-Addr}]{\setlength{\rightskip}{0pt plus 5cm}unsigned int U\-A\-R\-T\-C\-C3200\-\_\-\-H\-W\-Attrs\-::base\-Addr}\label{struct_u_a_r_t_c_c3200___h_w_attrs_a559d6e21a7f9950e0d3e9d42413d47ea}
+U\-A\-R\-T Peripheral's base address \index{U\-A\-R\-T\-C\-C3200\-\_\-\-H\-W\-Attrs@{U\-A\-R\-T\-C\-C3200\-\_\-\-H\-W\-Attrs}!int\-Num@{int\-Num}}
+\index{int\-Num@{int\-Num}!UARTCC3200_HWAttrs@{U\-A\-R\-T\-C\-C3200\-\_\-\-H\-W\-Attrs}}
+\paragraph[{int\-Num}]{\setlength{\rightskip}{0pt plus 5cm}unsigned int U\-A\-R\-T\-C\-C3200\-\_\-\-H\-W\-Attrs\-::int\-Num}\label{struct_u_a_r_t_c_c3200___h_w_attrs_a45e245f429f6bba9b77223bdcd58f2a2}
+U\-A\-R\-T Peripheral's interrupt vector 
+
+The documentation for this struct was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{_u_a_r_t_c_c3200_8h}{U\-A\-R\-T\-C\-C3200.\-h}\end{DoxyCompactItemize}

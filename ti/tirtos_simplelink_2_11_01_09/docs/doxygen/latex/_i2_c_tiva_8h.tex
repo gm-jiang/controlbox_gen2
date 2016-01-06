@@ -1,0 +1,106 @@
+\subsection{I2\-C\-Tiva.\-h File Reference}
+\label{_i2_c_tiva_8h}\index{I2\-C\-Tiva.\-h@{I2\-C\-Tiva.\-h}}
+
+
+\subsubsection{Detailed Description}
+I2\-C driver implementation for a Tiva I2\-C controller. ============================================================================
+
+The I2\-C header file should be included in an application as follows\-: 
+\begin{DoxyCode}
+*  #include <ti/drivers/I2C.h>
+*  #include <ti/drivers/i2c/I2CTiva.h>
+*  
+\end{DoxyCode}
+ 
+
+{\ttfamily \#include $<$stdint.\-h$>$}\\*
+{\ttfamily \#include $<$stdbool.\-h$>$}\\*
+{\ttfamily \#include $<$ti/drivers/\-I2\-C.\-h$>$}\\*
+{\ttfamily \#include $<$ti/sysbios/knl/\-Semaphore.\-h$>$}\\*
+{\ttfamily \#include $<$ti/sysbios/family/arm/m3/\-Hwi.\-h$>$}\\*
+Include dependency graph for I2\-C\-Tiva.\-h\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{_i2_c_tiva_8h__incl}
+\end{center}
+\end{figure}
+\subsubsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{struct_i2_c_tiva___h_w_attrs}{I2\-C\-Tiva\-\_\-\-H\-W\-Attrs}
+\begin{DoxyCompactList}\small\item\em I2\-C\-Tiva Hardware attributes. \end{DoxyCompactList}\item 
+struct \hyperlink{struct_i2_c_tiva___object}{I2\-C\-Tiva\-\_\-\-Object}
+\begin{DoxyCompactList}\small\item\em I2\-C\-Tiva Object. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{_i2_c_tiva_8h_aaa17ecf48f5762e2e1bdb0bab8aacf0c}{ti\-\_\-sysbios\-\_\-family\-\_\-arm\-\_\-m3\-\_\-\-Hwi\-\_\-\-\_\-nolocalnames}
+\item 
+\#define \hyperlink{_i2_c_tiva_8h_aafc3a9be9d97cec76d1d0c2fd6124359}{I2\-C\-Tiva\-\_\-\-C\-M\-D\-\_\-\-U\-N\-D\-E\-F\-I\-N\-E\-D}~-\/1
+\end{DoxyCompactItemize}
+\subsubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef struct \hyperlink{struct_i2_c_tiva___h_w_attrs}{I2\-C\-Tiva\-\_\-\-H\-W\-Attrs} \hyperlink{_i2_c_tiva_8h_af20903ad2ff3e34d27132e11aef68ad5}{I2\-C\-Tiva\-\_\-\-H\-W\-Attrs}
+\begin{DoxyCompactList}\small\item\em I2\-C\-Tiva Hardware attributes. \end{DoxyCompactList}\item 
+typedef struct \hyperlink{struct_i2_c_tiva___object}{I2\-C\-Tiva\-\_\-\-Object} \hyperlink{_i2_c_tiva_8h_a56bbf0bf756fabe1c1c6b905a1b88ee7}{I2\-C\-Tiva\-\_\-\-Object}
+\begin{DoxyCompactList}\small\item\em I2\-C\-Tiva Object. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+const \hyperlink{struct_i2_c___fxn_table}{I2\-C\-\_\-\-Fxn\-Table} \hyperlink{_i2_c_tiva_8h_aa37c457a45a8fa5451616bdb9cb5ce49}{I2\-C\-Tiva\-\_\-fxn\-Table}
+\end{DoxyCompactItemize}
+
+
+\subsubsection{Macro Definition Documentation}
+\index{I2\-C\-Tiva.\-h@{I2\-C\-Tiva.\-h}!ti\-\_\-sysbios\-\_\-family\-\_\-arm\-\_\-m3\-\_\-\-Hwi\-\_\-\-\_\-nolocalnames@{ti\-\_\-sysbios\-\_\-family\-\_\-arm\-\_\-m3\-\_\-\-Hwi\-\_\-\-\_\-nolocalnames}}
+\index{ti\-\_\-sysbios\-\_\-family\-\_\-arm\-\_\-m3\-\_\-\-Hwi\-\_\-\-\_\-nolocalnames@{ti\-\_\-sysbios\-\_\-family\-\_\-arm\-\_\-m3\-\_\-\-Hwi\-\_\-\-\_\-nolocalnames}!I2CTiva.h@{I2\-C\-Tiva.\-h}}
+\paragraph[{ti\-\_\-sysbios\-\_\-family\-\_\-arm\-\_\-m3\-\_\-\-Hwi\-\_\-\-\_\-nolocalnames}]{\setlength{\rightskip}{0pt plus 5cm}\#define ti\-\_\-sysbios\-\_\-family\-\_\-arm\-\_\-m3\-\_\-\-Hwi\-\_\-\-\_\-nolocalnames}\label{_i2_c_tiva_8h_aaa17ecf48f5762e2e1bdb0bab8aacf0c}
+\index{I2\-C\-Tiva.\-h@{I2\-C\-Tiva.\-h}!I2\-C\-Tiva\-\_\-\-C\-M\-D\-\_\-\-U\-N\-D\-E\-F\-I\-N\-E\-D@{I2\-C\-Tiva\-\_\-\-C\-M\-D\-\_\-\-U\-N\-D\-E\-F\-I\-N\-E\-D}}
+\index{I2\-C\-Tiva\-\_\-\-C\-M\-D\-\_\-\-U\-N\-D\-E\-F\-I\-N\-E\-D@{I2\-C\-Tiva\-\_\-\-C\-M\-D\-\_\-\-U\-N\-D\-E\-F\-I\-N\-E\-D}!I2CTiva.h@{I2\-C\-Tiva.\-h}}
+\paragraph[{I2\-C\-Tiva\-\_\-\-C\-M\-D\-\_\-\-U\-N\-D\-E\-F\-I\-N\-E\-D}]{\setlength{\rightskip}{0pt plus 5cm}\#define I2\-C\-Tiva\-\_\-\-C\-M\-D\-\_\-\-U\-N\-D\-E\-F\-I\-N\-E\-D~-\/1}\label{_i2_c_tiva_8h_aafc3a9be9d97cec76d1d0c2fd6124359}
+
+
+\subsubsection{Typedef Documentation}
+\index{I2\-C\-Tiva.\-h@{I2\-C\-Tiva.\-h}!I2\-C\-Tiva\-\_\-\-H\-W\-Attrs@{I2\-C\-Tiva\-\_\-\-H\-W\-Attrs}}
+\index{I2\-C\-Tiva\-\_\-\-H\-W\-Attrs@{I2\-C\-Tiva\-\_\-\-H\-W\-Attrs}!I2CTiva.h@{I2\-C\-Tiva.\-h}}
+\paragraph[{I2\-C\-Tiva\-\_\-\-H\-W\-Attrs}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf I2\-C\-Tiva\-\_\-\-H\-W\-Attrs}  {\bf I2\-C\-Tiva\-\_\-\-H\-W\-Attrs}}\label{_i2_c_tiva_8h_af20903ad2ff3e34d27132e11aef68ad5}
+
+
+I2\-C\-Tiva Hardware attributes. 
+
+These fields are used by driverlib A\-P\-Is and therefore must be populated by driverlib macro definitions. For Tiva\-Ware these definitions are found in\-:
+\begin{DoxyItemize}
+\item inc/hw\-\_\-memmap.\-h
+\item inc/hw\-\_\-ints.\-h
+\end{DoxyItemize}
+
+A sample structure is shown below\-: 
+\begin{DoxyCode}
+*  \textcolor{keyword}{const} I2CTiva_HWAttrs i2cTivaHWAttrs[] = \{
+*      \{
+*          I2C1\_BASE,
+*          INT\_I2C1
+*      \},
+*      \{
+*          I2C3\_BASE,
+*          INT\_I2C3
+*      \},
+*  \};
+*  
+\end{DoxyCode}
+ \index{I2\-C\-Tiva.\-h@{I2\-C\-Tiva.\-h}!I2\-C\-Tiva\-\_\-\-Object@{I2\-C\-Tiva\-\_\-\-Object}}
+\index{I2\-C\-Tiva\-\_\-\-Object@{I2\-C\-Tiva\-\_\-\-Object}!I2CTiva.h@{I2\-C\-Tiva.\-h}}
+\paragraph[{I2\-C\-Tiva\-\_\-\-Object}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf I2\-C\-Tiva\-\_\-\-Object}  {\bf I2\-C\-Tiva\-\_\-\-Object}}\label{_i2_c_tiva_8h_a56bbf0bf756fabe1c1c6b905a1b88ee7}
+
+
+I2\-C\-Tiva Object. 
+
+The application must not access any member variables of this structure! 
+
+\subsubsection{Variable Documentation}
+\index{I2\-C\-Tiva.\-h@{I2\-C\-Tiva.\-h}!I2\-C\-Tiva\-\_\-fxn\-Table@{I2\-C\-Tiva\-\_\-fxn\-Table}}
+\index{I2\-C\-Tiva\-\_\-fxn\-Table@{I2\-C\-Tiva\-\_\-fxn\-Table}!I2CTiva.h@{I2\-C\-Tiva.\-h}}
+\paragraph[{I2\-C\-Tiva\-\_\-fxn\-Table}]{\setlength{\rightskip}{0pt plus 5cm}const {\bf I2\-C\-\_\-\-Fxn\-Table} I2\-C\-Tiva\-\_\-fxn\-Table}\label{_i2_c_tiva_8h_aa37c457a45a8fa5451616bdb9cb5ce49}

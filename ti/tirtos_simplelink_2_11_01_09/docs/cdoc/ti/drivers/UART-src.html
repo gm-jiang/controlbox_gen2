@@ -1,0 +1,441 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head><title>module ti.drivers.UART</title>
+<meta name="googlebot" content="noindex,nofollow">
+<link rel="stylesheet" type="text/css" href="../../src.css"/>
+</head>
+<body>
+<pre class=src>
+     1    <span class="comment">/*
+</span>     2    <span class="comment"> * Copyright (c) 2014, Texas Instruments Incorporated
+</span>     3    <span class="comment"> * All rights reserved.
+</span>     4    <span class="comment"> *
+</span>     5    <span class="comment"> * Redistribution and use in source and binary forms, with or without
+</span>     6    <span class="comment"> * modification, are permitted provided that the following conditions
+</span>     7    <span class="comment"> * are met:
+</span>     8    <span class="comment"> *
+</span>     9    <span class="comment"> * *  Redistributions of source code must retain the above copyright
+</span>    10    <span class="comment"> *    notice, this list of conditions and the following disclaimer.
+</span>    11    <span class="comment"> *
+</span>    12    <span class="comment"> * *  Redistributions in binary form must reproduce the above copyright
+</span>    13    <span class="comment"> *    notice, this list of conditions and the following disclaimer in the
+</span>    14    <span class="comment"> *    documentation and/or other materials provided with the distribution.
+</span>    15    <span class="comment"> *
+</span>    16    <span class="comment"> * *  Neither the name of Texas Instruments Incorporated nor the names of
+</span>    17    <span class="comment"> *    its contributors may be used to endorse or promote products derived
+</span>    18    <span class="comment"> *    from this software without specific prior written permission.
+</span>    19    <span class="comment"> *
+</span>    20    <span class="comment"> * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+</span>    21    <span class="comment"> * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+</span>    22    <span class="comment"> * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+</span>    23    <span class="comment"> * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+</span>    24    <span class="comment"> * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+</span>    25    <span class="comment"> * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+</span>    26    <span class="comment"> * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+</span>    27    <span class="comment"> * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+</span>    28    <span class="comment"> * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+</span>    29    <span class="comment"> * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+</span>    30    <span class="comment"> * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+</span>    31    <span class="comment"> */</span>
+    32    <span class="comment">/*
+</span>    33    <span class="comment"> *  ======== UART.xdc ========
+</span>    34    <span class="comment"> */</span>
+    35    <span class=key>package</span> ti.drivers;
+    36    import xdc.rov.ViewInfo;
+    37    
+    38    <span class="xdoc">/*!
+</span>    39    <span class="xdoc"> *  ======== UART ========
+</span>    40    <span class="xdoc"> */</span>
+    41    @NoRuntime
+    42    @HeaderName(<span class="string">""</span>)
+    43    <span class=key>module</span> UART {
+    44    
+    45        <span class="xdoc">/*!
+</span>    46    <span class="xdoc">     *  ======== LibType ========
+</span>    47    <span class="xdoc">     *  UART library selection options
+</span>    48    <span class="xdoc">     *
+</span>    49    <span class="xdoc">     *  This enumeration defines all the UART library type
+</span>    50    <span class="xdoc">     *  provided by the product.  You can select the library type by setting
+</span>    51    <span class="xdoc">     *  the {<b>@link</b> #libType UART.libType} configuration parameter.
+</span>    52    <span class="xdoc">     *
+</span>    53    <span class="xdoc">     *  <b>@field(LibType_Instrumented)</b> The library supplied is prebuilt with
+</span>    54    <span class="xdoc">     *  logging and assertions enabled.
+</span>    55    <span class="xdoc">     *
+</span>    56    <span class="xdoc">     *  <b>@field(LibType_NonInstrumented)</b> The library supplied is prebuilt
+</span>    57    <span class="xdoc">     *  with logging and assertions disabled.
+</span>    58    <span class="xdoc">     */</span>
+    59        <span class=key>enum</span> LibType {
+    60            LibType_Instrumented,           <span class="xdoc">/*! instrumented */</span>
+    61            LibType_NonInstrumented         <span class="xdoc">/*! non-instrumented */</span>
+    62        };
+    63    
+    64        <span class="xdoc">/*!
+</span>    65    <span class="xdoc">     *  ======== libType ========
+</span>    66    <span class="xdoc">     *  UART Library type
+</span>    67    <span class="xdoc">     *
+</span>    68    <span class="xdoc">     *  Deprecated: Please use ti.tirtos.TIRTOS.libType instead.
+</span>    69    <span class="xdoc">     *
+</span>    70    <span class="xdoc">     *  The UART runtime is provided in the form of a library that is
+</span>    71    <span class="xdoc">     *  linked with your application.  Several forms of this library are
+</span>    72    <span class="xdoc">     *  provided with the UART product. This configuration parameter
+</span>    73    <span class="xdoc">     *  allows you to select the form of UART to use.
+</span>    74    <span class="xdoc">     *
+</span>    75    <span class="xdoc">     *  The default value of libType is
+</span>    76    <span class="xdoc">     *  {<b>@link</b> #LibType_Instrumented UART_LibType_Instrumented}.  For a
+</span>    77    <span class="xdoc">     *  complete list of options and what they offer see {<b>@link</b> #LibType}.
+</span>    78    <span class="xdoc">     */</span>
+    79        <span class=key>metaonly</span> <span class=key>config</span> LibType libType = LibType_Instrumented;
+    80    
+    81        <span class="xdoc">/*!
+</span>    82    <span class="xdoc">     *  <b>@_nodoc</b>
+</span>    83    <span class="xdoc">     *  ======== UART_Config ========
+</span>    84    <span class="xdoc">     *  Structure must match the UART_Config structure defined in UART.h
+</span>    85    <span class="xdoc">     */</span>
+    86        <span class=key>struct</span> UART_Config {
+    87            Void               *fxnTablePtr; <span class=comment>//Used to determine the implementation</span>
+    88            Void               *object;      <span class=comment>//Used to access the data</span>
+    89            Void               *hwAttrs;     <span class=comment>//Used to get the attributes</span>
+    90        };
+    91    
+    92        <span class="xdoc">/*!
+</span>    93    <span class="xdoc">     *  <b>@_nodoc</b>
+</span>    94    <span class="xdoc">     *  ======== UART callback ========
+</span>    95    <span class="xdoc">     *  Copied from UART.h and must match.
+</span>    96    <span class="xdoc">     */</span>
+    97        <span class=key>typedef</span> Void (*CallbackFxn)(Ptr, Int);
+    98    
+    99        <span class="xdoc">/*!
+</span>   100    <span class="xdoc">     *  <b>@_nodoc</b>
+</span>   101    <span class="xdoc">     *  ======== UART_Mode ========
+</span>   102    <span class="xdoc">     *  Copied from UART.h and must match.
+</span>   103    <span class="xdoc">     */</span>
+   104        <span class=key>enum</span> UART_Mode {
+   105            UART_MODE_BLOCKING,
+   106            UART_MODE_CALLBACK
+   107        };
+   108    
+   109        <span class="xdoc">/*!
+</span>   110    <span class="xdoc">     *  <b>@_nodoc</b>
+</span>   111    <span class="xdoc">     *  ======== UART_ReturnMode ========
+</span>   112    <span class="xdoc">     *  Copied from UART.h and must match.
+</span>   113    <span class="xdoc">     */</span>
+   114        <span class=key>enum</span> UART_ReturnMode {
+   115            UART_RETURN_FULL,
+   116            UART_RETURN_NEWLINE
+   117        };
+   118    
+   119        <span class="xdoc">/*!
+</span>   120    <span class="xdoc">     *  <b>@_nodoc</b>
+</span>   121    <span class="xdoc">     *  ======== UART_DataMode ========
+</span>   122    <span class="xdoc">     *  Copied from UART.h and must match.
+</span>   123    <span class="xdoc">     */</span>
+   124        <span class=key>enum</span> UART_DataMode {
+   125            UART_DATA_BINARY,
+   126            UART_DATA_TEXT
+   127        };
+   128    
+   129        <span class="xdoc">/*!
+</span>   130    <span class="xdoc">     *  <b>@_nodoc</b>
+</span>   131    <span class="xdoc">     *  ======== UART_Echo ========
+</span>   132    <span class="xdoc">     *  Copied from UART.h and must match.
+</span>   133    <span class="xdoc">     */</span>
+   134        <span class=key>enum</span> UART_Echo {
+   135            UART_ECHO_OFF = 0,
+   136            UART_ECHO_ON = 1
+   137        };
+   138    
+   139        <span class="xdoc">/*!
+</span>   140    <span class="xdoc">     *  <b>@_nodoc</b>
+</span>   141    <span class="xdoc">     *  ======== UART_LEN ========
+</span>   142    <span class="xdoc">     *  Copied from UART.h and must match.
+</span>   143    <span class="xdoc">     *
+</span>   144    <span class="xdoc">     *  Enum is set to *Ware defines, can not be used in ROV
+</span>   145    <span class="xdoc">     */</span>
+   146         <span class=key>enum</span> UART_LEN {
+   147            UART_LEN_5,
+   148            UART_LEN_6,
+   149            UART_LEN_7,
+   150            UART_LEN_8
+   151        };
+   152    
+   153        <span class="xdoc">/*!
+</span>   154    <span class="xdoc">     *  <b>@_nodoc</b>
+</span>   155    <span class="xdoc">     *  ======== UART_STOP ========
+</span>   156    <span class="xdoc">     *  Copied from UART.h and must match.
+</span>   157    <span class="xdoc">     *
+</span>   158    <span class="xdoc">     *  Enum is set to *Ware defines, can not be used in ROV
+</span>   159    <span class="xdoc">     */</span>
+   160        <span class=key>enum</span> UART_STOP{
+   161            UART_STOP_ONE,
+   162            UART_STOP_TWO
+   163        };
+   164    
+   165        <span class="xdoc">/*!
+</span>   166    <span class="xdoc">     *  <b>@_nodoc</b>
+</span>   167    <span class="xdoc">     *  ======== UART_PAR ========
+</span>   168    <span class="xdoc">     *  Copied from UART.h and must match.
+</span>   169    <span class="xdoc">     *
+</span>   170    <span class="xdoc">     *  Enum is set to *Ware defines, can not be used in ROV
+</span>   171    <span class="xdoc">     */</span>
+   172        <span class=key>enum</span> UART_PAR {
+   173            UART_PAR_NONE,
+   174            UART_PAR_EVEN,
+   175            UART_PAR_ODD,
+   176            UART_PAR_ZERO,
+   177            UART_PAR_ONE
+   178        };
+   179    
+   180        <span class="xdoc">/*!
+</span>   181    <span class="xdoc">     *  <b>@_nodoc</b>
+</span>   182    <span class="xdoc">     *  ======== UARTTiva_hwAttrs ========
+</span>   183    <span class="xdoc">     *  Structure must match the UART_HWAttrs structure defined in
+</span>   184    <span class="xdoc">     *  uart/UARTTiva.h
+</span>   185    <span class="xdoc">     */</span>
+   186        <span class=key>struct</span> UARTTiva_HWAttrs {
+   187            <span class=key>unsigned</span> <span class=key>int</span> baseAddr;
+   188            <span class=key>unsigned</span> <span class=key>int</span> intNum;
+   189        };
+   190    
+   191        <span class="xdoc">/*!
+</span>   192    <span class="xdoc">     *  <b>@_nodoc</b>
+</span>   193    <span class="xdoc">     *  ======== UART_Object ========
+</span>   194    <span class="xdoc">     *  Copied from UART.h and must match.
+</span>   195    <span class="xdoc">     */</span>
+   196        <span class=key>struct</span> UARTTiva_Object {
+   197            Bool                isOpen;
+   198    
+   199            UART_Mode           readMode;
+   200            UART_Mode           writeMode;
+   201            <span class=key>unsigned</span> <span class=key>int</span>        readTimeout;
+   202            <span class=key>unsigned</span> <span class=key>int</span>        writeTimeout;
+   203            CallbackFxn         readCallback;
+   204            CallbackFxn         writeCallback;
+   205            UART_ReturnMode     readReturnMode;
+   206            UART_DataMode       readDataMode;
+   207            UART_DataMode       writeDataMode;
+   208            UART_Echo           readEcho;
+   209    
+   210            <span class=key>const</span> <span class=key>void</span>         *writeBuf;
+   211            size_t              writeCount;
+   212            size_t              writeSize;
+   213            Bool                writeCR;
+   214    
+   215            <span class=key>void</span>               *readBuf;
+   216            size_t              readCount;
+   217            size_t              readSize;
+   218    
+   219            <span class="comment">/* Stuff beyond here is ignored */</span>
+   220            <span class=comment>//Hwi.Object          hwi;</span>
+   221            <span class=comment>//Semaphore.Object    writeSem;</span>
+   222            <span class=comment>//Semaphore.Object    readSem;</span>
+   223        };
+   224    
+   225            <span class="xdoc">/*!
+</span>   226    <span class="xdoc">     *  <b>@_nodoc</b>
+</span>   227    <span class="xdoc">     *  ======== UARTCC3200_hwAttrs ========
+</span>   228    <span class="xdoc">     *  Structure must match the UART_HWAttrs structure defined in
+</span>   229    <span class="xdoc">     *  uart/UARTCC3200.h
+</span>   230    <span class="xdoc">     */</span>
+   231        <span class=key>struct</span> UARTCC3200_HWAttrs {
+   232            <span class=key>unsigned</span> <span class=key>int</span> baseAddr;
+   233            <span class=key>unsigned</span> <span class=key>int</span> intNum;
+   234        };
+   235    
+   236        <span class="xdoc">/*!
+</span>   237    <span class="xdoc">     *  <b>@_nodoc</b>
+</span>   238    <span class="xdoc">     *  ======== UARTCC3200_Object ========
+</span>   239    <span class="xdoc">     *  Structure must match the UART_Object structure defined in
+</span>   240    <span class="xdoc">     *  uart/UARTCC3200.h
+</span>   241    <span class="xdoc">     */</span>
+   242        <span class=key>struct</span> UARTCC3200_Object {
+   243            Bool                isOpen;
+   244    
+   245            UART_Mode           readMode;
+   246            UART_Mode           writeMode;
+   247            <span class=key>unsigned</span> <span class=key>int</span>        readTimeout;
+   248            <span class=key>unsigned</span> <span class=key>int</span>        writeTimeout;
+   249            CallbackFxn         readCallback;
+   250            CallbackFxn         writeCallback;
+   251            UART_ReturnMode     readReturnMode;
+   252            UART_DataMode       readDataMode;
+   253            UART_DataMode       writeDataMode;
+   254            UART_Echo           readEcho;
+   255    
+   256            <span class=key>const</span> <span class=key>void</span>         *writeBuf;
+   257            size_t              writeCount;
+   258            size_t              writeSize;
+   259            Bool                writeCR;
+   260    
+   261            <span class=key>void</span>               *readBuf;
+   262            size_t              readCount;
+   263            size_t              readSize;
+   264        };
+   265    
+   266        <span class="xdoc">/*!
+</span>   267    <span class="xdoc">     *  <b>@_nodoc</b>
+</span>   268    <span class="xdoc">     *  ======== UARTUSCIA_HWAttrs ========
+</span>   269    <span class="xdoc">     *  Structure must match the UARTTiva_HWAttrs structure defined in
+</span>   270    <span class="xdoc">     *  uart/UARTUSCIA.h
+</span>   271    <span class="xdoc">     */</span>
+   272        <span class=key>struct</span> UARTUSCIA_HWAttrs {
+   273            <span class=key>unsigned</span> <span class=key>int</span>        baseAddr;
+   274            Bits8               clockSouce;
+   275            Bits32              bitOrder;
+   276            <span class=key>unsigned</span> <span class=key>int</span>        numBaudrateEntries;
+   277        };
+   278    
+   279        <span class="xdoc">/*!
+</span>   280    <span class="xdoc">     *  <b>@_nodoc</b>
+</span>   281    <span class="xdoc">     *  ======== UARTUSCIA_Object ========
+</span>   282    <span class="xdoc">     *  Copied from UART.h and must match.
+</span>   283    <span class="xdoc">     */</span>
+   284        <span class=key>struct</span> UARTUSCIA_Object {
+   285            Bool                isOpen;
+   286            UART_Mode           readMode;
+   287            UART_Mode           writeMode;
+   288            <span class=key>unsigned</span> <span class=key>int</span>        readTimeout;
+   289            <span class=key>unsigned</span> <span class=key>int</span>        writeTimeout;
+   290            CallbackFxn         readCallback;
+   291            CallbackFxn         writeCallback;
+   292            UART_ReturnMode     readReturnMode;
+   293            UART_DataMode       readDataMode;
+   294            UART_DataMode       writeDataMode;
+   295            UART_Echo           readEcho;
+   296    
+   297    
+   298            <span class=key>const</span> Void         *writeBuf;
+   299            size_t              writeCount;
+   300            size_t              writeSize;
+   301            Bool                writeCR;
+   302    
+   303            Void               *readBuf;
+   304            size_t              readCount;
+   305            size_t              readSize;
+   306    
+   307            <span class="comment">/* Stuff beyond here is ignored */</span>
+   308            <span class=comment>//Semaphore.Object    writeSem;</span>
+   309            <span class=comment>//Semaphore.Object    readSem;</span>
+   310        };
+   311    
+   312        <span class="xdoc">/*!
+</span>   313    <span class="xdoc">     *  <b>@_nodoc</b>
+</span>   314    <span class="xdoc">     *  ======== UARTEUSCIA_HWAttrs ========
+</span>   315    <span class="xdoc">     *  Structure must match the UARTTiva_HWAttrs structure defined in
+</span>   316    <span class="xdoc">     *  uart/UARTEUSCIA.h
+</span>   317    <span class="xdoc">     */</span>
+   318        <span class=key>struct</span> UARTEUSCIA_HWAttrs {
+   319            <span class=key>unsigned</span> <span class=key>int</span>        baseAddr;
+   320            Bits8               clockSouce;
+   321            Bits32              bitOrder;
+   322            <span class=key>unsigned</span> <span class=key>int</span>        numBaudrateEntries;
+   323        };
+   324    
+   325        <span class="xdoc">/*!
+</span>   326    <span class="xdoc">     *  <b>@_nodoc</b>
+</span>   327    <span class="xdoc">     *  ======== UARTEUSCIA_Object ========
+</span>   328    <span class="xdoc">     *  Copied from UART.h and must match.
+</span>   329    <span class="xdoc">     */</span>
+   330        <span class=key>struct</span> UARTEUSCIA_Object {
+   331            Bool                isOpen;
+   332            UART_Mode           readMode;
+   333            UART_Mode           writeMode;
+   334            <span class=key>unsigned</span> <span class=key>int</span>        readTimeout;
+   335            <span class=key>unsigned</span> <span class=key>int</span>        writeTimeout;
+   336            CallbackFxn         readCallback;
+   337            CallbackFxn         writeCallback;
+   338            UART_ReturnMode     readReturnMode;
+   339            UART_DataMode       readDataMode;
+   340            UART_DataMode       writeDataMode;
+   341            UART_Echo           readEcho;
+   342    
+   343    
+   344            <span class=key>const</span> Void         *writeBuf;
+   345            size_t              writeCount;
+   346            size_t              writeSize;
+   347            Bool                writeCR;
+   348    
+   349            Void               *readBuf;
+   350            size_t              readCount;
+   351            size_t              readSize;
+   352    
+   353            <span class="comment">/* Stuff beyond here is ignored */</span>
+   354            <span class=comment>//Semaphore.Object    writeSem;</span>
+   355            <span class=comment>//Semaphore.Object    readSem;</span>
+   356        };
+   357    
+   358        <span class="xdoc">/*!
+</span>   359    <span class="xdoc">     *  <b>@_nodoc</b>
+</span>   360    <span class="xdoc">     *  ======== BasicView ========
+</span>   361    <span class="xdoc">     */</span>
+   362        <span class=key>metaonly</span> <span class=key>struct</span> BasicView {
+   363            String uartHandle;
+   364            String baseAddr;
+   365            String functionTable;
+   366        };
+   367    
+   368         <span class="xdoc">/*!
+</span>   369    <span class="xdoc">     *  <b>@_nodoc</b>
+</span>   370    <span class="xdoc">     *  ======== ConfigView ========
+</span>   371    <span class="xdoc">     */</span>
+   372        <span class=key>metaonly</span> <span class=key>struct</span> ConfigView {
+   373            String baseAddr;
+   374            String writeMode;
+   375            String readMode;
+   376            String writeTimeout;
+   377            String readTimeout;
+   378            String readReturnMode;
+   379            String readDataMode;
+   380            String writeDataMode;
+   381            String readEcho;
+   382        };
+   383    
+   384        <span class="xdoc">/*!
+</span>   385    <span class="xdoc">     *  <b>@_nodoc</b>
+</span>   386    <span class="xdoc">     *  ======== BufferView ========
+</span>   387    <span class="xdoc">     */</span>
+   388        <span class=key>metaonly</span> <span class=key>struct</span> BufferView {
+   389            String Base;
+   390            String Format;
+   391            String Contents;
+   392        };
+   393    
+   394        <span class="xdoc">/*!
+</span>   395    <span class="xdoc">     *  <b>@_nodoc</b>
+</span>   396    <span class="xdoc">     *  ======== rovViewInfo ========
+</span>   397    <span class="xdoc">     */</span>
+   398        @Facet
+   399        <span class=key>metaonly</span> <span class=key>config</span> ViewInfo.Instance rovViewInfo =
+   400            ViewInfo.create({
+   401                viewMap: [
+   402                    [<span class="string">'Basic'</span>,
+   403                        {
+   404                            type: ViewInfo.MODULE_DATA,
+   405                            viewInitFxn: <span class="string">'viewInitBasic'</span>,
+   406                            structName: <span class="string">'BasicView'</span>
+   407                        }
+   408                    ],
+   409                    [<span class="string">'Config'</span>,
+   410                        {
+   411                            type: ViewInfo.MODULE_DATA,
+   412                            viewInitFxn: <span class="string">'viewInitConfig'</span>,
+   413                            structName: <span class="string">'ConfigView'</span>
+   414                        }
+   415                    ],
+   416                    [<span class="string">'Write Buffer'</span>,
+   417                        {
+   418                            type: ViewInfo.MODULE_DATA,
+   419                            viewInitFxn: <span class="string">'viewInitWriteBuffer'</span>,
+   420                            structName: <span class="string">'BufferView'</span>
+   421                        }
+   422                    ],
+   423                    [<span class="string">'Read Buffer'</span>,
+   424                        {
+   425                            type: ViewInfo.MODULE_DATA,
+   426                            viewInitFxn: <span class="string">'viewInitReadBuffer'</span>,
+   427                            structName: <span class="string">'BufferView'</span>
+   428                        }
+   429                    ],
+   430                ]
+   431            });
+   432    }
+</pre>
+</body></html>

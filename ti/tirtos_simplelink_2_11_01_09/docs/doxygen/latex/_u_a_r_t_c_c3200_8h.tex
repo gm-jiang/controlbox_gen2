@@ -1,0 +1,111 @@
+\subsection{U\-A\-R\-T\-C\-C3200.\-h File Reference}
+\label{_u_a_r_t_c_c3200_8h}\index{U\-A\-R\-T\-C\-C3200.\-h@{U\-A\-R\-T\-C\-C3200.\-h}}
+
+
+\subsubsection{Detailed Description}
+U\-A\-R\-T driver implementation for a C\-C3200 U\-A\-R\-T controller. ============================================================================
+
+The U\-A\-R\-T header file should be included in an application as follows\-: 
+\begin{DoxyCode}
+*  #include <ti/drivers/UART.h>
+*  #include <ti/drivers/uart/UARTCC3200.h>
+*  
+\end{DoxyCode}
+ 
+
+{\ttfamily \#include $<$stdint.\-h$>$}\\*
+{\ttfamily \#include $<$stdbool.\-h$>$}\\*
+{\ttfamily \#include $<$ti/drivers/\-U\-A\-R\-T.\-h$>$}\\*
+{\ttfamily \#include $<$ti/sysbios/knl/\-Semaphore.\-h$>$}\\*
+{\ttfamily \#include $<$ti/sysbios/family/arm/m3/\-Hwi.\-h$>$}\\*
+Include dependency graph for U\-A\-R\-T\-C\-C3200.\-h\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{_u_a_r_t_c_c3200_8h__incl}
+\end{center}
+\end{figure}
+\subsubsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{struct_u_a_r_t_c_c3200___h_w_attrs}{U\-A\-R\-T\-C\-C3200\-\_\-\-H\-W\-Attrs}
+\begin{DoxyCompactList}\small\item\em U\-A\-R\-T\-C\-C3200 Hardware attributes. \end{DoxyCompactList}\item 
+struct \hyperlink{struct_u_a_r_t_c_c3200___object}{U\-A\-R\-T\-C\-C3200\-\_\-\-Object}
+\begin{DoxyCompactList}\small\item\em U\-A\-R\-T\-C\-C3200 Object. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{_u_a_r_t_c_c3200_8h_aaa17ecf48f5762e2e1bdb0bab8aacf0c}{ti\-\_\-sysbios\-\_\-family\-\_\-arm\-\_\-m3\-\_\-\-Hwi\-\_\-\-\_\-nolocalnames}
+\item 
+\#define \hyperlink{_u_a_r_t_c_c3200_8h_a48d94a72ec44ec99ea03345aee391a62}{U\-A\-R\-T\-C\-C3200\-\_\-\-C\-M\-D\-\_\-\-U\-N\-D\-E\-F\-I\-N\-E\-D}~-\/1
+\end{DoxyCompactItemize}
+\subsubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef struct \hyperlink{struct_u_a_r_t_c_c3200___h_w_attrs}{U\-A\-R\-T\-C\-C3200\-\_\-\-H\-W\-Attrs} \hyperlink{_u_a_r_t_c_c3200_8h_a4314d1c1487378758af75f900158e582}{U\-A\-R\-T\-C\-C3200\-\_\-\-H\-W\-Attrs}
+\begin{DoxyCompactList}\small\item\em U\-A\-R\-T\-C\-C3200 Hardware attributes. \end{DoxyCompactList}\item 
+typedef struct \hyperlink{struct_u_a_r_t_c_c3200___object}{U\-A\-R\-T\-C\-C3200\-\_\-\-Object} \hyperlink{_u_a_r_t_c_c3200_8h_ab955379efacdd1121191c43ef60c6389}{U\-A\-R\-T\-C\-C3200\-\_\-\-Object}
+\begin{DoxyCompactList}\small\item\em U\-A\-R\-T\-C\-C3200 Object. \end{DoxyCompactList}\item 
+typedef struct \hyperlink{struct_u_a_r_t_c_c3200___object}{U\-A\-R\-T\-C\-C3200\-\_\-\-Object} $\ast$ \hyperlink{_u_a_r_t_c_c3200_8h_a7918e9066f5ecdeaba9075bf4fe71157}{U\-A\-R\-T\-C\-C3200\-\_\-\-Handle}
+\end{DoxyCompactItemize}
+\subsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+const \hyperlink{struct_u_a_r_t___fxn_table}{U\-A\-R\-T\-\_\-\-Fxn\-Table} \hyperlink{_u_a_r_t_c_c3200_8h_af5c9fcf73d2540d179ec24ef172f1299}{U\-A\-R\-T\-C\-C3200\-\_\-fxn\-Table}
+\end{DoxyCompactItemize}
+
+
+\subsubsection{Macro Definition Documentation}
+\index{U\-A\-R\-T\-C\-C3200.\-h@{U\-A\-R\-T\-C\-C3200.\-h}!ti\-\_\-sysbios\-\_\-family\-\_\-arm\-\_\-m3\-\_\-\-Hwi\-\_\-\-\_\-nolocalnames@{ti\-\_\-sysbios\-\_\-family\-\_\-arm\-\_\-m3\-\_\-\-Hwi\-\_\-\-\_\-nolocalnames}}
+\index{ti\-\_\-sysbios\-\_\-family\-\_\-arm\-\_\-m3\-\_\-\-Hwi\-\_\-\-\_\-nolocalnames@{ti\-\_\-sysbios\-\_\-family\-\_\-arm\-\_\-m3\-\_\-\-Hwi\-\_\-\-\_\-nolocalnames}!UARTCC3200.h@{U\-A\-R\-T\-C\-C3200.\-h}}
+\paragraph[{ti\-\_\-sysbios\-\_\-family\-\_\-arm\-\_\-m3\-\_\-\-Hwi\-\_\-\-\_\-nolocalnames}]{\setlength{\rightskip}{0pt plus 5cm}\#define ti\-\_\-sysbios\-\_\-family\-\_\-arm\-\_\-m3\-\_\-\-Hwi\-\_\-\-\_\-nolocalnames}\label{_u_a_r_t_c_c3200_8h_aaa17ecf48f5762e2e1bdb0bab8aacf0c}
+\index{U\-A\-R\-T\-C\-C3200.\-h@{U\-A\-R\-T\-C\-C3200.\-h}!U\-A\-R\-T\-C\-C3200\-\_\-\-C\-M\-D\-\_\-\-U\-N\-D\-E\-F\-I\-N\-E\-D@{U\-A\-R\-T\-C\-C3200\-\_\-\-C\-M\-D\-\_\-\-U\-N\-D\-E\-F\-I\-N\-E\-D}}
+\index{U\-A\-R\-T\-C\-C3200\-\_\-\-C\-M\-D\-\_\-\-U\-N\-D\-E\-F\-I\-N\-E\-D@{U\-A\-R\-T\-C\-C3200\-\_\-\-C\-M\-D\-\_\-\-U\-N\-D\-E\-F\-I\-N\-E\-D}!UARTCC3200.h@{U\-A\-R\-T\-C\-C3200.\-h}}
+\paragraph[{U\-A\-R\-T\-C\-C3200\-\_\-\-C\-M\-D\-\_\-\-U\-N\-D\-E\-F\-I\-N\-E\-D}]{\setlength{\rightskip}{0pt plus 5cm}\#define U\-A\-R\-T\-C\-C3200\-\_\-\-C\-M\-D\-\_\-\-U\-N\-D\-E\-F\-I\-N\-E\-D~-\/1}\label{_u_a_r_t_c_c3200_8h_a48d94a72ec44ec99ea03345aee391a62}
+
+
+\subsubsection{Typedef Documentation}
+\index{U\-A\-R\-T\-C\-C3200.\-h@{U\-A\-R\-T\-C\-C3200.\-h}!U\-A\-R\-T\-C\-C3200\-\_\-\-H\-W\-Attrs@{U\-A\-R\-T\-C\-C3200\-\_\-\-H\-W\-Attrs}}
+\index{U\-A\-R\-T\-C\-C3200\-\_\-\-H\-W\-Attrs@{U\-A\-R\-T\-C\-C3200\-\_\-\-H\-W\-Attrs}!UARTCC3200.h@{U\-A\-R\-T\-C\-C3200.\-h}}
+\paragraph[{U\-A\-R\-T\-C\-C3200\-\_\-\-H\-W\-Attrs}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf U\-A\-R\-T\-C\-C3200\-\_\-\-H\-W\-Attrs}  {\bf U\-A\-R\-T\-C\-C3200\-\_\-\-H\-W\-Attrs}}\label{_u_a_r_t_c_c3200_8h_a4314d1c1487378758af75f900158e582}
+
+
+U\-A\-R\-T\-C\-C3200 Hardware attributes. 
+
+These fields are used by driverlib A\-P\-Is and therefore must be populated by driverlib macro definitions. For C\-C3200\-Ware these definitions are found in\-:
+\begin{DoxyItemize}
+\item inc/hw\-\_\-memmap.\-h
+\item inc/hw\-\_\-ints.\-h
+\end{DoxyItemize}
+
+A sample structure is shown below\-: 
+\begin{DoxyCode}
+*  \textcolor{keyword}{const} UARTCC3200_HWAttrs uartCC3200HWAttrs[] = \{
+*      \{
+*          UARTA0\_BASE,
+*          INT\_UARTA0
+*      \},
+*      \{
+*          UARTA1\_BASE,
+*          INT\_UARTA1
+*      \},
+*  \};
+*  
+\end{DoxyCode}
+ \index{U\-A\-R\-T\-C\-C3200.\-h@{U\-A\-R\-T\-C\-C3200.\-h}!U\-A\-R\-T\-C\-C3200\-\_\-\-Object@{U\-A\-R\-T\-C\-C3200\-\_\-\-Object}}
+\index{U\-A\-R\-T\-C\-C3200\-\_\-\-Object@{U\-A\-R\-T\-C\-C3200\-\_\-\-Object}!UARTCC3200.h@{U\-A\-R\-T\-C\-C3200.\-h}}
+\paragraph[{U\-A\-R\-T\-C\-C3200\-\_\-\-Object}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf U\-A\-R\-T\-C\-C3200\-\_\-\-Object}  {\bf U\-A\-R\-T\-C\-C3200\-\_\-\-Object}}\label{_u_a_r_t_c_c3200_8h_ab955379efacdd1121191c43ef60c6389}
+
+
+U\-A\-R\-T\-C\-C3200 Object. 
+
+The application must not access any member variables of this structure! \index{U\-A\-R\-T\-C\-C3200.\-h@{U\-A\-R\-T\-C\-C3200.\-h}!U\-A\-R\-T\-C\-C3200\-\_\-\-Handle@{U\-A\-R\-T\-C\-C3200\-\_\-\-Handle}}
+\index{U\-A\-R\-T\-C\-C3200\-\_\-\-Handle@{U\-A\-R\-T\-C\-C3200\-\_\-\-Handle}!UARTCC3200.h@{U\-A\-R\-T\-C\-C3200.\-h}}
+\paragraph[{U\-A\-R\-T\-C\-C3200\-\_\-\-Handle}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf U\-A\-R\-T\-C\-C3200\-\_\-\-Object} $\ast$ {\bf U\-A\-R\-T\-C\-C3200\-\_\-\-Handle}}\label{_u_a_r_t_c_c3200_8h_a7918e9066f5ecdeaba9075bf4fe71157}
+
+
+\subsubsection{Variable Documentation}
+\index{U\-A\-R\-T\-C\-C3200.\-h@{U\-A\-R\-T\-C\-C3200.\-h}!U\-A\-R\-T\-C\-C3200\-\_\-fxn\-Table@{U\-A\-R\-T\-C\-C3200\-\_\-fxn\-Table}}
+\index{U\-A\-R\-T\-C\-C3200\-\_\-fxn\-Table@{U\-A\-R\-T\-C\-C3200\-\_\-fxn\-Table}!UARTCC3200.h@{U\-A\-R\-T\-C\-C3200.\-h}}
+\paragraph[{U\-A\-R\-T\-C\-C3200\-\_\-fxn\-Table}]{\setlength{\rightskip}{0pt plus 5cm}const {\bf U\-A\-R\-T\-\_\-\-Fxn\-Table} U\-A\-R\-T\-C\-C3200\-\_\-fxn\-Table}\label{_u_a_r_t_c_c3200_8h_af5c9fcf73d2540d179ec24ef172f1299}

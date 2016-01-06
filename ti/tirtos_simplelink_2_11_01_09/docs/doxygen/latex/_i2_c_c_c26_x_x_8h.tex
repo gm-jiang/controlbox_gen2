@@ -1,0 +1,405 @@
+\subsection{I2\-C\-C\-C26\-X\-X.\-h File Reference}
+\label{_i2_c_c_c26_x_x_8h}\index{I2\-C\-C\-C26\-X\-X.\-h@{I2\-C\-C\-C26\-X\-X.\-h}}
+
+
+\subsubsection{Detailed Description}
+I2\-C driver implementation for a C\-C26\-X\-X I2\-C controller. ============================================================================
+
+\subsubsection*{Driver Include}
+
+The I2\-C header file should be included in an application as follows\-: 
+\begin{DoxyCode}
+*  #include <ti/drivers/I2C.h>
+*  #include <ti/drivers/i2c/I2CCC26XX.h>
+*  
+\end{DoxyCode}
+
+
+\subsubsection*{Overview}
+
+The general I2\-C A\-P\-I is normally used in application code, e.\-g. \hyperlink{_i2_c_8h_ae1aa99e1fee4517406018e10025cca0e}{I2\-C\-\_\-open()} is used instead of I2\-C\-C\-C26\-X\-X\-\_\-open(). The board file will define the device specific config, and casting in the general A\-P\-I will ensure that the correct device specific functions are called. This is also reflected in the example code in \hyperlink{_i2_c_c_c26_x_x_8h_I2C_USE_CASES}{Use Cases}.
+
+\paragraph*{General Behavior}
+
+Before using the I2\-C in C\-C26\-X\-X\-:
+\begin{DoxyItemize}
+\item The I2\-C driver is initialized by calling \hyperlink{_i2_c_8h_a9ff51ddf1d325776fef90cce0223772b}{I2\-C\-\_\-init()}.
+\item The I2\-C H\-W is configured and flags system dependencies (e.\-g. I\-Os, power, etc.) by calling \hyperlink{_i2_c_8h_ae1aa99e1fee4517406018e10025cca0e}{I2\-C\-\_\-open()}.
+\end{DoxyItemize}The following is true for receive operation\-:
+\begin{DoxyItemize}
+\item R\-X is enabled by calling \hyperlink{_i2_c_8h_ac5d827b67fe77d7d179026941cc069d7}{I2\-C\-\_\-transfer()}. The read\-Count of the \hyperlink{struct_i2_c___transaction}{I2\-C\-\_\-\-Transaction} must be set to a non-\/zero value.
+\item If the \hyperlink{_i2_c_8h_ac5d827b67fe77d7d179026941cc069d7}{I2\-C\-\_\-transfer()} succeeds, the I2\-C remains enabled.
+\item The application must check the return value from \hyperlink{_i2_c_8h_ac5d827b67fe77d7d179026941cc069d7}{I2\-C\-\_\-transfer()} to verify that the transfer succeeded.
+\end{DoxyItemize}The following apply for transmit operation\-:
+\begin{DoxyItemize}
+\item T\-X is enabled by calling \hyperlink{_i2_c_8h_ac5d827b67fe77d7d179026941cc069d7}{I2\-C\-\_\-transfer()}. The write\-Count of the \hyperlink{struct_i2_c___transaction}{I2\-C\-\_\-\-Transaction} must be set to a non-\/zero value.
+\item If the \hyperlink{_i2_c_8h_ac5d827b67fe77d7d179026941cc069d7}{I2\-C\-\_\-transfer()} succeeds, the I2\-C remains enabled.
+\item The application must check the return value from \hyperlink{_i2_c_8h_ac5d827b67fe77d7d179026941cc069d7}{I2\-C\-\_\-transfer()} to verify that the transfer succeeded.
+\end{DoxyItemize}After I2\-C operation has ended\-:
+\begin{DoxyItemize}
+\item Release system dependencies for I2\-C by calling \hyperlink{_i2_c_8h_a12c86d89a687f2ee1eb980d99c32326d}{I2\-C\-\_\-close()}.
+\end{DoxyItemize}
+
+\paragraph*{Error handling}
+
+If an error occurs during operation\-:
+\begin{DoxyItemize}
+\item The I2\-C Master transmits a stop bit and remains enabled.
+\end{DoxyItemize}\paragraph*{Power Management}
+
+The I2\-C\-C\-C26\-X\-X driver is setting a power constraint during operation to keep the device out of standby, i.\-e. device will enter idle mode when no tasks are active. When the operation has finished, the power constraint is released. The following statements are valid\-:
+\begin{DoxyItemize}
+\item After \hyperlink{_i2_c_8h_ae1aa99e1fee4517406018e10025cca0e}{I2\-C\-\_\-open()} call\-: I2\-C is enabled, there is no active I2\-C transactions, the device can enter standby.
+\item After \hyperlink{_i2_c_8h_ac5d827b67fe77d7d179026941cc069d7}{I2\-C\-\_\-transfer()} call\-: active I2\-C transactions exist , the device might enter idle, not standby (set constraint).
+\item If \hyperlink{_i2_c_8h_ac5d827b67fe77d7d179026941cc069d7}{I2\-C\-\_\-transfer()} returns successfully or with error\-: I2\-C remains enabled, but device can enter standby.
+\item After \hyperlink{_i2_c_8h_a12c86d89a687f2ee1eb980d99c32326d}{I2\-C\-\_\-close()} call\-: I2\-C is disabled
+\end{DoxyItemize}
+
+\paragraph*{Supported Functions}
+
+\begin{TabularC}{3}
+\hline
+\rowcolor{lightgray}{\bf Generic A\-P\-I Function }&{\bf A\-P\-I Function }&{\bf Description  }\\\cline{1-3}
+\hyperlink{_i2_c_8h_a9ff51ddf1d325776fef90cce0223772b}{I2\-C\-\_\-init()} &I2\-C\-C\-C26\-X\-X\-\_\-init() &Initialize I2\-C driver \\\cline{1-3}
+\hyperlink{_i2_c_8h_ae1aa99e1fee4517406018e10025cca0e}{I2\-C\-\_\-open()} &I2\-C\-C\-C26\-X\-X\-\_\-open() &Initialize I2\-C H\-W and set system dependencies \\\cline{1-3}
+\hyperlink{_i2_c_8h_a12c86d89a687f2ee1eb980d99c32326d}{I2\-C\-\_\-close()} &I2\-C\-C\-C26\-X\-X\-\_\-close() &Disable I2\-C H\-W and release system dependencies \\\cline{1-3}
+\hyperlink{_i2_c_8h_ac5d827b67fe77d7d179026941cc069d7}{I2\-C\-\_\-transfer()} &I2\-C\-C\-C26\-X\-X\-\_\-transfer() &Start I2\-C transfer \\\cline{1-3}
+\end{TabularC}
+\begin{DoxyNote}{Note}
+All calls should go through the generic A\-P\-I.
+\end{DoxyNote}
+\paragraph*{Unsupported Functionality}
+
+The C\-C26\-X\-X I2\-C driver currently does not support\-:
+\begin{DoxyItemize}
+\item Multi-\/master mode
+\item I2\-C slave mode
+\end{DoxyItemize}
+
+\paragraph*{Use Cases\label{_i2_c_c_c26_x_x_8h_I2C_USE_CASES}%
+\hypertarget{_i2_c_c_c26_x_x_8h_I2C_USE_CASES}{}%
+}
+
+\subparagraph*{Basic Receive}
+
+Receive 10 bytes over I2\-C in \hyperlink{_i2_c_8h_a39f3b9340fc4ee241b0d2da9b2841c26abe065350be2a0ae5c9beb24624626c75}{I2\-C\-\_\-\-M\-O\-D\-E\-\_\-\-B\-L\-O\-C\-K\-I\-N\-G}. 
+\begin{DoxyCode}
+*  \textcolor{comment}{// Locals}
+*  I2C_Handle handle;
+*  I2C_Params params;
+*  I2C_Transaction i2cTrans;
+*  uint8\_t rxBuf[32];      \textcolor{comment}{// Receive buffer}
+*  uint8\_t txBuf[32];      \textcolor{comment}{// Transmit buffer}
+*
+*  \textcolor{comment}{// Configure I2C parameters.}
+*  I2C_Params_init(&params);
+*
+*  \textcolor{comment}{// Initialize master I2C transaction structure}
+*  i2cTrans.writeCount   = 0;
+*  i2cTrans.writeBuf     = txBuf;
+*  i2cTrans.readCount    = 10;
+*  i2cTrans.readBuf      = rxBuf;
+*  i2cTrans.slaveAddress = 0x3C;
+*
+*  \textcolor{comment}{// Open I2C}
+*  handle = I2C_open(Board\_I2C, &params);
+*
+*  \textcolor{comment}{// Do I2C transfer receive}
+*  I2C_transfer(handle, &i2cTrans);
+*  
+\end{DoxyCode}
+
+
+\subparagraph*{Basic Transmit}
+
+Transmit 16 bytes over I2\-C in \hyperlink{_i2_c_8h_a39f3b9340fc4ee241b0d2da9b2841c26a129731a7edeb285f43a54b2cf9f5ac72}{I2\-C\-\_\-\-M\-O\-D\-E\-\_\-\-C\-A\-L\-L\-B\-A\-C\-K}. 
+\begin{DoxyCode}
+*  uint8\_t rxBuffer[32];            \textcolor{comment}{// Receive buffer}
+*  uint8\_t txBuffer[32];            \textcolor{comment}{// Transmit buffer}
+*  \textcolor{keywordtype}{bool} transferDone = \textcolor{keyword}{false};
+*
+*  \textcolor{keyword}{static} \textcolor{keywordtype}{void} transferCallback(I2C_Handle handle, I2C_Transaction *transac, \textcolor{keywordtype}{bool} result)
+*  \{
+*      \textcolor{comment}{// Set length bytes}
+*      \textcolor{keywordflow}{if} (result) \{
+*          transferDone = \textcolor{keyword}{true};
+*      \} \textcolor{keywordflow}{else} \{
+*          \textcolor{comment}{// Transaction failed, act accordingly...}
+*          .
+*          .
+*      \}
+*  \}
+*
+*  \textcolor{keyword}{static} \textcolor{keywordtype}{void} taskFxn(UArg a0, UArg a1)
+*  \{
+*      \textcolor{comment}{// Locals}
+*      I2C_Handle handle;
+*      I2C_Params params;
+*      I2C_Transaction i2cTrans;
+*
+*      \textcolor{comment}{// Configure I2C parameters.}
+*      I2C_Params_init(&params);
+*      params.transferMode = I2C_MODE_CALLBACK;
+*      params.transferCallbackFxn = transferCallback;
+*
+*      \textcolor{comment}{// Prepare data to send, send 0x00, 0x01, 0x02, ...0xFF, 0x00, 0x01...}
+*      \textcolor{keywordflow}{for}(uint32\_t i = 0; i < numTxBytes; i++)
+*          txBuffer[i] = (uint8\_t) i;
+*
+*      \textcolor{comment}{// Initialize master I2C transaction structure}
+*      i2cTrans.writeCount   = 16;
+*      i2cTrans.writeBuf     = txBuffer;
+*      i2cTrans.readCount    = 0;
+*      i2cTrans.readBuf      = rxBuffer;
+*      i2cTrans.slaveAddress = 0x3C;
+*
+*      \textcolor{comment}{// Open I2C}
+*      handle = I2C_open(Board\_I2C, &params);
+*
+*      \textcolor{comment}{// Do I2C transfer (in callback mode)}
+*      I2C_transfer(handle, &i2cTrans);
+*
+*      \textcolor{comment}{// Do other stuff while I2C is handling the transfer}
+*      .
+*      .
+*
+*      \textcolor{comment}{// Do something if I2C transfer is finished}
+*      \textcolor{keywordflow}{if}(transferDone) \{
+*          .
+*          .
+*      \}
+*
+*      \textcolor{comment}{// Continue...}
+*      .
+*      .
+*  \}
+*  
+\end{DoxyCode}
+
+
+\subparagraph*{Chained Transactions}
+
+Transmit 10 bytes and then 32 bytes over I2\-C in \hyperlink{_i2_c_8h_a39f3b9340fc4ee241b0d2da9b2841c26a129731a7edeb285f43a54b2cf9f5ac72}{I2\-C\-\_\-\-M\-O\-D\-E\-\_\-\-C\-A\-L\-L\-B\-A\-C\-K}. 
+\begin{DoxyCode}
+*  uint8\_t rxBuffer[32];            \textcolor{comment}{// Receive buffer}
+*  uint8\_t txBuffer[32];            \textcolor{comment}{// Transmit buffer}
+*  uint8\_t rxBuffer2[64];           \textcolor{comment}{// 2. Receive buffer}
+*  uint8\_t txBuffer2[64];           \textcolor{comment}{// 2. Transmit buffer}
+*  \textcolor{keywordtype}{bool} transferDone = \textcolor{keyword}{false};
+*
+*  \textcolor{keyword}{static} \textcolor{keywordtype}{void} writeCallbackDefault(I2C_Handle handle, I2C_Transaction *transac, \textcolor{keywordtype}{bool} result)
+*  \{
+*      \textcolor{comment}{// Set length bytes}
+*      \textcolor{keywordflow}{if} (result) \{
+*          transferDone = \textcolor{keyword}{true};
+*      \} \textcolor{keywordflow}{else} \{
+*          \textcolor{comment}{// Transaction failed, act accordingly...}
+*          .
+*          .
+*      \}
+*  \}
+*
+*  \textcolor{keyword}{static} \textcolor{keywordtype}{void} taskFxn(UArg a0, UArg a1)
+*  \{
+*      \textcolor{comment}{// Locals}
+*      I2C_Handle handle;
+*      I2C_Params params;
+*      I2C_Transaction i2cTrans;
+*      I2C_Transaction i2cTrans2;
+*
+*      \textcolor{comment}{// Configure I2C parameters.}
+*      I2C_Params_init(&params);
+*      params.transferMode = I2C_MODE_CALLBACK;
+*      params.transferCallbackFxn = writeCallbackDefault;
+*
+*      \textcolor{comment}{// Prepare data to send, send 0x00, 0x01, 0x02, ...0xFF, 0x00, 0x01...}
+*      \textcolor{keywordflow}{for}(uint32\_t i = 0; i < numTxBytes; i++)
+*          txBuffer[i] = (uint8\_t) i;
+*
+*      \textcolor{comment}{// Initialize first master I2C transaction structure}
+*      i2cTrans.writeCount   = 10;
+*      i2cTrans.writeBuf     = txBuffer;
+*      i2cTrans.readCount    = 0;
+*      i2cTrans.readBuf      = rxBuffer;
+*      i2cTrans.slaveAddress = 0x3C;
+*
+*      \textcolor{comment}{// Second transaction}
+*      i2cTrans2.writeCount   = 32;
+*      i2cTrans2.writeBuf     = txBuffer2;
+*      i2cTrans2.readCount    = 0;
+*      i2cTrans2.readBuf      = rxBuffer2;
+*      i2cTrans2.slaveAddress = 0x2E;
+*
+*      \textcolor{comment}{// Open I2C}
+*      handle = I2C_open(Board\_I2C, &params);
+*
+*      \textcolor{comment}{// Do chained I2C transfers (in callback mode).}
+*      I2C_transfer(handle, &i2cTrans);
+*      I2C_transfer(handle, &i2cTrans2);
+*
+*      \textcolor{comment}{// Do other stuff while I2C is handling the transfers}
+*      .
+*      .
+*
+*      \textcolor{comment}{// Do something if I2C transfers are finished}
+*      \textcolor{keywordflow}{if}(transferDone) \{
+*          .
+*          .
+*      \}
+*
+*      \textcolor{comment}{// Continue...}
+*      .
+*      .
+*  \}
+*  
+\end{DoxyCode}
+
+
+\subsubsection*{Instrumentation}
+
+The I2\-C driver interface produces log statements if instrumentation is enabled.
+
+\begin{TabularC}{2}
+\hline
+\rowcolor{lightgray}{\bf Diagnostics Mask }&{\bf Log details  }\\\cline{1-2}
+Diags\-\_\-\-U\-S\-E\-R1 &basic I2\-C operations performed \\\cline{1-2}
+Diags\-\_\-\-U\-S\-E\-R2 &detailed I2\-C operations performed \\\cline{1-2}
+\end{TabularC}
+
+
+{\ttfamily \#include $<$stdint.\-h$>$}\\*
+{\ttfamily \#include $<$stdbool.\-h$>$}\\*
+{\ttfamily \#include $<$ti/drivers/\-I2\-C.\-h$>$}\\*
+{\ttfamily \#include $<$ti/sysbios/family/arm/cc26xx/\-Power.\-h$>$}\\*
+{\ttfamily \#include $<$ti/sysbios/family/arm/m3/\-Hwi.\-h$>$}\\*
+{\ttfamily \#include $<$ti/sysbios/knl/\-Semaphore.\-h$>$}\\*
+Include dependency graph for I2\-C\-C\-C26\-X\-X.\-h\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{_i2_c_c_c26_x_x_8h__incl}
+\end{center}
+\end{figure}
+\subsubsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{struct_i2_c_c_c26_x_x___i2_c_pin_cfg}{I2\-C\-C\-C26\-X\-X\-\_\-\-I2\-C\-Pin\-Cfg}
+\begin{DoxyCompactList}\small\item\em I2\-C\-C\-C26\-X\-X Pin Configuration. \end{DoxyCompactList}\item 
+struct \hyperlink{struct_i2_c_c_c26_x_x___h_w_attrs}{I2\-C\-C\-C26\-X\-X\-\_\-\-H\-W\-Attrs}
+\begin{DoxyCompactList}\small\item\em I2\-C\-C\-C26\-X\-X Hardware attributes. \end{DoxyCompactList}\item 
+struct \hyperlink{struct_i2_c_c_c26_x_x___object}{I2\-C\-C\-C26\-X\-X\-\_\-\-Object}
+\begin{DoxyCompactList}\small\item\em I2\-C\-C\-C26\-X\-X Object. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{_i2_c_c_c26_x_x_8h_aaa17ecf48f5762e2e1bdb0bab8aacf0c}{ti\-\_\-sysbios\-\_\-family\-\_\-arm\-\_\-m3\-\_\-\-Hwi\-\_\-\-\_\-nolocalnames}
+\item 
+\#define \hyperlink{_i2_c_c_c26_x_x_8h_a608c11d9086ef509bc173d18659f1014}{I2\-C\-C\-C26\-X\-X\-\_\-\-C\-M\-D\-\_\-\-U\-N\-D\-E\-F\-I\-N\-E\-D}~-\/1
+\item 
+\#define \hyperlink{_i2_c_c_c26_x_x_8h_afa112ed4c00eb67f507b0ae891500b94}{I2\-C\-C\-C26\-X\-X\-\_\-\-S\-U\-C\-C\-E\-S\-S}~0
+\item 
+\#define \hyperlink{_i2_c_c_c26_x_x_8h_addac2f61431f42ea2f6ad3af0b9b6c98}{I2\-C\-C\-C26\-X\-X\-\_\-\-E\-R\-R\-O\-R}~-\/1
+\end{DoxyCompactItemize}
+\subsubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef unsigned long \hyperlink{_i2_c_c_c26_x_x_8h_a6e087d828c4463de0061d8205b2245d8}{I2\-C\-Base\-Addr\-Type}
+\item 
+typedef unsigned long \hyperlink{_i2_c_c_c26_x_x_8h_a5c119be60e1890af18565f27bbb8433a}{I2\-C\-Data\-Type}
+\item 
+typedef struct \hyperlink{struct_i2_c_c_c26_x_x___i2_c_pin_cfg}{I2\-C\-C\-C26\-X\-X\-\_\-\-I2\-C\-Pin\-Cfg} \hyperlink{_i2_c_c_c26_x_x_8h_a92eeee6e19d215804204c4830a82d424}{I2\-C\-C\-C26\-X\-X\-\_\-\-I2\-C\-Pin\-Cfg}
+\begin{DoxyCompactList}\small\item\em I2\-C\-C\-C26\-X\-X Pin Configuration. \end{DoxyCompactList}\item 
+typedef struct \hyperlink{struct_i2_c_c_c26_x_x___h_w_attrs}{I2\-C\-C\-C26\-X\-X\-\_\-\-H\-W\-Attrs} \hyperlink{_i2_c_c_c26_x_x_8h_ab3c00c0267b7eb96f1459bfb823bdd79}{I2\-C\-C\-C26\-X\-X\-\_\-\-H\-W\-Attrs}
+\begin{DoxyCompactList}\small\item\em I2\-C\-C\-C26\-X\-X Hardware attributes. \end{DoxyCompactList}\item 
+typedef struct \hyperlink{struct_i2_c_c_c26_x_x___object}{I2\-C\-C\-C26\-X\-X\-\_\-\-Object} \hyperlink{_i2_c_c_c26_x_x_8h_a0eb1b66d08f9584c404d1610f8282394}{I2\-C\-C\-C26\-X\-X\-\_\-\-Object}
+\begin{DoxyCompactList}\small\item\em I2\-C\-C\-C26\-X\-X Object. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+const \hyperlink{struct_i2_c___fxn_table}{I2\-C\-\_\-\-Fxn\-Table} \hyperlink{_i2_c_c_c26_x_x_8h_a6fb66ad0052e9ab9d1c1b65b8276fc61}{I2\-C\-C\-C26\-X\-X\-\_\-fxn\-Table}
+\end{DoxyCompactItemize}
+
+
+\subsubsection{Macro Definition Documentation}
+\index{I2\-C\-C\-C26\-X\-X.\-h@{I2\-C\-C\-C26\-X\-X.\-h}!ti\-\_\-sysbios\-\_\-family\-\_\-arm\-\_\-m3\-\_\-\-Hwi\-\_\-\-\_\-nolocalnames@{ti\-\_\-sysbios\-\_\-family\-\_\-arm\-\_\-m3\-\_\-\-Hwi\-\_\-\-\_\-nolocalnames}}
+\index{ti\-\_\-sysbios\-\_\-family\-\_\-arm\-\_\-m3\-\_\-\-Hwi\-\_\-\-\_\-nolocalnames@{ti\-\_\-sysbios\-\_\-family\-\_\-arm\-\_\-m3\-\_\-\-Hwi\-\_\-\-\_\-nolocalnames}!I2CCC26XX.h@{I2\-C\-C\-C26\-X\-X.\-h}}
+\paragraph[{ti\-\_\-sysbios\-\_\-family\-\_\-arm\-\_\-m3\-\_\-\-Hwi\-\_\-\-\_\-nolocalnames}]{\setlength{\rightskip}{0pt plus 5cm}\#define ti\-\_\-sysbios\-\_\-family\-\_\-arm\-\_\-m3\-\_\-\-Hwi\-\_\-\-\_\-nolocalnames}\label{_i2_c_c_c26_x_x_8h_aaa17ecf48f5762e2e1bdb0bab8aacf0c}
+\index{I2\-C\-C\-C26\-X\-X.\-h@{I2\-C\-C\-C26\-X\-X.\-h}!I2\-C\-C\-C26\-X\-X\-\_\-\-C\-M\-D\-\_\-\-U\-N\-D\-E\-F\-I\-N\-E\-D@{I2\-C\-C\-C26\-X\-X\-\_\-\-C\-M\-D\-\_\-\-U\-N\-D\-E\-F\-I\-N\-E\-D}}
+\index{I2\-C\-C\-C26\-X\-X\-\_\-\-C\-M\-D\-\_\-\-U\-N\-D\-E\-F\-I\-N\-E\-D@{I2\-C\-C\-C26\-X\-X\-\_\-\-C\-M\-D\-\_\-\-U\-N\-D\-E\-F\-I\-N\-E\-D}!I2CCC26XX.h@{I2\-C\-C\-C26\-X\-X.\-h}}
+\paragraph[{I2\-C\-C\-C26\-X\-X\-\_\-\-C\-M\-D\-\_\-\-U\-N\-D\-E\-F\-I\-N\-E\-D}]{\setlength{\rightskip}{0pt plus 5cm}\#define I2\-C\-C\-C26\-X\-X\-\_\-\-C\-M\-D\-\_\-\-U\-N\-D\-E\-F\-I\-N\-E\-D~-\/1}\label{_i2_c_c_c26_x_x_8h_a608c11d9086ef509bc173d18659f1014}
+Return code when command is not defined. Currently in use by I2\-C\-C\-C26\-X\-X\-\_\-control(). \index{I2\-C\-C\-C26\-X\-X.\-h@{I2\-C\-C\-C26\-X\-X.\-h}!I2\-C\-C\-C26\-X\-X\-\_\-\-S\-U\-C\-C\-E\-S\-S@{I2\-C\-C\-C26\-X\-X\-\_\-\-S\-U\-C\-C\-E\-S\-S}}
+\index{I2\-C\-C\-C26\-X\-X\-\_\-\-S\-U\-C\-C\-E\-S\-S@{I2\-C\-C\-C26\-X\-X\-\_\-\-S\-U\-C\-C\-E\-S\-S}!I2CCC26XX.h@{I2\-C\-C\-C26\-X\-X.\-h}}
+\paragraph[{I2\-C\-C\-C26\-X\-X\-\_\-\-S\-U\-C\-C\-E\-S\-S}]{\setlength{\rightskip}{0pt plus 5cm}\#define I2\-C\-C\-C26\-X\-X\-\_\-\-S\-U\-C\-C\-E\-S\-S~0}\label{_i2_c_c_c26_x_x_8h_afa112ed4c00eb67f507b0ae891500b94}
+Success Return Code \index{I2\-C\-C\-C26\-X\-X.\-h@{I2\-C\-C\-C26\-X\-X.\-h}!I2\-C\-C\-C26\-X\-X\-\_\-\-E\-R\-R\-O\-R@{I2\-C\-C\-C26\-X\-X\-\_\-\-E\-R\-R\-O\-R}}
+\index{I2\-C\-C\-C26\-X\-X\-\_\-\-E\-R\-R\-O\-R@{I2\-C\-C\-C26\-X\-X\-\_\-\-E\-R\-R\-O\-R}!I2CCC26XX.h@{I2\-C\-C\-C26\-X\-X.\-h}}
+\paragraph[{I2\-C\-C\-C26\-X\-X\-\_\-\-E\-R\-R\-O\-R}]{\setlength{\rightskip}{0pt plus 5cm}\#define I2\-C\-C\-C26\-X\-X\-\_\-\-E\-R\-R\-O\-R~-\/1}\label{_i2_c_c_c26_x_x_8h_addac2f61431f42ea2f6ad3af0b9b6c98}
+Error Return Code 
+
+\subsubsection{Typedef Documentation}
+\index{I2\-C\-C\-C26\-X\-X.\-h@{I2\-C\-C\-C26\-X\-X.\-h}!I2\-C\-Base\-Addr\-Type@{I2\-C\-Base\-Addr\-Type}}
+\index{I2\-C\-Base\-Addr\-Type@{I2\-C\-Base\-Addr\-Type}!I2CCC26XX.h@{I2\-C\-C\-C26\-X\-X.\-h}}
+\paragraph[{I2\-C\-Base\-Addr\-Type}]{\setlength{\rightskip}{0pt plus 5cm}typedef unsigned long {\bf I2\-C\-Base\-Addr\-Type}}\label{_i2_c_c_c26_x_x_8h_a6e087d828c4463de0061d8205b2245d8}
+I2\-C Base Address type. \index{I2\-C\-C\-C26\-X\-X.\-h@{I2\-C\-C\-C26\-X\-X.\-h}!I2\-C\-Data\-Type@{I2\-C\-Data\-Type}}
+\index{I2\-C\-Data\-Type@{I2\-C\-Data\-Type}!I2CCC26XX.h@{I2\-C\-C\-C26\-X\-X.\-h}}
+\paragraph[{I2\-C\-Data\-Type}]{\setlength{\rightskip}{0pt plus 5cm}typedef unsigned long {\bf I2\-C\-Data\-Type}}\label{_i2_c_c_c26_x_x_8h_a5c119be60e1890af18565f27bbb8433a}
+\index{I2\-C\-C\-C26\-X\-X.\-h@{I2\-C\-C\-C26\-X\-X.\-h}!I2\-C\-C\-C26\-X\-X\-\_\-\-I2\-C\-Pin\-Cfg@{I2\-C\-C\-C26\-X\-X\-\_\-\-I2\-C\-Pin\-Cfg}}
+\index{I2\-C\-C\-C26\-X\-X\-\_\-\-I2\-C\-Pin\-Cfg@{I2\-C\-C\-C26\-X\-X\-\_\-\-I2\-C\-Pin\-Cfg}!I2CCC26XX.h@{I2\-C\-C\-C26\-X\-X.\-h}}
+\paragraph[{I2\-C\-C\-C26\-X\-X\-\_\-\-I2\-C\-Pin\-Cfg}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf I2\-C\-C\-C26\-X\-X\-\_\-\-I2\-C\-Pin\-Cfg}  {\bf I2\-C\-C\-C26\-X\-X\-\_\-\-I2\-C\-Pin\-Cfg}}\label{_i2_c_c_c26_x_x_8h_a92eeee6e19d215804204c4830a82d424}
+
+
+I2\-C\-C\-C26\-X\-X Pin Configuration. 
+
+Pin configuration that holds non-\/default pins. The default pin configuration is typically defined in \hyperlink{struct_i2_c_c_c26_x_x___h_w_attrs}{I2\-C\-C\-C26\-X\-X\-\_\-\-H\-W\-Attrs} placed in the board file. The pin configuration structure is used by setting the custom void pointer in the \hyperlink{struct_i2_c___params}{I2\-C\-\_\-\-Params} to point to this struct. If the custom void pointer is N\-U\-L\-L, the \hyperlink{struct_i2_c_c_c26_x_x___h_w_attrs}{I2\-C\-C\-C26\-X\-X\-\_\-\-H\-W\-Attrs} pin mapping will be used. 
+\begin{DoxyCode}
+*  I2C_Handle handle;
+*  I2C_Params i2cParams;
+*  I2CCC26XX_I2CPinCfg pinCfg;
+*
+*  I2C_Params_init(&i2cParams);     \textcolor{comment}{// sets custom to NULL}
+*  pinCfg.pinSDA = Board\_I2C0\_SDA1;
+*  pinCfg.pinSCL = Board\_I2C0\_SCL1;
+*  i2cParams.custom = &pinCfg;
+*
+*  handle = I2C_open(Board\_I2C, &i2cParams);
+*  
+\end{DoxyCode}
+ \index{I2\-C\-C\-C26\-X\-X.\-h@{I2\-C\-C\-C26\-X\-X.\-h}!I2\-C\-C\-C26\-X\-X\-\_\-\-H\-W\-Attrs@{I2\-C\-C\-C26\-X\-X\-\_\-\-H\-W\-Attrs}}
+\index{I2\-C\-C\-C26\-X\-X\-\_\-\-H\-W\-Attrs@{I2\-C\-C\-C26\-X\-X\-\_\-\-H\-W\-Attrs}!I2CCC26XX.h@{I2\-C\-C\-C26\-X\-X.\-h}}
+\paragraph[{I2\-C\-C\-C26\-X\-X\-\_\-\-H\-W\-Attrs}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf I2\-C\-C\-C26\-X\-X\-\_\-\-H\-W\-Attrs}  {\bf I2\-C\-C\-C26\-X\-X\-\_\-\-H\-W\-Attrs}}\label{_i2_c_c_c26_x_x_8h_ab3c00c0267b7eb96f1459bfb823bdd79}
+
+
+I2\-C\-C\-C26\-X\-X Hardware attributes. 
+
+These fields are used by driverlib A\-P\-Is and therefore must be populated by driverlib macro definitions. For cc26xxware these definitions are found in\-:
+\begin{DoxyItemize}
+\item inc/hw\-\_\-memmap.\-h
+\item inc/hw\-\_\-ints.\-h
+\end{DoxyItemize}
+
+A sample structure is shown below\-: 
+\begin{DoxyCode}
+*  \textcolor{keyword}{const} I2CCC26XX_HWAttrs i2cCC26XXHWAttrs[] = \{
+*      \{
+*         .baseAddr = I2C0\_BASE,
+*         .intNum = INT\_I2C,
+*         .powerMngrId = PERIPH\_I2C0,
+*         .sdaPin = Board\_I2C\_SDA,
+*         .sclPin = Board\_I2C\_SCL,
+*      \},
+*  \};
+*  
+\end{DoxyCode}
+ \index{I2\-C\-C\-C26\-X\-X.\-h@{I2\-C\-C\-C26\-X\-X.\-h}!I2\-C\-C\-C26\-X\-X\-\_\-\-Object@{I2\-C\-C\-C26\-X\-X\-\_\-\-Object}}
+\index{I2\-C\-C\-C26\-X\-X\-\_\-\-Object@{I2\-C\-C\-C26\-X\-X\-\_\-\-Object}!I2CCC26XX.h@{I2\-C\-C\-C26\-X\-X.\-h}}
+\paragraph[{I2\-C\-C\-C26\-X\-X\-\_\-\-Object}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf I2\-C\-C\-C26\-X\-X\-\_\-\-Object}  {\bf I2\-C\-C\-C26\-X\-X\-\_\-\-Object}}\label{_i2_c_c_c26_x_x_8h_a0eb1b66d08f9584c404d1610f8282394}
+
+
+I2\-C\-C\-C26\-X\-X Object. 
+
+The application must not access any member variables of this structure! 
+
+\subsubsection{Variable Documentation}
+\index{I2\-C\-C\-C26\-X\-X.\-h@{I2\-C\-C\-C26\-X\-X.\-h}!I2\-C\-C\-C26\-X\-X\-\_\-fxn\-Table@{I2\-C\-C\-C26\-X\-X\-\_\-fxn\-Table}}
+\index{I2\-C\-C\-C26\-X\-X\-\_\-fxn\-Table@{I2\-C\-C\-C26\-X\-X\-\_\-fxn\-Table}!I2CCC26XX.h@{I2\-C\-C\-C26\-X\-X.\-h}}
+\paragraph[{I2\-C\-C\-C26\-X\-X\-\_\-fxn\-Table}]{\setlength{\rightskip}{0pt plus 5cm}const {\bf I2\-C\-\_\-\-Fxn\-Table} I2\-C\-C\-C26\-X\-X\-\_\-fxn\-Table}\label{_i2_c_c_c26_x_x_8h_a6fb66ad0052e9ab9d1c1b65b8276fc61}

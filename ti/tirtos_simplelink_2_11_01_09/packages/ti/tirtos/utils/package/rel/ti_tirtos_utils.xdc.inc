@@ -1,0 +1,14 @@
+package/package.bld.xml
+package/build.cfg
+package/package.xdc.inc
+package.bld
+UARTMon.xml
+package/package.cfg.xdc.inc
+lib/release/ti.tirtos.utils.aem3
+package/package_ti.tirtos.utils.c
+UARTMon.c
+lib/release/ti.tirtos.utils.arm3
+lib/release/ti.tirtos.utils.am3g
+lib/release/ti.tirtos.utils.aem4
+lib/release/ti.tirtos.utils.arm4
+lib/release/ti.tirtos.utils.am4g

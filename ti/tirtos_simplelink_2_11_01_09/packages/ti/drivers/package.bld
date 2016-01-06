@@ -1,0 +1,491 @@
+/*
+ * Copyright (c) 2015, Texas Instruments Incorporated
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * *  Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ *
+ * *  Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * *  Neither the name of Texas Instruments Incorporated nor the names of
+ *    its contributors may be used to endorse or promote products derived
+ *    from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+ * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+/*
+ *  ======== package.bld ========
+ */
+
+/* Driver Build */
+var commonBld = xdc.loadCapsule("ti/tirtos/build/common.bld");
+
+var MWareObjList = [
+    "EMAC.c",
+    "./emac/EMACTiva.c",
+    "./gpio/GPIOTiva.c",
+    "I2C.c",
+    "./i2c/I2CTiva.c",
+    "SDSPI.c",
+    "./sdspi/SDSPITiva.c",
+    "SPI.c",
+    "./spi/SPITivaDMA.c",
+    "UART.c",
+    "./uart/UARTTiva.c",
+    "USBMSCHFatFs.c",
+    "./usbmschfatfs/USBMSCHFatFsTiva.c",
+    "Watchdog.c",
+    "./watchdog/WatchdogTiva.c",
+];
+
+var TivaObjList = [
+    "EMAC.c",
+    "./emac/EMACSnow.c",
+    "./gpio/GPIOTiva.c",
+    "I2C.c",
+    "./i2c/I2CTiva.c",
+    "PWM.c",
+    "./pwm/PWMTimerTiva.c",
+    "./pwm/PWMTiva.c",
+    "SDSPI.c",
+    "./sdspi/SDSPITiva.c",
+    "SPI.c",
+    "./spi/SPITivaDMA.c",
+    "UART.c",
+    "./uart/UARTTiva.c",
+    "./uart/UARTTivaDMA.c",
+    "USBMSCHFatFs.c",
+    "./usbmschfatfs/USBMSCHFatFsTiva.c",
+    "Watchdog.c",
+    "./watchdog/WatchdogTiva.c",
+];
+
+var CC3200ObjList = [
+    "./gpio/GPIOCC3200.c",
+    "I2C.c",
+    "./i2c/I2CCC3200.c",
+    "PWM.c",
+    "./pwm/PWMTimerCC3200.c",
+    "SDSPI.c",
+    "./sdspi/SDSPICC3200.c",
+    "SPI.c",
+    "./spi/SPICC3200DMA.c",
+    "UART.c",
+    "./uart/UARTCC3200.c",
+    "./uart/UARTCC3200DMA.c",
+    "Watchdog.c",
+    "./watchdog/WatchdogCC3200.c",
+];
+
+var CC26xxObjList = [
+    "./crypto/CryptoCC26XX.c",
+    "./dma/UDMACC26XX.c",
+    "I2C.c",
+    "./i2c/I2CCC26XX.c",
+    "./lcd/LCDDogm1286.c",
+    "./lcd/LCDDogm1286_util.c",
+    "./pin/PINCC26XX.c",
+    "SPI.c",
+    "./spi/SPICC26XXDMA.c",
+    "UART.c",
+    "./uart/UARTCC26XX.c",
+];
+
+var MSP430GenericObjList = [
+    "./gpio/GPIOMSP430.c",
+    "Watchdog.c",
+    "./watchdog/WatchdogMSP430.c",
+];
+
+var I2CUSCIObjList = [
+    "I2C.c",
+    "./i2c/I2CUSCIB.c",
+];
+
+var I2CEUSCIObjList = [
+    "I2C.c",
+    "./i2c/I2CEUSCIB.c",
+];
+
+var SDSPIUSCIObjList = [
+    "SDSPI.c",
+    "./sdspi/SDSPIUSCIA.c",
+    "./sdspi/SDSPIUSCIB.c",
+];
+
+var SDSPIEUSCIObjList = [
+    "SDSPI.c",
+    "./sdspi/SDSPIEUSCIA.c",
+    "./sdspi/SDSPIEUSCIB.c",
+];
+
+var SPIUSCIObjList = [
+    "SPI.c",
+    "./spi/SPIUSCIADMA.c",
+    "./spi/SPIUSCIBDMA.c",
+];
+
+var SPIEUSCIObjList = [
+    "SPI.c",
+    "./spi/SPIEUSCIBDMA.c",
+    "./spi/SPIEUSCIADMA.c",
+];
+
+var UARTUSCIObjList = [
+    "UART.c",
+    "./uart/UARTUSCIA.c",
+];
+
+var UARTEUSCIObjList = [
+    "UART.c",
+    "./uart/UARTEUSCIA.c",
+];
+
+var WiFiCC3100ObjList = [
+    "WiFi.c",
+    "./wifi/cc3100/Simplelink/osi_tirtos.c",
+    "./wifi/cc3100/Simplelink/Source/device.c",
+    "./wifi/cc3100/Simplelink/Source/driver.c",
+    "./wifi/cc3100/Simplelink/Source/flowcont.c",
+    "./wifi/cc3100/Simplelink/Source/fs.c",
+    "./wifi/cc3100/Simplelink/Source/netapp.c",
+    "./wifi/cc3100/Simplelink/Source/netcfg.c",
+    "./wifi/cc3100/Simplelink/Source/socket.c",
+    "./wifi/cc3100/Simplelink/Source/spawn.c",
+    "./wifi/cc3100/Simplelink/Source/wlan.c",
+    "./wifi/WiFiCC3100.c"
+];
+
+var WiFiSingleThreadMSP430ObjList = [
+    "WiFi.c",
+    "./wifi/WiFiMSP430CC3000.c",
+    "./wifi/cc3000/cc3000_host_driver/core_driver/src/nvmem.c",
+    "./wifi/cc3000/cc3000_host_driver/core_driver/src/security.c",
+    "./wifi/cc3000/cc3000_host_driver/core_driver/src/socket.c",
+    "./wifi/cc3000/cc3000_host_driver/core_driver/src/wlan.c",
+    "./wifi/cc3000/cc3000_host_driver/core_driver/src/netapp.c",
+    "./wifi/cc3000/cc3000_host_driver/core_driver/src/cc3000_common.c",
+    "./wifi/cc3000/cc3000_host_driver/core_driver/src/evnt_handler.c",
+    "./wifi/cc3000/cc3000_host_driver/core_driver/src/hci.c",
+    "./wifi/cc3000/osal/sys_bios/src/os.c",
+];
+
+var WiFiMultiThreadMSP430ObjList = [
+    "WiFi.c",
+    "./wifi/WiFiMSP430CC3000.c",
+    "./wifi/cc3000/cc3000_host_driver/implementation/multi_threaded/src/netapp.c",
+    "./wifi/cc3000/cc3000_host_driver/core_driver/src/nvmem.c",
+    "./wifi/cc3000/cc3000_host_driver/implementation/multi_threaded/src/nvmem.c",
+    "./wifi/cc3000/cc3000_host_driver/core_driver/src/security.c",
+    "./wifi/cc3000/cc3000_host_driver/implementation/multi_threaded/src/security.c",
+    "./wifi/cc3000/cc3000_host_driver/core_driver/src/socket.c",
+    "./wifi/cc3000/cc3000_host_driver/implementation/multi_threaded/src/socket.c",
+    "./wifi/cc3000/cc3000_host_driver/core_driver/src/wlan.c",
+    "./wifi/cc3000/cc3000_host_driver/implementation/multi_threaded/src/wlan.c",
+    "./wifi/cc3000/cc3000_host_driver/core_driver/src/netapp.c",
+    "./wifi/cc3000/cc3000_host_driver/core_driver/src/cc3000_common.c",
+    "./wifi/cc3000/cc3000_host_driver/core_driver/src/evnt_handler.c",
+    "./wifi/cc3000/cc3000_host_driver/core_driver/src/hci.c",
+    "./wifi/cc3000/osal/sys_bios/src/os.c",
+];
+
+var WiFiSingleThreadObjList = [
+    "WiFi.c",
+    "./wifi/WiFiTivaCC3000.c",
+    "./wifi/cc3000/cc3000_host_driver/core_driver/src/nvmem.c",
+    "./wifi/cc3000/cc3000_host_driver/core_driver/src/security.c",
+    "./wifi/cc3000/cc3000_host_driver/core_driver/src/socket.c",
+    "./wifi/cc3000/cc3000_host_driver/core_driver/src/wlan.c",
+    "./wifi/cc3000/cc3000_host_driver/core_driver/src/netapp.c",
+    "./wifi/cc3000/cc3000_host_driver/core_driver/src/cc3000_common.c",
+    "./wifi/cc3000/cc3000_host_driver/core_driver/src/evnt_handler.c",
+    "./wifi/cc3000/cc3000_host_driver/core_driver/src/hci.c",
+    "./wifi/cc3000/osal/sys_bios/src/os.c",
+];
+
+var WiFiMultiThreadObjList = [
+    "WiFi.c",
+    "./wifi/WiFiTivaCC3000.c",
+    "./wifi/cc3000/cc3000_host_driver/core_driver/src/nvmem.c",
+    "./wifi/cc3000/cc3000_host_driver/core_driver/src/security.c",
+    "./wifi/cc3000/cc3000_host_driver/core_driver/src/socket.c",
+    "./wifi/cc3000/cc3000_host_driver/core_driver/src/wlan.c",
+    "./wifi/cc3000/cc3000_host_driver/core_driver/src/netapp.c",
+    "./wifi/cc3000/cc3000_host_driver/core_driver/src/cc3000_common.c",
+    "./wifi/cc3000/cc3000_host_driver/core_driver/src/evnt_handler.c",
+    "./wifi/cc3000/cc3000_host_driver/core_driver/src/hci.c",
+    "./wifi/cc3000/osal/sys_bios/src/os.c",
+
+    "./wifi/cc3000/cc3000_host_driver/implementation/multi_threaded/src/netapp.c",
+    "./wifi/cc3000/cc3000_host_driver/implementation/multi_threaded/src/nvmem.c",
+    "./wifi/cc3000/cc3000_host_driver/implementation/multi_threaded/src/security.c",
+    "./wifi/cc3000/cc3000_host_driver/implementation/multi_threaded/src/socket.c",
+    "./wifi/cc3000/cc3000_host_driver/implementation/multi_threaded/src/wlan.c",
+];
+
+var trgFilter_430X = {
+    field: "isa",
+    list: ["430X"],
+};
+
+var trgFilter_M3 = {
+    field: "name",
+    list: ["M3"],
+};
+
+var trgFilter_M3noGNU = {
+    field: "suffix",
+    list: ["em3", "rm3"],
+};
+
+var trgFilter_M4 = {
+    field: "name",
+    list: ["M4"],
+};
+
+var trgFilter_M4F = {
+    field: "name",
+    list: ["M4F"],
+};
+
+var trgFilter_A8Fnv = {
+    field: "isa",
+    buildTargets: ["A8Fnv", "A8F"],
+    list: ["v7A"],
+};
+
+
+otherFiles = [
+    "package.bld",
+    "rovdriver.xs",
+
+    "./crypto/CryptoCC26XX.h",
+    "./dma/UDMACC26XX.h",
+
+    "EMAC.h",
+    "./emac/EMACTiva.h",
+    "./emac/EMACSnow.h",
+    "EMAC.xml",
+
+    "GPIO.h",
+    "GPIO.xml",
+
+    "I2C.h",
+    "./i2c/I2CTiva.h",
+    "./i2c/I2CCC3200.h",
+    "./i2c/I2CCC26XX.h",
+    "./i2c/I2CUSCIB.h",
+    "./i2c/I2CEUSCIB.h",
+    "I2C.xml",
+
+    "./lcd/LCDDogm1286.h",
+    "./lcd/LCDDogm1286_util.h",
+
+    "PIN.h",
+    "./pin/PINCC26XX.h",
+
+    "PWM.h",
+    "./pwm/PWMTimerCC3200.h",
+    "./pwm/PWMTimerTiva.h",
+    "./pwm/PWMTiva.h",
+    "PWM.xml",
+
+    "SDSPI.h",
+    "./sdspi/SDSPICC3200.h",
+    "./sdspi/SDSPITiva.h",
+    "./sdspi/SDSPIUSCIA.h",
+    "./sdspi/SDSPIUSCIB.h",
+    "./sdspi/SDSPIEUSCIA.h",
+    "./sdspi/SDSPIEUSCIB.h",
+    "SDSPI.xml",
+
+    "SPI.h",
+    "./spi/SPITivaDMA.h",
+    "./spi/SPICC3200DMA.h",
+    "./spi/SPICC26XXDMA.h",
+    "./spi/SPIUSCIADMA.h",
+    "./spi/SPIUSCIBDMA.h",
+    "./spi/SPIEUSCIADMA.h",
+    "./spi/SPIEUSCIBDMA.h",
+    "SPI.xml",
+
+    "UART.h",
+    "./uart/UARTTiva.h",
+    "./uart/UARTTivaDMA.h",
+    "./uart/UARTCC3200.h",
+    "./uart/UARTCC26XX.h",
+    "./uart/UARTCC3200DMA.h",
+    "./uart/UARTUSCIA.h",
+    "./uart/UARTEUSCIA.h",
+    "UART.xml",
+
+    "USBMSCHFatFs.h",
+    "./usbmschfatfs/USBMSCHFatFsTiva.h",
+    "USBMSCHFatFs.xml",
+
+    "Watchdog.h",
+    "./watchdog/WatchdogTiva.h",
+    "./watchdog/WatchdogCC3200.h",
+    "./watchdog/WatchdogMSP430.h",
+    "Watchdog.xml",
+
+    "WiFi.h",
+    "./wifi/WiFiTivaCC3000.h",
+    "./wifi/WiFiMSP430CC3000.h",
+    "./wifi/cc3000/",
+
+    "./wifi/WiFiCC3100.h",
+    "./wifi/cc3100/Simplelink/",
+    "WiFi.xml",
+];
+
+/* generate libraries */
+if (MWareDir != "") {
+    /* Library include paths are defined in config.bld */
+    var coptsMWareIncludePath = " -I" + MWareDir + " -DMWARE ";
+    var cc3000IncludePaths = coptsMWareIncludePath
+                             + " -I./wifi/cc3000";
+    var cc3100IncludePaths = coptsMWareIncludePath
+                             + " -I./wifi/cc3100/Simplelink"
+                             + " -I./wifi/cc3100/Simplelink/Include";
+
+    commonBld.buildLibs(MWareObjList, "drivers_mware", undefined, trgFilter_M3, arguments, {copts: coptsMWareIncludePath} );
+    commonBld.buildLibs(WiFiSingleThreadObjList, "wifi_singlethread_mware", undefined, trgFilter_M3, arguments, {copts: cc3000IncludePaths} );
+    commonBld.buildLibs(WiFiMultiThreadObjList, "wifi_multithread_mware", undefined, trgFilter_M3, arguments, {copts: cc3000IncludePaths + " -D__ENABLE_MULTITHREADED_SUPPORT__"} );
+    commonBld.buildLibs(WiFiCC3100ObjList, "wifi_cc3100_mware", undefined, trgFilter_M3, arguments, {copts: cc3100IncludePaths});
+}
+
+if (CCWareDir != "") {
+    /* Library include paths are defined in config.bld */
+    var coptsCCWareM4IncludePath = " -I" + CCWareDir + " -DCCWARE ";
+
+    commonBld.buildLibs(CC3200ObjList, "drivers_ccware", undefined, trgFilter_M4, arguments, {copts: coptsCCWareM4IncludePath} );
+}
+
+if (CC26xxWareDir != "") {
+    /* Library include paths are defined in config.bld */
+    var coptsCC26xxWareM3IncludePath = " -I" + CC26xxWareDir + " -DCC26XXWARE ";
+
+    /*
+     * optimize CC26xx IAR object files for size (not speed)
+     */
+    var M3 = xdc.module('iar.targets.arm.M3');
+    M3.profiles["release"].compileOpts.copts = M3.profiles["release"].compileOpts.copts.replace("Ohs", "Ohz");
+
+    commonBld.buildLibs(CC26xxObjList, "drivers_cc26xxware", undefined, trgFilter_M3noGNU, arguments, {copts: coptsCC26xxWareM3IncludePath} );
+}
+
+if (TivaWareDir != "") {
+    /* Library include paths are defined in config.bld */
+    var coptsTivaWareM4IncludePath = " -I" + TivaWareDir + " -DTIVAWARE ";
+    var cc3000IncludePaths = coptsTivaWareM4IncludePath
+                             + " -I./wifi/cc3000";
+    var cc3100IncludePaths = coptsTivaWareM4IncludePath
+                             + " -I./wifi/cc3100/Simplelink"
+                             + " -I./wifi/cc3100/Simplelink/Include";
+
+    commonBld.buildLibs(TivaObjList, "drivers_tivaware", undefined, trgFilter_M4F, arguments, {copts: coptsTivaWareM4IncludePath} );
+    commonBld.buildLibs(WiFiSingleThreadObjList, "wifi_singlethread_tivaware", undefined, trgFilter_M4F, arguments, {copts: cc3000IncludePaths} );
+    commonBld.buildLibs(WiFiMultiThreadObjList, "wifi_multithread_tivaware", undefined, trgFilter_M4F, arguments, {copts: cc3000IncludePaths + " -D__ENABLE_MULTITHREADED_SUPPORT__"} );
+    commonBld.buildLibs(WiFiCC3100ObjList, "wifi_cc3100_tivaware", undefined, trgFilter_M4F, arguments, {copts: cc3100IncludePaths});
+}
+
+if ((MSP430WareDir != "")) {
+    /* Library include paths are defined in config.bld */
+    var coptsMSP430HeaderIncludePath = " -DMSP430WARE ";
+    var cc3000IncludePaths = coptsMSP430HeaderIncludePath
+                             + " -I./wifi/cc3000 ";
+    var cc3100IncludePaths = coptsMSP430HeaderIncludePath
+                             + " -I./wifi/cc3100/Simplelink"
+                             + " -I./wifi/cc3100/Simplelink/Include";
+
+    if (MSP430DevList != "" ) {
+        /* For each device in the MSP430DevList create a set of MSP430 TI-RTOS drivers */
+        for (dev in MSP430DevList) {
+            /* Get MSP430 device specific compiler and linker opts */
+            var paths = commonBld.getCompilerLinkerOptions(MSP430DevList[dev], MSP430WareDir);
+
+            if (MSP430DevList[dev].match(/MSP430F[56][\d\w]*/g)) {
+                var MSP430ObjList = MSP430GenericObjList.concat(I2CUSCIObjList,
+                                                                UARTUSCIObjList,
+                                                                SDSPIUSCIObjList,
+                                                                SPIUSCIObjList);
+
+                commonBld.buildLibs(MSP430ObjList, "drivers_" + MSP430DevList[dev],
+                    undefined, trgFilter_430X, arguments, {copts: paths.copts +
+                    coptsMSP430HeaderIncludePath} );
+            }
+
+            if (MSP430DevList[dev].match(/MSP430FR[56][\d\w]*/g)) {
+                var MSP430ObjList = MSP430GenericObjList.concat(I2CEUSCIObjList,
+                                                                UARTEUSCIObjList,
+                                                                SDSPIEUSCIObjList,
+                                                                SPIEUSCIObjList);
+
+                commonBld.buildLibs(MSP430ObjList, "drivers_" + MSP430DevList[dev],
+                    undefined, trgFilter_430X, arguments, {copts: paths.copts +
+                    coptsMSP430HeaderIncludePath} );
+            }
+
+            /* WiFi CC3000 singlethread driver */
+            commonBld.buildLibs(WiFiSingleThreadMSP430ObjList,
+                "wifi_singlethread_" + MSP430DevList[dev], undefined,
+                trgFilter_430X, arguments, {copts: paths.copts +
+                cc3000IncludePaths} );
+
+            /* WiFi CC3000 multithread driver */
+            commonBld.buildLibs(WiFiMultiThreadMSP430ObjList,
+                "wifi_multithread_" + MSP430DevList[dev], undefined,
+                 trgFilter_430X, arguments, {copts: paths.copts +
+                 cc3000IncludePaths + " -D__ENABLE_MULTITHREADED_SUPPORT__"} );
+
+            /* WiFi CC3100 driver */
+            commonBld.buildLibs(WiFiCC3100ObjList,
+                "wifi_cc3100_" + MSP430DevList[dev], undefined,
+                 trgFilter_430X, arguments, {copts: paths.copts +
+                 cc3100IncludePaths} );
+        }
+    }
+    else {
+        print ("WARNING: No MSP430 devices defined. Check that you're passing"
+                + "in a 'MSP430DEVLIST' in XDCARGS");
+    }
+}
+else {
+    /* We still need to add the source code if we aren't building MSP430 drivers */
+    otherFiles = otherFiles.concat([
+        "./i2c/I2CUSCIB.c",
+        "./spi/SPIUSCIADMA.c",
+        "./spi/SPIUSCIBDMA.c",
+        "./spi/SPIEUSCIADMA.c",
+        "./spi/SPIEUSCIBDMA.c",
+        "./sdspi/SDSPIUSCIA.c",
+        "./sdspi/SDSPIUSCIB.c",
+        "./uart/UARTUSCIA.c",
+        "./wifi/WiFiMSP430CC3000.c",
+    ]);
+}
+
+Pkg.otherFiles = otherFiles;
+
+/* include source files in the release package */
+Pkg.attrs.exportSrc = true;
+Pkg.attrs.exportCfg = true;
+

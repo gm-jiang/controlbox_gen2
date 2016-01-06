@@ -1,0 +1,32 @@
+Signature-Version: 1.0
+SHA1-Digest-Manifest-Main-Attributes: wdgX8Jchz54zqKfFi5vU8tosTT8=
+Created-By: 1.6.0_37 (Sun Microsystems Inc.)
+SHA1-Digest-Manifest: J/8RSEKq/spZp8uF0R+93VNw8IQ=
+
+Name: packages/xdc/services/intern/gen/java/package.jar
+SHA1-Digest: 5gSQydlxwfqdimexlkfVSthIbOg=
+
+Name: packages/xdc/services/mapping/java/package.jar
+SHA1-Digest: Hsg9s8aXzKCjM7THHymRtZPL4mQ=
+
+Name: packages/xdc/shelf/java/antlr.jar
+SHA1-Digest: wyFqcUDpZi6GKBkcLIDQTcjIw6E=
+
+Name: bin/org/eclipse/rtsc/xdctools/core/CorePlugin.class
+SHA1-Digest: 8tg3MZAJlhQltdLMv476SeTtWRU=
+
+Name: packages/xdc/shelf/java/js.jar
+SHA1-Digest: vb2Z+a6viWxFzgZNlbTWjR4csZI=
+
+Name: config.jar
+SHA1-Digest: WSdZbNWOtjg4fysmoGLLB+XH2Xs=
+
+Name: packages/xdc/services/spec/java/package.jar
+SHA1-Digest: q+4JR30lwdGCG8d/7T7Z8PCFlz4=
+
+Name: packages/xdc/services/spec/views/java/package.jar
+SHA1-Digest: SwbG9MJT3GHEOCcRu1xsPVxzThk=
+
+Name: packages/xdc/services/global/java/package.jar
+SHA1-Digest: S6lj1KnPPh9joMrS17nNcpG8tio=
+

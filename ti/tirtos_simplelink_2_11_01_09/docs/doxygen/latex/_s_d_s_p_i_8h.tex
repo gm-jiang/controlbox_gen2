@@ -1,0 +1,318 @@
+\subsection{S\-D\-S\-P\-I.\-h File Reference}
+\label{_s_d_s_p_i_8h}\index{S\-D\-S\-P\-I.\-h@{S\-D\-S\-P\-I.\-h}}
+
+
+\subsubsection{Detailed Description}
+S\-D\-S\-P\-I driver interface. ============================================================================
+
+The S\-D\-S\-P\-I header file should be included in an application as follows\-: 
+\begin{DoxyCode}
+*  #include <ti/drivers/SDSPI.h>
+*  
+\end{DoxyCode}
+
+
+\subsubsection*{Operation}
+
+The S\-D\-S\-P\-I driver is a driver designed to hook into Fat\-Fs. It implements a set of functions that Fat\-Fs needs to call to perform basic block data transfers.
+
+A S\-D\-S\-P\-I driver peripheral implementation doesn't require R\-T\-O\-S protection primitives due to the resource protection provided with Fat\-Fs. The only functions that can be called by the application are the standard driver framework functions (\-\_\-open, \-\_\-close, etc...).
+
+Once the driver has been opened, the application may used the Fat\-Fs A\-P\-Is or the standard C runtime file I/\-O calls (fopen, fclose, etc...). Once the driver has been closed, ensure the application does N\-O\-T make any file I/\-O calls.
+
+\paragraph*{Opening the driver}
+
+
+\begin{DoxyCode}
+*  SDSPI_Handle      handle;
+*  SDSPI_Params      params;
+*
+*  SDSPI_Params_init(&params);
+*  params.bitRate  = someNewBitRate;
+*  handle = SDSPI_open(someSDSPI\_configIndexValue, &params);
+*  \textcolor{keywordflow}{if} (!handle) \{
+*      System\_printf(\textcolor{stringliteral}{"SDSPI did not open"});
+*  \}
+*  
+\end{DoxyCode}
+
+
+\subsubsection*{Implementation}
+
+This module serves as the main interface for T\-I-\/\-R\-T\-O\-S applications. Its purpose is to redirect the module's A\-P\-Is to specific peripheral implementations which are specified using a pointer to a \hyperlink{struct_s_d_s_p_i___fxn_table}{S\-D\-S\-P\-I\-\_\-\-Fxn\-Table}.
+
+The S\-D\-S\-P\-I driver interface module is joined (at link time) to a N\-U\-L\-L-\/terminated array of \hyperlink{struct_s_d_s_p_i___config}{S\-D\-S\-P\-I\-\_\-\-Config} data structures named {\itshape S\-D\-S\-P\-I\-\_\-config}. {\itshape S\-D\-S\-P\-I\-\_\-config} is implemented in the application with each entry being an instance of a S\-D\-S\-P\-I peripheral. Each entry in {\itshape S\-D\-S\-P\-I\-\_\-config} contains a\-:
+\begin{DoxyItemize}
+\item (\hyperlink{struct_s_d_s_p_i___fxn_table}{S\-D\-S\-P\-I\-\_\-\-Fxn\-Table} $\ast$) to a set of functions that implement a S\-D\-S\-P\-I peripheral
+\item (void $\ast$) data object that is associated with the \hyperlink{struct_s_d_s_p_i___fxn_table}{S\-D\-S\-P\-I\-\_\-\-Fxn\-Table}
+\item (void $\ast$) hardware attributes that are associated to the \hyperlink{struct_s_d_s_p_i___fxn_table}{S\-D\-S\-P\-I\-\_\-\-Fxn\-Table}
+\end{DoxyItemize}
+
+Currently the following S\-D\-S\-P\-I peripheral implementations are supported\-:
+\begin{DoxyItemize}
+\item \hyperlink{_s_d_s_p_i_tiva_8h}{S\-D\-S\-P\-I\-Tiva.\-h}
+\item \hyperlink{_s_d_s_p_i_c_c3200_8h}{S\-D\-S\-P\-I\-C\-C3200.\-h}
+\item \hyperlink{_s_d_s_p_i_u_s_c_i_a_8h}{S\-D\-S\-P\-I\-U\-S\-C\-I\-A.\-h}
+\item \hyperlink{_s_d_s_p_i_u_s_c_i_b_8h}{S\-D\-S\-P\-I\-U\-S\-C\-I\-B.\-h}
+\item \hyperlink{_s_d_s_p_i_e_u_s_c_i_a_8h}{S\-D\-S\-P\-I\-E\-U\-S\-C\-I\-A.\-h}
+\item \hyperlink{_s_d_s_p_i_e_u_s_c_i_b_8h}{S\-D\-S\-P\-I\-E\-U\-S\-C\-I\-B.\-h}
+\end{DoxyItemize}
+
+\subsubsection*{Instrumentation}
+
+The S\-D\-S\-P\-I driver interface produces log statements if instrumentation is enabled.
+
+\begin{TabularC}{2}
+\hline
+\rowcolor{lightgray}{\bf Diagnostics Mask }&{\bf Log details  }\\\cline{1-2}
+Diags\-\_\-\-U\-S\-E\-R1 &basic S\-D\-S\-P\-I operations performed \\\cline{1-2}
+Diags\-\_\-\-U\-S\-E\-R2 &detailed S\-D\-S\-P\-I operations performed \\\cline{1-2}
+\end{TabularC}
+
+
+{\ttfamily \#include $<$stdint.\-h$>$}\\*
+Include dependency graph for S\-D\-S\-P\-I.\-h\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=91pt]{_s_d_s_p_i_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{_s_d_s_p_i_8h__dep__incl}
+\end{center}
+\end{figure}
+\subsubsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{struct_s_d_s_p_i___params}{S\-D\-S\-P\-I\-\_\-\-Params}
+\begin{DoxyCompactList}\small\item\em S\-D\-S\-P\-I Parameters are used to with the \hyperlink{_s_d_s_p_i_8h_af4a5ca9bb35e8a7df02acf20ceeae66d}{S\-D\-S\-P\-I\-\_\-open()} call. Default values for these parameters are set using \hyperlink{_s_d_s_p_i_8h_a6fe24eaba1cca88242c5df360a074ca8}{S\-D\-S\-P\-I\-\_\-\-Params\-\_\-init()}. \end{DoxyCompactList}\item 
+struct \hyperlink{struct_s_d_s_p_i___fxn_table}{S\-D\-S\-P\-I\-\_\-\-Fxn\-Table}
+\begin{DoxyCompactList}\small\item\em The definition of a S\-D\-S\-P\-I function table that contains the required set of functions to control a specific S\-D\-S\-P\-I driver implementation. \end{DoxyCompactList}\item 
+struct \hyperlink{struct_s_d_s_p_i___config}{S\-D\-S\-P\-I\-\_\-\-Config}
+\begin{DoxyCompactList}\small\item\em The \hyperlink{struct_s_d_s_p_i___config}{S\-D\-S\-P\-I\-\_\-\-Config} structure contains a set of pointers used to characterize the S\-D\-S\-P\-I driver implementation. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef struct \hyperlink{struct_s_d_s_p_i___config}{S\-D\-S\-P\-I\-\_\-\-Config} $\ast$ \hyperlink{_s_d_s_p_i_8h_abd3d22133d60c2e5afd49722d6bafb7e}{S\-D\-S\-P\-I\-\_\-\-Handle}
+\begin{DoxyCompactList}\small\item\em A handle that is returned from a \hyperlink{_s_d_s_p_i_8h_af4a5ca9bb35e8a7df02acf20ceeae66d}{S\-D\-S\-P\-I\-\_\-open()} call. \end{DoxyCompactList}\item 
+typedef struct \hyperlink{struct_s_d_s_p_i___params}{S\-D\-S\-P\-I\-\_\-\-Params} \hyperlink{_s_d_s_p_i_8h_a3fd9e0fa28415b0c0cf6ab03c37ca4d1}{S\-D\-S\-P\-I\-\_\-\-Params}
+\begin{DoxyCompactList}\small\item\em S\-D\-S\-P\-I Parameters are used to with the \hyperlink{_s_d_s_p_i_8h_af4a5ca9bb35e8a7df02acf20ceeae66d}{S\-D\-S\-P\-I\-\_\-open()} call. Default values for these parameters are set using \hyperlink{_s_d_s_p_i_8h_a6fe24eaba1cca88242c5df360a074ca8}{S\-D\-S\-P\-I\-\_\-\-Params\-\_\-init()}. \end{DoxyCompactList}\item 
+typedef void($\ast$ \hyperlink{_s_d_s_p_i_8h_a3171d9675e245720a8552f667e33ba54}{S\-D\-S\-P\-I\-\_\-\-Init\-Fxn} )(\hyperlink{_s_d_s_p_i_8h_abd3d22133d60c2e5afd49722d6bafb7e}{S\-D\-S\-P\-I\-\_\-\-Handle} handle)
+\begin{DoxyCompactList}\small\item\em A function pointer to a driver specific implementation of \hyperlink{_s_d_s_p_i_8h_a83cfcebe7875d9d8b5e08e57e6785ae6}{S\-D\-S\-P\-I\-\_\-init()}. \end{DoxyCompactList}\item 
+typedef \hyperlink{_s_d_s_p_i_8h_abd3d22133d60c2e5afd49722d6bafb7e}{S\-D\-S\-P\-I\-\_\-\-Handle}($\ast$ \hyperlink{_s_d_s_p_i_8h_a2ff79d0b69515e8da6ad65367239236b}{S\-D\-S\-P\-I\-\_\-\-Open\-Fxn} )(\hyperlink{_s_d_s_p_i_8h_abd3d22133d60c2e5afd49722d6bafb7e}{S\-D\-S\-P\-I\-\_\-\-Handle} handle, unsigned char drv, \hyperlink{struct_s_d_s_p_i___params}{S\-D\-S\-P\-I\-\_\-\-Params} $\ast$params)
+\begin{DoxyCompactList}\small\item\em A function pointer to a driver specific implementation of \hyperlink{_s_d_s_p_i_8h_af4a5ca9bb35e8a7df02acf20ceeae66d}{S\-D\-S\-P\-I\-\_\-open()}. \end{DoxyCompactList}\item 
+typedef void($\ast$ \hyperlink{_s_d_s_p_i_8h_a81531f5ec9d2e1b167e3c21edc1636cb}{S\-D\-S\-P\-I\-\_\-\-Close\-Fxn} )(\hyperlink{_s_d_s_p_i_8h_abd3d22133d60c2e5afd49722d6bafb7e}{S\-D\-S\-P\-I\-\_\-\-Handle} handle)
+\begin{DoxyCompactList}\small\item\em A function pointer to a driver specific implementation of \hyperlink{_s_d_s_p_i_8h_a8816c223935b575f10acd5277b9a8ca5}{S\-D\-S\-P\-I\-\_\-close()}. \end{DoxyCompactList}\item 
+typedef int($\ast$ \hyperlink{_s_d_s_p_i_8h_ad4f4fea0465def77622c20abb3519c6c}{S\-D\-S\-P\-I\-\_\-\-Control\-Fxn} )(\hyperlink{_s_d_s_p_i_8h_abd3d22133d60c2e5afd49722d6bafb7e}{S\-D\-S\-P\-I\-\_\-\-Handle} handle, unsigned int cmd, void $\ast$arg)
+\begin{DoxyCompactList}\small\item\em A function pointer to a driver specific implementation of \hyperlink{_s_d_s_p_i_8h_a541a1db109382fe090ed7a9209a34f61}{S\-D\-S\-P\-I\-\_\-control()}. \end{DoxyCompactList}\item 
+typedef struct \hyperlink{struct_s_d_s_p_i___fxn_table}{S\-D\-S\-P\-I\-\_\-\-Fxn\-Table} \hyperlink{_s_d_s_p_i_8h_a5d2665a5c69ea532a94acdc45ac1f456}{S\-D\-S\-P\-I\-\_\-\-Fxn\-Table}
+\begin{DoxyCompactList}\small\item\em The definition of a S\-D\-S\-P\-I function table that contains the required set of functions to control a specific S\-D\-S\-P\-I driver implementation. \end{DoxyCompactList}\item 
+typedef struct \hyperlink{struct_s_d_s_p_i___config}{S\-D\-S\-P\-I\-\_\-\-Config} \hyperlink{_s_d_s_p_i_8h_acd04506a18457faefc4f3639b6e0a0a1}{S\-D\-S\-P\-I\-\_\-\-Config}
+\begin{DoxyCompactList}\small\item\em The \hyperlink{struct_s_d_s_p_i___config}{S\-D\-S\-P\-I\-\_\-\-Config} structure contains a set of pointers used to characterize the S\-D\-S\-P\-I driver implementation. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{_s_d_s_p_i_8h_a8816c223935b575f10acd5277b9a8ca5}{S\-D\-S\-P\-I\-\_\-close} (\hyperlink{_s_d_s_p_i_8h_abd3d22133d60c2e5afd49722d6bafb7e}{S\-D\-S\-P\-I\-\_\-\-Handle} handle)
+\begin{DoxyCompactList}\small\item\em Function to close a given S\-D\-S\-P\-I peripheral specified by the S\-D\-S\-P\-I handle. This function unmounts the file system mounted by S\-D\-S\-P\-I\-\_\-open and unregisters the S\-D\-S\-P\-I driver from B\-I\-O\-S' Fat\-Fs module. \end{DoxyCompactList}\item 
+int \hyperlink{_s_d_s_p_i_8h_a541a1db109382fe090ed7a9209a34f61}{S\-D\-S\-P\-I\-\_\-control} (\hyperlink{_s_d_s_p_i_8h_abd3d22133d60c2e5afd49722d6bafb7e}{S\-D\-S\-P\-I\-\_\-\-Handle} handle, unsigned int cmd, void $\ast$arg)
+\begin{DoxyCompactList}\small\item\em Function performs implementation specific features on a given S\-D\-S\-P\-I\-\_\-\-Handle. \end{DoxyCompactList}\item 
+void \hyperlink{_s_d_s_p_i_8h_a83cfcebe7875d9d8b5e08e57e6785ae6}{S\-D\-S\-P\-I\-\_\-init} (void)
+\begin{DoxyCompactList}\small\item\em This function initializes the S\-D\-S\-P\-I driver module. \end{DoxyCompactList}\item 
+\hyperlink{_s_d_s_p_i_8h_abd3d22133d60c2e5afd49722d6bafb7e}{S\-D\-S\-P\-I\-\_\-\-Handle} \hyperlink{_s_d_s_p_i_8h_af4a5ca9bb35e8a7df02acf20ceeae66d}{S\-D\-S\-P\-I\-\_\-open} (unsigned int index, unsigned char drv, \hyperlink{struct_s_d_s_p_i___params}{S\-D\-S\-P\-I\-\_\-\-Params} $\ast$params)
+\begin{DoxyCompactList}\small\item\em This function registers the S\-D\-S\-P\-I driver with B\-I\-O\-S' Fat\-Fs module and mounts the Fat\-Fs file system. \end{DoxyCompactList}\item 
+void \hyperlink{_s_d_s_p_i_8h_a6fe24eaba1cca88242c5df360a074ca8}{S\-D\-S\-P\-I\-\_\-\-Params\-\_\-init} (\hyperlink{struct_s_d_s_p_i___params}{S\-D\-S\-P\-I\-\_\-\-Params} $\ast$params)
+\begin{DoxyCompactList}\small\item\em Function to initialize the \hyperlink{struct_s_d_s_p_i___params}{S\-D\-S\-P\-I\-\_\-\-Params} struct to its defaults. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsubsection{Typedef Documentation}
+\index{S\-D\-S\-P\-I.\-h@{S\-D\-S\-P\-I.\-h}!S\-D\-S\-P\-I\-\_\-\-Handle@{S\-D\-S\-P\-I\-\_\-\-Handle}}
+\index{S\-D\-S\-P\-I\-\_\-\-Handle@{S\-D\-S\-P\-I\-\_\-\-Handle}!SDSPI.h@{S\-D\-S\-P\-I.\-h}}
+\paragraph[{S\-D\-S\-P\-I\-\_\-\-Handle}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf S\-D\-S\-P\-I\-\_\-\-Config}$\ast$ {\bf S\-D\-S\-P\-I\-\_\-\-Handle}}\label{_s_d_s_p_i_8h_abd3d22133d60c2e5afd49722d6bafb7e}
+
+
+A handle that is returned from a \hyperlink{_s_d_s_p_i_8h_af4a5ca9bb35e8a7df02acf20ceeae66d}{S\-D\-S\-P\-I\-\_\-open()} call. 
+
+\index{S\-D\-S\-P\-I.\-h@{S\-D\-S\-P\-I.\-h}!S\-D\-S\-P\-I\-\_\-\-Params@{S\-D\-S\-P\-I\-\_\-\-Params}}
+\index{S\-D\-S\-P\-I\-\_\-\-Params@{S\-D\-S\-P\-I\-\_\-\-Params}!SDSPI.h@{S\-D\-S\-P\-I.\-h}}
+\paragraph[{S\-D\-S\-P\-I\-\_\-\-Params}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf S\-D\-S\-P\-I\-\_\-\-Params}  {\bf S\-D\-S\-P\-I\-\_\-\-Params}}\label{_s_d_s_p_i_8h_a3fd9e0fa28415b0c0cf6ab03c37ca4d1}
+
+
+S\-D\-S\-P\-I Parameters are used to with the \hyperlink{_s_d_s_p_i_8h_af4a5ca9bb35e8a7df02acf20ceeae66d}{S\-D\-S\-P\-I\-\_\-open()} call. Default values for these parameters are set using \hyperlink{_s_d_s_p_i_8h_a6fe24eaba1cca88242c5df360a074ca8}{S\-D\-S\-P\-I\-\_\-\-Params\-\_\-init()}. 
+
+\begin{DoxySeeAlso}{See Also}
+\hyperlink{_s_d_s_p_i_8h_a6fe24eaba1cca88242c5df360a074ca8}{S\-D\-S\-P\-I\-\_\-\-Params\-\_\-init} 
+\end{DoxySeeAlso}
+\index{S\-D\-S\-P\-I.\-h@{S\-D\-S\-P\-I.\-h}!S\-D\-S\-P\-I\-\_\-\-Init\-Fxn@{S\-D\-S\-P\-I\-\_\-\-Init\-Fxn}}
+\index{S\-D\-S\-P\-I\-\_\-\-Init\-Fxn@{S\-D\-S\-P\-I\-\_\-\-Init\-Fxn}!SDSPI.h@{S\-D\-S\-P\-I.\-h}}
+\paragraph[{S\-D\-S\-P\-I\-\_\-\-Init\-Fxn}]{\setlength{\rightskip}{0pt plus 5cm}typedef void($\ast$ S\-D\-S\-P\-I\-\_\-\-Init\-Fxn)({\bf S\-D\-S\-P\-I\-\_\-\-Handle} handle)}\label{_s_d_s_p_i_8h_a3171d9675e245720a8552f667e33ba54}
+
+
+A function pointer to a driver specific implementation of \hyperlink{_s_d_s_p_i_8h_a83cfcebe7875d9d8b5e08e57e6785ae6}{S\-D\-S\-P\-I\-\_\-init()}. 
+
+\index{S\-D\-S\-P\-I.\-h@{S\-D\-S\-P\-I.\-h}!S\-D\-S\-P\-I\-\_\-\-Open\-Fxn@{S\-D\-S\-P\-I\-\_\-\-Open\-Fxn}}
+\index{S\-D\-S\-P\-I\-\_\-\-Open\-Fxn@{S\-D\-S\-P\-I\-\_\-\-Open\-Fxn}!SDSPI.h@{S\-D\-S\-P\-I.\-h}}
+\paragraph[{S\-D\-S\-P\-I\-\_\-\-Open\-Fxn}]{\setlength{\rightskip}{0pt plus 5cm}typedef {\bf S\-D\-S\-P\-I\-\_\-\-Handle}($\ast$ S\-D\-S\-P\-I\-\_\-\-Open\-Fxn)({\bf S\-D\-S\-P\-I\-\_\-\-Handle} handle, unsigned char drv, {\bf S\-D\-S\-P\-I\-\_\-\-Params} $\ast$params)}\label{_s_d_s_p_i_8h_a2ff79d0b69515e8da6ad65367239236b}
+
+
+A function pointer to a driver specific implementation of \hyperlink{_s_d_s_p_i_8h_af4a5ca9bb35e8a7df02acf20ceeae66d}{S\-D\-S\-P\-I\-\_\-open()}. 
+
+\index{S\-D\-S\-P\-I.\-h@{S\-D\-S\-P\-I.\-h}!S\-D\-S\-P\-I\-\_\-\-Close\-Fxn@{S\-D\-S\-P\-I\-\_\-\-Close\-Fxn}}
+\index{S\-D\-S\-P\-I\-\_\-\-Close\-Fxn@{S\-D\-S\-P\-I\-\_\-\-Close\-Fxn}!SDSPI.h@{S\-D\-S\-P\-I.\-h}}
+\paragraph[{S\-D\-S\-P\-I\-\_\-\-Close\-Fxn}]{\setlength{\rightskip}{0pt plus 5cm}typedef void($\ast$ S\-D\-S\-P\-I\-\_\-\-Close\-Fxn)({\bf S\-D\-S\-P\-I\-\_\-\-Handle} handle)}\label{_s_d_s_p_i_8h_a81531f5ec9d2e1b167e3c21edc1636cb}
+
+
+A function pointer to a driver specific implementation of \hyperlink{_s_d_s_p_i_8h_a8816c223935b575f10acd5277b9a8ca5}{S\-D\-S\-P\-I\-\_\-close()}. 
+
+\index{S\-D\-S\-P\-I.\-h@{S\-D\-S\-P\-I.\-h}!S\-D\-S\-P\-I\-\_\-\-Control\-Fxn@{S\-D\-S\-P\-I\-\_\-\-Control\-Fxn}}
+\index{S\-D\-S\-P\-I\-\_\-\-Control\-Fxn@{S\-D\-S\-P\-I\-\_\-\-Control\-Fxn}!SDSPI.h@{S\-D\-S\-P\-I.\-h}}
+\paragraph[{S\-D\-S\-P\-I\-\_\-\-Control\-Fxn}]{\setlength{\rightskip}{0pt plus 5cm}typedef int($\ast$ S\-D\-S\-P\-I\-\_\-\-Control\-Fxn)({\bf S\-D\-S\-P\-I\-\_\-\-Handle} handle, unsigned int cmd, void $\ast$arg)}\label{_s_d_s_p_i_8h_ad4f4fea0465def77622c20abb3519c6c}
+
+
+A function pointer to a driver specific implementation of \hyperlink{_s_d_s_p_i_8h_a541a1db109382fe090ed7a9209a34f61}{S\-D\-S\-P\-I\-\_\-control()}. 
+
+\index{S\-D\-S\-P\-I.\-h@{S\-D\-S\-P\-I.\-h}!S\-D\-S\-P\-I\-\_\-\-Fxn\-Table@{S\-D\-S\-P\-I\-\_\-\-Fxn\-Table}}
+\index{S\-D\-S\-P\-I\-\_\-\-Fxn\-Table@{S\-D\-S\-P\-I\-\_\-\-Fxn\-Table}!SDSPI.h@{S\-D\-S\-P\-I.\-h}}
+\paragraph[{S\-D\-S\-P\-I\-\_\-\-Fxn\-Table}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf S\-D\-S\-P\-I\-\_\-\-Fxn\-Table}  {\bf S\-D\-S\-P\-I\-\_\-\-Fxn\-Table}}\label{_s_d_s_p_i_8h_a5d2665a5c69ea532a94acdc45ac1f456}
+
+
+The definition of a S\-D\-S\-P\-I function table that contains the required set of functions to control a specific S\-D\-S\-P\-I driver implementation. 
+
+\index{S\-D\-S\-P\-I.\-h@{S\-D\-S\-P\-I.\-h}!S\-D\-S\-P\-I\-\_\-\-Config@{S\-D\-S\-P\-I\-\_\-\-Config}}
+\index{S\-D\-S\-P\-I\-\_\-\-Config@{S\-D\-S\-P\-I\-\_\-\-Config}!SDSPI.h@{S\-D\-S\-P\-I.\-h}}
+\paragraph[{S\-D\-S\-P\-I\-\_\-\-Config}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf S\-D\-S\-P\-I\-\_\-\-Config}  {\bf S\-D\-S\-P\-I\-\_\-\-Config}}\label{_s_d_s_p_i_8h_acd04506a18457faefc4f3639b6e0a0a1}
+
+
+The \hyperlink{struct_s_d_s_p_i___config}{S\-D\-S\-P\-I\-\_\-\-Config} structure contains a set of pointers used to characterize the S\-D\-S\-P\-I driver implementation. 
+
+This structure needs to be defined before calling \hyperlink{_s_d_s_p_i_8h_a83cfcebe7875d9d8b5e08e57e6785ae6}{S\-D\-S\-P\-I\-\_\-init()} and it must not be changed thereafter. 
+
+\subsubsection{Function Documentation}
+\index{S\-D\-S\-P\-I.\-h@{S\-D\-S\-P\-I.\-h}!S\-D\-S\-P\-I\-\_\-close@{S\-D\-S\-P\-I\-\_\-close}}
+\index{S\-D\-S\-P\-I\-\_\-close@{S\-D\-S\-P\-I\-\_\-close}!SDSPI.h@{S\-D\-S\-P\-I.\-h}}
+\paragraph[{S\-D\-S\-P\-I\-\_\-close}]{\setlength{\rightskip}{0pt plus 5cm}void S\-D\-S\-P\-I\-\_\-close (
+\begin{DoxyParamCaption}
+\item[{{\bf S\-D\-S\-P\-I\-\_\-\-Handle}}]{handle}
+\end{DoxyParamCaption}
+)}\label{_s_d_s_p_i_8h_a8816c223935b575f10acd5277b9a8ca5}
+
+
+Function to close a given S\-D\-S\-P\-I peripheral specified by the S\-D\-S\-P\-I handle. This function unmounts the file system mounted by S\-D\-S\-P\-I\-\_\-open and unregisters the S\-D\-S\-P\-I driver from B\-I\-O\-S' Fat\-Fs module. 
+
+\begin{DoxyPrecond}{Precondition}
+\hyperlink{_s_d_s_p_i_8h_af4a5ca9bb35e8a7df02acf20ceeae66d}{S\-D\-S\-P\-I\-\_\-open()} had to be called first.
+\end{DoxyPrecond}
+
+\begin{DoxyParams}{Parameters}
+{\em handle} & A S\-D\-S\-P\-I handle returned from S\-D\-S\-P\-I\-\_\-open\\
+\hline
+\end{DoxyParams}
+\begin{DoxySeeAlso}{See Also}
+\hyperlink{_s_d_s_p_i_8h_af4a5ca9bb35e8a7df02acf20ceeae66d}{S\-D\-S\-P\-I\-\_\-open()} 
+\end{DoxySeeAlso}
+\index{S\-D\-S\-P\-I.\-h@{S\-D\-S\-P\-I.\-h}!S\-D\-S\-P\-I\-\_\-control@{S\-D\-S\-P\-I\-\_\-control}}
+\index{S\-D\-S\-P\-I\-\_\-control@{S\-D\-S\-P\-I\-\_\-control}!SDSPI.h@{S\-D\-S\-P\-I.\-h}}
+\paragraph[{S\-D\-S\-P\-I\-\_\-control}]{\setlength{\rightskip}{0pt plus 5cm}int S\-D\-S\-P\-I\-\_\-control (
+\begin{DoxyParamCaption}
+\item[{{\bf S\-D\-S\-P\-I\-\_\-\-Handle}}]{handle, }
+\item[{unsigned int}]{cmd, }
+\item[{void $\ast$}]{arg}
+\end{DoxyParamCaption}
+)}\label{_s_d_s_p_i_8h_a541a1db109382fe090ed7a9209a34f61}
+
+
+Function performs implementation specific features on a given S\-D\-S\-P\-I\-\_\-\-Handle. 
+
+\begin{DoxyPrecond}{Precondition}
+\hyperlink{_s_d_s_p_i_8h_af4a5ca9bb35e8a7df02acf20ceeae66d}{S\-D\-S\-P\-I\-\_\-open()} has to be called first.
+\end{DoxyPrecond}
+
+\begin{DoxyParams}{Parameters}
+{\em handle} & A S\-D\-S\-P\-I handle returned from \hyperlink{_s_d_s_p_i_8h_af4a5ca9bb35e8a7df02acf20ceeae66d}{S\-D\-S\-P\-I\-\_\-open()}\\
+\hline
+{\em cmd} & A command value defined by the driver specific implementation\\
+\hline
+{\em arg} & An optional argument that is accompanied with cmd\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Implementation specific return codes. Negative values indicate unsuccessful operations.
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See Also}
+\hyperlink{_s_d_s_p_i_8h_af4a5ca9bb35e8a7df02acf20ceeae66d}{S\-D\-S\-P\-I\-\_\-open()} 
+\end{DoxySeeAlso}
+\index{S\-D\-S\-P\-I.\-h@{S\-D\-S\-P\-I.\-h}!S\-D\-S\-P\-I\-\_\-init@{S\-D\-S\-P\-I\-\_\-init}}
+\index{S\-D\-S\-P\-I\-\_\-init@{S\-D\-S\-P\-I\-\_\-init}!SDSPI.h@{S\-D\-S\-P\-I.\-h}}
+\paragraph[{S\-D\-S\-P\-I\-\_\-init}]{\setlength{\rightskip}{0pt plus 5cm}void S\-D\-S\-P\-I\-\_\-init (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}\label{_s_d_s_p_i_8h_a83cfcebe7875d9d8b5e08e57e6785ae6}
+
+
+This function initializes the S\-D\-S\-P\-I driver module. 
+
+\begin{DoxyPrecond}{Precondition}
+The S\-D\-S\-P\-I needs to be powered up and clocked. The S\-D\-S\-P\-I\-\_\-config structure must exist and be persistent before this function can be called. This function must also be called before any other S\-D\-S\-P\-I driver A\-P\-Is. 
+\end{DoxyPrecond}
+\index{S\-D\-S\-P\-I.\-h@{S\-D\-S\-P\-I.\-h}!S\-D\-S\-P\-I\-\_\-open@{S\-D\-S\-P\-I\-\_\-open}}
+\index{S\-D\-S\-P\-I\-\_\-open@{S\-D\-S\-P\-I\-\_\-open}!SDSPI.h@{S\-D\-S\-P\-I.\-h}}
+\paragraph[{S\-D\-S\-P\-I\-\_\-open}]{\setlength{\rightskip}{0pt plus 5cm}{\bf S\-D\-S\-P\-I\-\_\-\-Handle} S\-D\-S\-P\-I\-\_\-open (
+\begin{DoxyParamCaption}
+\item[{unsigned int}]{index, }
+\item[{unsigned char}]{drv, }
+\item[{{\bf S\-D\-S\-P\-I\-\_\-\-Params} $\ast$}]{params}
+\end{DoxyParamCaption}
+)}\label{_s_d_s_p_i_8h_af4a5ca9bb35e8a7df02acf20ceeae66d}
+
+
+This function registers the S\-D\-S\-P\-I driver with B\-I\-O\-S' Fat\-Fs module and mounts the Fat\-Fs file system. 
+
+\begin{DoxyPrecond}{Precondition}
+S\-D\-S\-P\-I controller has been initialized using \hyperlink{_s_d_s_p_i_8h_a83cfcebe7875d9d8b5e08e57e6785ae6}{S\-D\-S\-P\-I\-\_\-init()}
+\end{DoxyPrecond}
+
+\begin{DoxyParams}{Parameters}
+{\em index} & Logical peripheral number indexed into the S\-D\-S\-P\-I\-\_\-config table\\
+\hline
+{\em drv} & Drive number to be associated with the S\-D\-S\-P\-I Fat\-Fs driver\\
+\hline
+{\em params} & Pointer to an parameter block, if N\-U\-L\-L it will use default values\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A pointer to a S\-D\-S\-P\-I\-\_\-\-Handle on success or a N\-U\-L\-L it was already opened
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See Also}
+\hyperlink{_s_d_s_p_i_8h_a8816c223935b575f10acd5277b9a8ca5}{S\-D\-S\-P\-I\-\_\-close()} 
+
+\hyperlink{_s_d_s_p_i_8h_a83cfcebe7875d9d8b5e08e57e6785ae6}{S\-D\-S\-P\-I\-\_\-init()} 
+\end{DoxySeeAlso}
+\index{S\-D\-S\-P\-I.\-h@{S\-D\-S\-P\-I.\-h}!S\-D\-S\-P\-I\-\_\-\-Params\-\_\-init@{S\-D\-S\-P\-I\-\_\-\-Params\-\_\-init}}
+\index{S\-D\-S\-P\-I\-\_\-\-Params\-\_\-init@{S\-D\-S\-P\-I\-\_\-\-Params\-\_\-init}!SDSPI.h@{S\-D\-S\-P\-I.\-h}}
+\paragraph[{S\-D\-S\-P\-I\-\_\-\-Params\-\_\-init}]{\setlength{\rightskip}{0pt plus 5cm}void S\-D\-S\-P\-I\-\_\-\-Params\-\_\-init (
+\begin{DoxyParamCaption}
+\item[{{\bf S\-D\-S\-P\-I\-\_\-\-Params} $\ast$}]{params}
+\end{DoxyParamCaption}
+)}\label{_s_d_s_p_i_8h_a6fe24eaba1cca88242c5df360a074ca8}
+
+
+Function to initialize the \hyperlink{struct_s_d_s_p_i___params}{S\-D\-S\-P\-I\-\_\-\-Params} struct to its defaults. 
+
+Defaults values are\-: 
+\begin{DoxyCode}
+*  bitRate             = 12500000 (Hz)
+*  
+\end{DoxyCode}
+
+
+
+\begin{DoxyParams}{Parameters}
+{\em params} & Parameter structure to initialize \\
+\hline
+\end{DoxyParams}

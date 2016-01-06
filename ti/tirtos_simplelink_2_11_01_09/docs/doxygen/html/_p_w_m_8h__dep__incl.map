@@ -1,0 +1,5 @@
+<map id="PWM.h" name="PWM.h">
+<area shape="rect" href="$_p_w_m_timer_c_c3200_8h.html" title="PWM driver implementation using CC3200 General Purpose Timer peripherals. " alt="" coords="8,83,154,107" />
+<area shape="rect" href="$_p_w_m_timer_tiva_8h.html" title="PWM driver implementation using Tiva General Purpose Timer peripherals. " alt="" coords="178,83,301,107" />
+<area shape="rect" href="$_p_w_m_tiva_8h.html" title="PWM driver implementation for Tiva PWM perhiperals. " alt="" coords="325,83,416,107" />
+</map>

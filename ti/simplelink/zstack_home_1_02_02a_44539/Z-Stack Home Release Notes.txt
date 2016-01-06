@@ -1,0 +1,108 @@
+Texas Instruments, Inc.
+
+Z-Stack Home TI-RTOS Release Notes
+
+-------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+
+Version 1.2.2a
+October 16, 2015
+
+
+Notices:
+ - Z-Stack Home 1.2.2a meets requirements for full conformance to the ZigBee
+   Home Automation 1.2 specification. The Z-Stack Home 1.2.2a release is based
+   on Z-Stack Core 2.6.3a - see the "Z-Stack Core Release Notes" for details.
+
+ - Z-Stack Home provides over 15 documents that cover various aspects of this
+   Home Automation development package. Included is API documentation for each
+   layer of the Z-Stack system, and a selection of Developer's Guides, User's
+   Guides, and Application Notes to accelerate your product development. These
+   documents can be found at: <InstallPath>\Documents folder with the default
+   set to: "C:\Texas Instruments\Z-Stack Home 1.2.2.44539\Documents" which can
+   be accessed from the Windows Start Menu.
+
+ - Z-Stack for the CC2630/CC2650 has been built/tested with IAR's DLIB library.
+
+ - Z-Stack projects specify compile options in two ways: (1) "-D" statements
+   in f8wConfig.cfg and other *.cfg files, (2) entries in the IDE Compiler
+   Preprocessor Defined Symbols. When using the EWARM compiler, settings in
+   the *.cfg files will override any made in the IDE.
+
+ - When programming devices for the first time with this release, the entire
+   Flash memory should be erased: select "Project->Download->Erase Memory".
+
+ - Application, library, and hex files were built/tested with the following
+   versions of IAR tools and may not work with different IAR tool versions:
+     - CC2630 + SRF06EB:  EWARM 7.40.2  (7.40.2.8570)
+     - CC2630 + EXP5438:  EW430 6.20.1  (6.20.1.931)
+
+ - Support software packages for Z-Stack Home 1.2.2a on CC2630/CC2650 include:
+     - TI-RTOS:  tirtos_simplelink_2_11_01_09
+     - XDCTOOLS: xdctools_3_30_06_67_core
+
+
+Changes:
+ - [6021] Seven new Monitor-Test commands have been added to support extended
+   capabilities of the Non-Volatile memory system (NV) on the CC2630/CC2650
+   platforms. Refer to sections 3.8.1.27-3.8.1.33 of the "Z-Stack Monitor and
+   Test API" document for details.
+
+ - [5893] Introduces the Boundary tool that automatically optimizes the Code
+   and RAM memory boundaries between core stack and application images. This
+   tool analyzes the Code and RAM requirements for the Z-Stack Core image and
+   optimizes the compiler/linker boundaries to maximize memory spaces for the
+   Application image. The Boundary tool only makes changes to the boundary
+   files when the Z-Stack Core is altered
+
+ - [5844] Modified the ZCL EZ-Mode to support the ZCL_STANDALONE compile flag.
+
+ - [5747] Introduces support for the CC2630/CC2650, running on TI-RTOS. The
+   sample applications for Home Automation are built from two separate images,
+   the Z-Stack Core and the HA Application. Refer to the "Z-Stack Home TI-RTOS
+   Developer's Guide" and the "Z-Stack Home Sample Application User's Guide"
+   for details on working with the Home Automation sample applications. The
+   ZigBee Network Processor (ZNP) devices are built from a single image, and
+   therefore do not involve use of the Boundary tool.
+
+
+Bug Fixes:
+ - [6193] Fixed an issue where an EZ-Mode target would stop waiting for any
+   Identify Query Responses when the first response was received.
+
+ - [6124] Fixed a problem in EZ-Mode commissioning where binding information
+   was not being saved in non-volatile memory when NV_RESTORE was enabled.
+
+ - [5918] Fixed the device ID in the simple descriptor for the following three
+   sample applications - they previously indicated 'Dimmable Light':
+     - Door Lock
+     - Door Lock Controller
+     - Temperature Sensor
+
+ - [5839] Added rejoin back off capability to force the HA device to wait for
+   a specified amount of time after attempting to rejoin before attempting to
+   rejoin again, unless prompted by user intervention. The back off timer and
+   scan duration can now be set at compile or run time. Default values for both
+   timers is set at 15 minutes, per section 5.3.2 of the HA 1.2 spec.
+
+
+Known Issues:
+ - Home Automation sample applications only support ZigBee End-Devices.
+
+ - ZNP applications and hex files only support a single ZigBee device type.
+
+ - ZNP currently supports UART only, SPI will be added in a future release.
+
+ - UART I/O does not support flow control, will be added in a future release.
+
+ - The ZAP sample applications retain the older format (from the Home-1.1.1
+   release), so they do not provide EZ-Mode commissioning.
+
+ - To disable security at build time, use the "SECURE=0" compile option in the
+   Z-Stack Core image. Don't try to disable security by setting SECURITY_LEVEL
+   to zero.
+
+ - The ZDO Complex Descriptor is not supported.
+
+-------------------------------------------------------------------------------
+-------------------------------------------------------------------------------

@@ -1,0 +1,159 @@
+Signature-Version: 1.0
+SHA1-Digest-Manifest-Main-Attributes: fsD32nU6u/j91ULataX75A/TKS4=
+Created-By: 1.6.0_37 (Sun Microsystems Inc.)
+SHA1-Digest-Manifest: oFnEG0ClGZtcy5Y6eCNQRImdoeQ=
+
+Name: uia_eclipse_cdoc_toc.xml
+SHA1-Digest: v6mhbDy2OL05bD+IH+bD1AS2Q8o=
+
+Name: resources/boards/CC2650STK_BLE/empty_min.c
+SHA1-Digest: H1fik/z1igh4ibUHWYjg44TyGaw=
+
+Name: resources/ti/sysbios/examples/makefile.defs
+SHA1-Digest: R6k3NNFr5GCC+NCVY7QeZ5CCqAA=
+
+Name: resources/boards/CC3200_LP/CC3200_LP.cmd
+SHA1-Digest: rjwCa/VV3xq0b6Ex09ecSRXYoLE=
+
+Name: resources/boards/CC2650DK/empty_min.c
+SHA1-Digest: YrpqASKtJxZNm9O+b6ssSNwT2pQ=
+
+Name: resources/ti/sysbios/examples/generic/typical/cortexm/app.cfg
+SHA1-Digest: 3qzL3fs6fhtCoF2UyYLiHm3mHS8=
+
+Name: resources/ti/uia/examples/helloworld/cortexm/helloWorld.cfg
+SHA1-Digest: QdGOhwYon7LvgqyILjMoK8MnPZI=
+
+Name: resources/boards/CC3200_LP/Board.h
+SHA1-Digest: nZZ0HF385ajR/GBANJxrooZ7ZWY=
+
+Name: resources/boards/CC2650DK/empty_min_readme.txt
+SHA1-Digest: rmdH5iR5RyiyMrx+vKlcuF4XyOc=
+
+Name: toc_top.xml
+SHA1-Digest: vUZ/xQfQ14o9iMNqOCz50aPYUOs=
+
+Name: resources/boards/CC2650STK_BLE/Board.h
+SHA1-Digest: vQG6BfMKa8gPnwSe5Fzdw+csZv8=
+
+Name: resources/boards/CC2650STK_BLE/empty_min_readme.txt
+SHA1-Digest: vx6sySPrzgArASsNyd2lZYT3ui0=
+
+Name: resources/boards/CC2650DK/empty_readme.txt
+SHA1-Digest: IhPDnFrwwvCr097B+1B3T88Xv8g=
+
+Name: resources/makefile.defs
+SHA1-Digest: kfwuZQy/sdKfE3WGirg4DqC+OUQ=
+
+Name: resources/boards/CC3200_LP/empty.c
+SHA1-Digest: N+8/OiacDRP66sSsA8nzuuxV4EU=
+
+Name: plugin.properties
+SHA1-Digest: x/3CE38M7NJyiuqFoBliHONtg8s=
+
+Name: resources/boards/CC2650STK_BLE/empty_readme.txt
+SHA1-Digest: OE2Qgim9Y6IbmqSZlK8SfMMBuLE=
+
+Name: resources/ti/uia/examples/makefile.defs
+SHA1-Digest: NI/+rj0a2WGhf24QsH2et61cP30=
+
+Name: tirtos_eclipse_cdoc_toc.xml
+SHA1-Digest: s+MNAAoBwNN4QTgqA12K0Plhvp0=
+
+Name: resources/boards/CC3200_LP/empty_rom_pin_mux_config.c
+SHA1-Digest: 91oNwWyu8MPFpEgj7eNPZ6vlHwo=
+
+Name: resources/ti/uia/examples/single/cortexm/stairstep_JTAGStopMode.
+ cfg
+SHA1-Digest: pBp4R2SjMx7wRJI5kl61UIeS/5M=
+
+Name: resources/boards/CC3200_LP/empty_min.cfg
+SHA1-Digest: RBCQI+/WZNY5S96+tPouQLYu6uc=
+
+Name: resources/boards/CC2650STK_BLE/empty.cfg
+SHA1-Digest: ajUumOaH6/HRJ4ceYlyRW7iXGC8=
+
+Name: resources/boards/CC3200_LP/empty_min_rom_pin_mux_config.c
+SHA1-Digest: /MIiWaNIEEwKfmVFlRwXR8ZS7HQ=
+
+Name: resources/boards/CC2650DK/empty.cfg
+SHA1-Digest: lUJlZbOMpUQHHU4KqbyoXdGKS5w=
+
+Name: resources/boards/CC2650DK/empty_min.cfg
+SHA1-Digest: lKm6CRiQBmhSt7krdxsEdB6ofno=
+
+Name: resources/ti/sysbios/examples/generic/typical/main.c
+SHA1-Digest: 3wb/W5VMH9HVGh9+5H2VLNNoNdM=
+
+Name: bios_eclipse_cdoc_toc.xml
+SHA1-Digest: Zp3MecEKnJ7ShvKfWloO5lwQY38=
+
+Name: resources/boards/CC3200_LP/empty_min.c
+SHA1-Digest: VccsrFKEFo6KhOyvgqIfvZq6fe8=
+
+Name: resources/ti/sysbios/examples/generic/minimal/main.c
+SHA1-Digest: TDFLFP93kpPf8sOL71LFKUq9WDU=
+
+Name: resources/boards/CC2650DK/CC2650DK.cmd
+SHA1-Digest: dECqlIJrSp5AeyZLCdnXWslroGQ=
+
+Name: resources/ti/sysbios/examples/generic/minimal/cortexm/app.cfg
+SHA1-Digest: cRml4Vmt1AjTsfHQ/DwZHYA4JFc=
+
+Name: tirtos_doxygen_toc.xml
+SHA1-Digest: AL/gN/5n/apWDiw1gInICLb9sF4=
+
+Name: resources/boards/CC2650DK/empty.c
+SHA1-Digest: W84hyCmo+PZH2iKDIkl635tw3VM=
+
+Name: resources/boards/CC3200_LP/empty_readme.txt
+SHA1-Digest: 5kqNsvf2TUinNbRyGBiLT4Ta/rI=
+
+Name: resources/boards/CC2650STK_BLE/empty.c
+SHA1-Digest: zY53FDEIqqecJVb0efrex6tzxB0=
+
+Name: resources/ti/uia/examples/single/stairstep.c
+SHA1-Digest: VJvCOl0JbpmhhoILDvfHsY9H2VY=
+
+Name: resources/boards/CC3200_LP/empty.pinmux
+SHA1-Digest: +qVarRMPZVydEBfOzfD9ZQbWg2Y=
+
+Name: resources/ti/uia/examples/helloworld/main.c
+SHA1-Digest: YZ6NW5W31bpdNiQgypnJe7Ah5Qo=
+
+Name: resources/boards/CC3200_LP/empty_min_readme.txt
+SHA1-Digest: Sf2bRip5vzKA9jedtMmGXVlRavs=
+
+Name: resources/boards/CC2650STK_BLE/Board.c
+SHA1-Digest: omwYmN9rRbX9/+i9gf+64X3mg74=
+
+Name: resources/boards/CC2650STK_BLE/CC2650STK_BLE.cmd
+SHA1-Digest: GNJ5ED/UuzQvm9aK1eLBJ3oO4nI=
+
+Name: resources/boards/CC3200_LP/CC3200_LP.h
+SHA1-Digest: 3DdjjHfbmYXKprcnn5Y4FyJIBqc=
+
+Name: resources/boards/CC2650DK/Board.c
+SHA1-Digest: 4D/kHisj++pqcr3fgzwleRQJV9s=
+
+Name: resources/boards/CC3200_LP/pin_mux_config.h
+SHA1-Digest: wMh4+Op8QkQcmhtiTnNrJJcCa2s=
+
+Name: resources/boards/CC3200_LP/empty_min.pinmux
+SHA1-Digest: s5F5dbtOzTtOhIfWYN4F/FxyeyY=
+
+Name: plugin.xml
+SHA1-Digest: yo1RwvoNVjCqY1qNmGMVhBTG2zg=
+
+Name: resources/boards/CC3200_LP/empty.cfg
+SHA1-Digest: BWbwU+C1J0sJM2OEO3ZIcShLeKo=
+
+Name: resources/boards/CC2650DK/Board.h
+SHA1-Digest: n9tCurpcC4WqTx5IbszCXyuFLb0=
+
+Name: resources/boards/CC2650STK_BLE/empty_min.cfg
+SHA1-Digest: zqYTq/ntUgiAOwtxMSCY7Yj2Anc=
+
+Name: resources/boards/CC3200_LP/CC3200_LP.c
+SHA1-Digest: qOvPeO2VG3hE9FiOzwnZVhR8+hc=
+
