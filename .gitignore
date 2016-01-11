@@ -1,1 +1,12 @@
 *.o
+ti/simplelink/zstack_home_1_02_02a_44539/Projects/zstack/HomeAutomation/SmartLock2/CC26xx/SmartLock2.dep
+ti/simplelink/zstack_home_1_02_02a_44539/Projects/zstack/HomeAutomation/SmartLock2/CC26xx/SmartLock2.ewt
+ti/simplelink/zstack_home_1_02_02a_44539/Projects/zstack/HomeAutomation/SmartLock2/CC26xx/configPkg
+
+ti/simplelink/zstack_home_1_02_02a_44539/Projects/zstack/HomeAutomation/SmartLock2/CC26xx/SmartRF06
+ti/simplelink/zstack_home_1_02_02a_44539/Projects/zstack/HomeAutomation/SmartLock2/CC26xx/settings
+ti/simplelink/zstack_home_1_02_02a_44539/Projects/zstack/HomeAutomation/SmartLock2/CC26xx/src
+ti/simplelink/zstack_home_1_02_02a_44539/Projects/zstack/Core/Thread/CC26xx/EndDevice
+ti/simplelink/zstack_home_1_02_02a_44539/Projects/zstack/Core/Thread/CC26xx/settings
+ti/simplelink/zstack_home_1_02_02a_44539/Projects/zstack/Core/Thread/CC26xx/ZStackCore.dep
+ti/simplelink/zstack_home_1_02_02a_44539/Projects/zstack/Core/Thread/CC26xx/ZStackCore.ewt

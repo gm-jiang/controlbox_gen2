@@ -89,7 +89,7 @@
         </option>
         <option>
           <name>OGChipSelectEditMenu</name>
-          <state>CC2650F128	TexasInstruments CC2650F128</state>
+          <state>CC2630F128	TexasInstruments CC2630F128</state>
         </option>
         <option>
           <name>GenLowLevelInterface</name>
@@ -149,7 +149,7 @@
         </option>
         <option>
           <name>GFPUDeviceSlave</name>
-          <state>CC2650F128	TexasInstruments CC2650F128</state>
+          <state>CC2630F128	TexasInstruments CC2630F128</state>
         </option>
         <option>
           <name>FPU2</name>
