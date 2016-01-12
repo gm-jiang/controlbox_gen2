@@ -128,7 +128,7 @@
 #include "zcl_port.h"
 #include "smartlock2.h"
 #include "znwk_config.h"
-
+#include "smartlock2_print.h"
 //*****************************************************************************
 // Constants
 //*****************************************************************************
@@ -1122,6 +1122,7 @@ static void DLSApp_processZStackMsgs(zstackmsg_genericReq_t *pMsg)
                         DLSApp_displayLcdUpdate();
                         Board_Led_control(board_led_type_LED1,
                                           board_led_state_ON);
+                        log_print("endDevice ok\r\n");
 
                         if(pInd->req.state != zstack_DevState_DEV_END_DEVICE)
                         {

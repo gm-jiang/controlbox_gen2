@@ -73,7 +73,7 @@
 #include "nvoctp.h"
 #include "smartlock2.h"
 #include "zstackconfig.h"
-
+#include "smartlock2_print.h"
 
 /******************************************************************************
  * CONSTANTS
@@ -211,6 +211,9 @@ Void taskFxn(UArg a0, UArg a1)
 
     /* Start tasks of external images */
     ICall_createRemoteTasks();
+
+    /*uart init*/
+    smartlock2_uart_init();
 
     /* Kick off application */
     DLSApp_task(&user0Cfg.nvFps);

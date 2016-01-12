@@ -201,7 +201,7 @@
           <state>xdc_runtime_Log_DISABLE_ALL</state>
           <state>xdc_runtime_Assert_DISABLE_ALL</state>
           <state>MODULE_CC26XX_7X7</state>
-          <state>TI_DRIVERS_LCD_INCLUDED</state>
+          <state>xTI_DRIVERS_LCD_INCLUDED</state>
         </option>
         <option>
           <name>CCPreprocFile</name>
@@ -1028,6 +1028,12 @@
     </file>
     <file>
       <name>$PROJ_DIR$\smartlock2.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\smartlock2_print.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\smartlock2_print.h</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\common\CC26xx\util.c</name>
