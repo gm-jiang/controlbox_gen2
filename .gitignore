@@ -10,3 +10,13 @@ ti/simplelink/zstack_home_1_02_02a_44539/Projects/zstack/Core/Thread/CC26xx/EndD
 ti/simplelink/zstack_home_1_02_02a_44539/Projects/zstack/Core/Thread/CC26xx/settings
 ti/simplelink/zstack_home_1_02_02a_44539/Projects/zstack/Core/Thread/CC26xx/ZStackCore.dep
 ti/simplelink/zstack_home_1_02_02a_44539/Projects/zstack/Core/Thread/CC26xx/ZStackCore.ewt
+
+ti/simplelink/zstack_home_1_02_02a_44539/Projects/zstack/ZNP/CC26xx/Coordinator-Pro_Secure_Link_Key_Join
+ti/simplelink/zstack_home_1_02_02a_44539/Projects/zstack/ZNP/CC26xx/EndDevice-Pro
+ti/simplelink/zstack_home_1_02_02a_44539/Projects/zstack/ZNP/CC26xx/bin/znp_enddev_pro.hex
+ti/simplelink/zstack_home_1_02_02a_44539/Projects/zstack/ZNP/CC26xx/configPkg
+ti/simplelink/zstack_home_1_02_02a_44539/Projects/zstack/ZNP/CC26xx/settings
+ti/simplelink/zstack_home_1_02_02a_44539/Projects/zstack/ZNP/CC26xx/src
+ti/simplelink/zstack_home_1_02_02a_44539/Projects/zstack/ZNP/CC26xx/znp.dep
+ti/simplelink/zstack_home_1_02_02a_44539/Projects/zstack/ZNP/CC26xx/znp.ewt
+
