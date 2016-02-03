@@ -89,8 +89,8 @@
 // Values based on powerup h/w config as input with pull-up - not using dynamic cfg of transport.
 #define ZNP_CFG0_32K_XTAL        1         /* 32kHz crystal installed and used */
 #define ZNP_CFG0_32K_OSC         0         /* 32kHz crystal not installed; internal osc. used */
-#define ZNP_CFG1_SPI             1         /* use SPI transport */
-#define ZNP_CFG1_UART            0         /* use UART transport */
+#define ZNP_CFG1_SPI             0         /* use SPI transport */
+#define ZNP_CFG1_UART            1         /* use UART transport */
 #define ZNP_CFG1_UART_USB        2         /* definition required for CC2531 compatibility */
 extern unsigned char znpCfg1;
 extern unsigned char znpCfg0;
