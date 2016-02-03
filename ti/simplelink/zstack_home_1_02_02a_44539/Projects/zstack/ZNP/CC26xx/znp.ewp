@@ -8473,7 +8473,7 @@
           <state>DATA=</state>
           <state>FEATURE_SYSTEM_STATS</state>
           <state>ZDNWKMGR_MIN_TRANSMISSIONS=0 </state>
-          <state>SECURE=0</state>
+          <state>SECURE=1</state>
           <state>xTC_LINKKEY_JOIN</state>
           <state>DSECMGR_TC_DEVICE_MAX=16</state>
           <state>HOLD_AUTO_START</state>
