@@ -103,6 +103,7 @@ extern "C"
 #define MT_SYS_ZDIAGS_SAVE_STATS_TO_NV       0x1B
 #define MT_SYS_OSAL_NV_READ_EXT              0x1C
 #define MT_SYS_OSAL_NV_WRITE_EXT             0x1D
+#define MT_SYS_ASSOCDEVLIST_GET              0x25
 
 /* Extended Non-Vloatile Memory */
 #define MT_SYS_NV_CREATE                     0x30

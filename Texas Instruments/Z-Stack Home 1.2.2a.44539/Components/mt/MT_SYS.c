@@ -51,6 +51,7 @@
 #include "mac_low_level.h"
 #include "ZMAC.h"
 #include "MT_UART.h"
+#include "AssocList.h"
 
 #if !defined( CC26XX )
   #include "hal_adc.h"
@@ -145,6 +146,15 @@
 #define MT_SYS_OSAL_NV_READ_CERTIFICATE_DATA  FALSE
 #endif
 
+#define Max_Dev_Num 16
+extern associated_devices_t AssociatedDevList[];
+typedef struct
+{
+  uint16   nwkAddr;
+  uint8    lqi;
+} Device_List_t;
+Device_List_t Device_List[5];
+
 #if defined( MT_SYS_FUNC )
 static const uint16 MT_SysOsalEventId[] =
 {
@@ -213,6 +223,7 @@ static void MT_SysGetExtAddr(void);
 static void MT_SysOsalStartTimer(uint8 *pBuf);
 static void MT_SysOsalStopTimer(uint8 *pBuf);
 static void MT_SysRandom(void);
+static void MT_AssocDevList(void);
 static void MT_SysGpio(uint8 *pBuf);
 static void MT_SysStackTune(uint8 *pBuf);
 static void MT_SysSetUtcTime(uint8 *pBuf);
@@ -306,6 +317,10 @@ uint8 MT_SysCommandProcessing(uint8 *pBuf)
 
     case MT_SYS_RANDOM:
       MT_SysRandom();
+      break;
+
+    case MT_SYS_ASSOCDEVLIST_GET:
+      MT_AssocDevList();
       break;
 
 #if !defined( CC26XX )
@@ -1425,6 +1440,27 @@ static void MT_SysRandom()
   /* Build and send back the response */
   MT_BuildAndSendZToolResponse( MT_SRSP_SYS, MT_SYS_RANDOM,
                                 sizeof(retArray), retArray );
+}
+/******************************************************************************
+ * @fn      MT_AssocDevList
+ *
+ * @brief
+ *
+ * @param   uint8 pData - pointer to the data
+ *
+ * @return  None
+ *****************************************************************************/
+static void MT_AssocDevList()
+{
+  for(uint8 i=0;i<Max_Dev_Num;i++)
+  {
+    Device_List[i].nwkAddr = AssociatedDevList[i].shortAddr;
+    Device_List[i].lqi = AssociatedDevList[i].linkInfo.rxLqi;
+  }
+
+  /* Build and send back the response */
+  MT_BuildAndSendZToolResponse( MT_SRSP_SYS, MT_SYS_ASSOCDEVLIST_GET,
+                                sizeof(Device_List), (uint8*)Device_List );
 }
 
 #if !defined( CC26XX )
