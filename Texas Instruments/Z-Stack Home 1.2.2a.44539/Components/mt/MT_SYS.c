@@ -146,14 +146,14 @@
 #define MT_SYS_OSAL_NV_READ_CERTIFICATE_DATA  FALSE
 #endif
 
-#define Max_Dev_Num 16
+#define Max_Dev_Num 8
 extern associated_devices_t AssociatedDevList[];
 typedef struct
 {
   uint16   nwkAddr;
   uint8    lqi;
 } Device_List_t;
-Device_List_t Device_List[5];
+Device_List_t Device_List[Max_Dev_Num];
 
 #if defined( MT_SYS_FUNC )
 static const uint16 MT_SysOsalEventId[] =
