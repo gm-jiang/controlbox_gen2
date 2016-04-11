@@ -372,9 +372,9 @@ void zclSampleDoorLockController_Init( byte task_id )
   zclSampleDoorLockController_TaskID = task_id;
 
   // Set destination address to indirect
-  zclSampleDoorLockController_DstAddr.addrMode = (afAddrMode_t)AddrNotPresent;
-  zclSampleDoorLockController_DstAddr.endPoint = 0;
-  zclSampleDoorLockController_DstAddr.addr.shortAddr = 0;
+  zclSampleDoorLockController_DstAddr.addrMode = (afAddrMode_t)Addr16Bit;
+  zclSampleDoorLockController_DstAddr.endPoint = 1;
+  zclSampleDoorLockController_DstAddr.addr.shortAddr = 0x0000;
 
   // This app is part of the Home Automation Profile
   zclHA_Init( &zclSampleDoorLockController_SimpleDesc );
@@ -477,6 +477,9 @@ uint16 zclSampleDoorLockController_event_loop( uint8 task_id, uint16 events )
 #ifdef ZCL_EZMODE
             zcl_EZModeAction( EZMODE_ACTION_NETWORK_STARTED, NULL );
 #endif
+          osal_start_timerEx( zclSampleDoorLockController_TaskID,
+                   SAMPLEDOORLOCKCONTROLLER_IDENTIFY_TIMEOUT_EVT,
+                                                           5000 );
           }
           break;
 
@@ -494,9 +497,15 @@ uint16 zclSampleDoorLockController_event_loop( uint8 task_id, uint16 events )
 
   if ( events & SAMPLEDOORLOCKCONTROLLER_IDENTIFY_TIMEOUT_EVT )
   {
-    if ( zclSampleDoorLockController_IdentifyTime > 0 )
-      zclSampleDoorLockController_IdentifyTime--;
-    zclSampleDoorLockController_ProcessIdentifyTimeChange();
+    osal_start_timerEx( zclSampleDoorLockController_TaskID,
+             SAMPLEDOORLOCKCONTROLLER_IDENTIFY_TIMEOUT_EVT,
+                                                     5000 );
+    zclDoorLock_t cmd;
+    cmd.pPinRfidCode = aiDoorLockPIN;
+    zclClosures_SendDoorLockUnlockDoor( SAMPLEDOORLOCKCONTROLLER_ENDPOINT,
+                                     &zclSampleDoorLockController_DstAddr,
+                                                               &cmd, TRUE,
+                                     zclSampleDoorLockControllerSeqNum++ );
 
     return ( events ^ SAMPLEDOORLOCKCONTROLLER_IDENTIFY_TIMEOUT_EVT );
   }
@@ -1447,7 +1456,7 @@ static void zclSampleDoorLockController_ProcessIdentifyTimeChange( void )
 {
   if ( zclSampleDoorLockController_IdentifyTime > 0 )
   {
-    osal_start_timerEx( zclSampleDoorLockController_TaskID, SAMPLEDOORLOCKCONTROLLER_IDENTIFY_TIMEOUT_EVT, 1000 );
+    osal_start_timerEx( zclSampleDoorLockController_TaskID, SAMPLEDOORLOCKCONTROLLER_IDENTIFY_TIMEOUT_EVT, 5000 );
     HalLedBlink ( HAL_LED_4, 0xFF, HAL_LED_DEFAULT_DUTY_CYCLE, HAL_LED_DEFAULT_FLASH_TIME );
   }
   else
