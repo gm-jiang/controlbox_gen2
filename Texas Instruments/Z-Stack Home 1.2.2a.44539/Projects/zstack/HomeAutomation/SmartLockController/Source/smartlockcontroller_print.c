@@ -18,7 +18,7 @@
 #define BUF_SIZE 128
 void log_print( char *str )
 {
-    HalUARTWrite(uint8 port,uint8 * pBuffer,uint16 length)( HAL_UART_PORT_1, (uint8 *)str, strlen((const char *)str));
+    HalUARTWrite( HAL_UART_PORT_1, (uint8 *)str, strlen((const char *)str));
 }
 
 void log_printf(const char *fmt, ...)

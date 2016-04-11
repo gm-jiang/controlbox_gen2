@@ -304,7 +304,7 @@
           <name>CCDefines</name>
           <state>FEATURE_SYSTEM_STATS</state>
           <state>POWER_SAVING</state>
-          <state>xTC_LINKKEY_JOIN</state>
+          <state>TC_LINKKEY_JOIN</state>
           <state>ZNP_ALT</state>
         </option>
         <option>
