@@ -49,7 +49,14 @@
 #if defined ( INTER_PAN )
   #include "stub_aps.h"
 #endif
+#if defined ( PRINT_DEBUG )
+  #include "router_print.h"
+#endif
 
+#ifdef ROUTER
+#include "router_print.h"
+  extern uint8  ZC_ONLINE_TIME;
+#endif
 /*********************************************************************
  * MACROS
  */
@@ -377,6 +384,9 @@ uint16 zcl_event_loop( uint8 task_id, uint16 events )
       if ( *msgPtr == AF_INCOMING_MSG_CMD )
       {
         zcl_ProcessMessageMSG( (afIncomingMSGPacket_t *)msgPtr );
+        #ifdef ROUTER
+            AssocList( (afIncomingMSGPacket_t *)msgPtr );
+        #endif
       }
       else
       {

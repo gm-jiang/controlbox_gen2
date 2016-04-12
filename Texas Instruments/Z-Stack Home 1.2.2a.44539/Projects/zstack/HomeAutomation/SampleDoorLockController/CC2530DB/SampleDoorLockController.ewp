@@ -1464,7 +1464,7 @@
           <state>MT_APP_FUNC</state>
           <state>MT_SYS_FUNC</state>
           <state>MT_ZDO_FUNC</state>
-          <state>LCD_SUPPORTED=DEBUG</state>
+          <state>xLCD_SUPPORTED=DEBUG</state>
           <state>MULTICAST_ENABLED=FALSE</state>
           <state>ZCL_READ</state>
           <state>ZCL_WRITE</state>
@@ -1475,6 +1475,8 @@
           <state>ZCL_DOORLOCK</state>
           <state>ZCL_SCENES</state>
           <state>ZCL_GROUPS</state>
+          <state>PRINT_DEBUG</state>
+          <state>ROUTER</state>
         </option>
         <option>
           <name>CCPreprocFile</name>
@@ -1542,7 +1544,7 @@
         </option>
         <option>
           <name>CCRequirePrototypes</name>
-          <state>1</state>
+          <state>0</state>
         </option>
         <option>
           <name>CCMultibyteSupport</name>
@@ -3464,6 +3466,12 @@
     <name>App</name>
     <file>
       <name>$PROJ_DIR$\..\Source\OSAL_SampleDoorLockController.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\Source\router_print.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\Source\router_print.h</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\Source\zcl_sampledoorlockcontroller.c</name>

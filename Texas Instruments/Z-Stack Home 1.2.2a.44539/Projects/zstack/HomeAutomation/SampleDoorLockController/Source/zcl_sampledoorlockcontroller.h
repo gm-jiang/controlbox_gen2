@@ -116,6 +116,9 @@ extern void zclSampleDoorLockController_Init( byte task_id );
  */
 extern UINT16 zclSampleDoorLockController_event_loop( byte task_id, UINT16 events );
 
+#ifdef ROUTER
+extern void AssocList( afIncomingMSGPacket_t *pkt );
+#endif
 
 /*********************************************************************
 *********************************************************************/

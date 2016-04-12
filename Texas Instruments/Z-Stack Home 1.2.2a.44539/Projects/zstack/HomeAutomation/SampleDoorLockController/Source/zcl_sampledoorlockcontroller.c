@@ -83,8 +83,12 @@
 #include "hal_lcd.h"
 #include "hal_led.h"
 #include "hal_key.h"
-
-
+#ifdef ROUTER
+  #include "router_print.h"
+  #define TIM 5000
+  #define default_time 10
+  uint8  ZC_ONLINE_TIME = default_time;
+#endif
 /*********************************************************************
  * MACROS
  */
@@ -479,7 +483,7 @@ uint16 zclSampleDoorLockController_event_loop( uint8 task_id, uint16 events )
 #endif
           osal_start_timerEx( zclSampleDoorLockController_TaskID,
                    SAMPLEDOORLOCKCONTROLLER_IDENTIFY_TIMEOUT_EVT,
-                                                           5000 );
+                                                            TIM );
           }
           break;
 
@@ -499,14 +503,14 @@ uint16 zclSampleDoorLockController_event_loop( uint8 task_id, uint16 events )
   {
     osal_start_timerEx( zclSampleDoorLockController_TaskID,
              SAMPLEDOORLOCKCONTROLLER_IDENTIFY_TIMEOUT_EVT,
-                                                     5000 );
-    zclDoorLock_t cmd;
-    cmd.pPinRfidCode = aiDoorLockPIN;
-    zclClosures_SendDoorLockUnlockDoor( SAMPLEDOORLOCKCONTROLLER_ENDPOINT,
-                                     &zclSampleDoorLockController_DstAddr,
-                                                               &cmd, TRUE,
-                                     zclSampleDoorLockControllerSeqNum++ );
-
+                                                      TIM );
+    if ( 0 == ZC_ONLINE_TIME-- )
+    {
+      ZC_ONLINE_TIME = default_time;
+      //system_reset();
+      SystemResetSoft();
+    }
+    log_printf( "ZC_ONLINE_TIME:%d\n",ZC_ONLINE_TIME );
     return ( events ^ SAMPLEDOORLOCKCONTROLLER_IDENTIFY_TIMEOUT_EVT );
   }
 
@@ -1868,6 +1872,44 @@ static void zclSampleDoorLockController_EZModeCB( zlcEZMode_State_t state, zclEZ
 }
 
 #endif // ZCL_EZMODE
+
+#ifdef ROUTER
+/*********************************************************************
+ * @fn      AssocList
+ *
+ * @brief   Like ChildAging function,if ZC offline,the ZC_ONLINE_TIME
+ *          will be decrease,when the ZC_ONLINE_TIME down to 0, Router reset.
+ * @param   pkt - incoming message
+ *
+ * @return  AssocList
+ */
+void AssocList( afIncomingMSGPacket_t *pkt )
+{
+  //log_printf( "len:%d\n",pkt->cmd.DataLength );
+  log_printf( "data:%s\n",pkt->cmd.Data );
+  ZC_ONLINE_TIME = 10;
+  //zclDoorLock_t cmd;
+
+  for(uint8 i=0;i<Max_Dev_Num;i++)
+  {
+    Device_List[i].nwkAddr = AssociatedDevList[i].shortAddr;
+    Device_List[i].lqi = AssociatedDevList[i].linkInfo.rxLqi;
+    Device_List[i].dev_type = 0x01;
+  }
+  //log_printf( "size:%d\n", sizeof(*Device_List ));
+  //cmd.pPinRfidCode = aiDoorLockPIN;
+  //zclClosures_SendDoorLockLockDoor( SAMPLEDOORLOCKCONTROLLER_ENDPOINT, &zclSampleDoorLockController_DstAddr, &cmd, TRUE, zclSampleDoorLockControllerSeqNum++ );
+  zcl_SendCommand(  SAMPLEDOORLOCKCONTROLLER_ENDPOINT,
+                 &zclSampleDoorLockController_DstAddr,
+                    ZCL_CLUSTER_ID_CLOSURES_DOOR_LOCK,
+                     COMMAND_CLOSURES_LOCK_DOOR, TRUE,
+                    ZCL_FRAME_CLIENT_SERVER_DIR, TRUE,
+                                                    0,
+                  zclSampleDoorLockControllerSeqNum++,
+                     sizeof(*Device_List)*Max_Dev_Num,
+                                (uint8 *)Device_List );
+}
+#endif
 
 /****************************************************************************
 ****************************************************************************/

@@ -114,6 +114,13 @@ typedef struct
 
 typedef struct
 {
+  uint16   nwkAddr;
+  uint8    lqi;
+  uint8    dev_type;
+} Device_List_t;
+
+typedef struct
+{
   uint16 numRecs;
 } nvDeviceListHdr_t;
 
@@ -122,7 +129,7 @@ typedef struct
  */
 //extern byte _numAssocDev;
 extern associated_devices_t AssociatedDevList[];
-
+extern Device_List_t Device_List[];
 /*********************************************************************
  * FUNCTIONS
  */

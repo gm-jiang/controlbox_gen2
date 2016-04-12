@@ -146,14 +146,8 @@
 #define MT_SYS_OSAL_NV_READ_CERTIFICATE_DATA  FALSE
 #endif
 
-#define Max_Dev_Num 8
 extern associated_devices_t AssociatedDevList[];
-typedef struct
-{
-  uint16   nwkAddr;
-  uint8    lqi;
-} Device_List_t;
-Device_List_t Device_List[Max_Dev_Num];
+extern Device_List_t Device_List[];
 
 #if defined( MT_SYS_FUNC )
 static const uint16 MT_SysOsalEventId[] =
@@ -223,7 +217,9 @@ static void MT_SysGetExtAddr(void);
 static void MT_SysOsalStartTimer(uint8 *pBuf);
 static void MT_SysOsalStopTimer(uint8 *pBuf);
 static void MT_SysRandom(void);
+#ifdef ZNP_CC2530
 static void MT_AssocDevList(void);
+#endif
 static void MT_SysGpio(uint8 *pBuf);
 static void MT_SysStackTune(uint8 *pBuf);
 static void MT_SysSetUtcTime(uint8 *pBuf);
@@ -318,10 +314,11 @@ uint8 MT_SysCommandProcessing(uint8 *pBuf)
     case MT_SYS_RANDOM:
       MT_SysRandom();
       break;
-
+#ifdef ZNP_CC2530
     case MT_SYS_ASSOCDEVLIST_GET:
       MT_AssocDevList();
       break;
+#endif
 
 #if !defined( CC26XX )
     case MT_SYS_ADC_READ:
@@ -1441,6 +1438,7 @@ static void MT_SysRandom()
   MT_BuildAndSendZToolResponse( MT_SRSP_SYS, MT_SYS_RANDOM,
                                 sizeof(retArray), retArray );
 }
+#ifdef ZNP_CC2530
 /******************************************************************************
  * @fn      MT_AssocDevList
  *
@@ -1460,9 +1458,9 @@ static void MT_AssocDevList()
 
   /* Build and send back the response */
   MT_BuildAndSendZToolResponse( MT_SRSP_SYS, MT_SYS_ASSOCDEVLIST_GET,
-                                sizeof(Device_List), (uint8*)Device_List );
+              sizeof(*Device_List)*Max_Dev_Num, (uint8*)Device_List );
 }
-
+#endif
 #if !defined( CC26XX )
 /******************************************************************************
  * @fn      MT_SysAdcRead

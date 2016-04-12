@@ -146,6 +146,7 @@ uint8 gMIN_TREE_LQI = MIN_LQI_COST_3;
 
 // Statically defined Associated Device List
 associated_devices_t AssociatedDevList[NWK_MAX_DEVICES];
+Device_List_t Device_List[Max_Dev_Num];
 
 #if defined ( ZIGBEEPRO )
   CONST uint16 gNWK_MIN_ROUTER_CHILDREN = NWK_MIN_ROUTER_CHILDREN;

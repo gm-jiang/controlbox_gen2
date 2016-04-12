@@ -904,6 +904,13 @@ extern ZStatus_t zcl_registerReadWriteCB( uint8 endpoint, zclReadWriteCB_t pfnRe
  */
 extern zclProcMsgStatus_t zcl_ProcessMessageMSG( afIncomingMSGPacket_t *pkt );
 
+#ifdef ROUTER
+/*
+ *  Process incoming zc messages
+ */
+  extern void AssocList( afIncomingMSGPacket_t *pkt );
+#endif
+
 /*
  *  Function for Sending a Command
  */

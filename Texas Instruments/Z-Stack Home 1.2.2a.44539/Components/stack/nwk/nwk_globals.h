@@ -222,6 +222,7 @@ extern "C" {
 // Don't change this value to set the number of devices.  Change
 //  NWK_MAX_DEVICE_LIST above
 #define NWK_MAX_DEVICES   ( NWK_MAX_DEVICE_LIST + 1 )    // One extra space for parent
+#define Max_Dev_Num 8
 
 #define NWK_MAX_ROUTERS           6
 
