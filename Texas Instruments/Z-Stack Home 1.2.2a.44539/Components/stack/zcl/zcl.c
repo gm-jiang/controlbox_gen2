@@ -384,9 +384,9 @@ uint16 zcl_event_loop( uint8 task_id, uint16 events )
       if ( *msgPtr == AF_INCOMING_MSG_CMD )
       {
         zcl_ProcessMessageMSG( (afIncomingMSGPacket_t *)msgPtr );
-        #ifdef ROUTER
-            AssocList( (afIncomingMSGPacket_t *)msgPtr );
-        #endif
+#ifdef ROUTER
+        AssocList( (afIncomingMSGPacket_t *)msgPtr );
+#endif
       }
       else
       {

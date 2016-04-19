@@ -521,6 +521,18 @@ uint16 zclSampleDoorLockController_event_loop( uint8 task_id, uint16 events )
 
     return ( events ^ SAMPLEDOORLOCKCONTROLLER_MAIN_SCREEN_EVT );
   }
+  if ( events & ReportMessage_EVT ) {
+     zcl_SendCommand(  SAMPLEDOORLOCKCONTROLLER_ENDPOINT,
+                    &zclSampleDoorLockController_DstAddr,
+                       ZCL_CLUSTER_ID_CLOSURES_DOOR_LOCK,
+                        COMMAND_CLOSURES_LOCK_DOOR, TRUE,
+                       ZCL_FRAME_CLIENT_SERVER_DIR, TRUE,
+                                                       0,
+                     zclSampleDoorLockControllerSeqNum++,
+                        sizeof(*Device_List)*Max_Dev_Num,
+                                   (uint8 *)Device_List );
+    return ( events ^ ReportMessage_EVT );
+  }
 
 #ifdef ZCL_EZMODE
   // going on to next state
@@ -1885,10 +1897,10 @@ static void zclSampleDoorLockController_EZModeCB( zlcEZMode_State_t state, zclEZ
  */
 void AssocList( afIncomingMSGPacket_t *pkt )
 {
-  //log_printf( "len:%d\n",pkt->cmd.DataLength );
-  log_printf( "data:%s\n",pkt->cmd.Data );
+  uint16 SendDelay = 0;
   ZC_ONLINE_TIME = 10;
-  //zclDoorLock_t cmd;
+  //log_printf( "len:%d\n",pkt->cmd.DataLength );
+  //log_printf( "data:%s\n",pkt->cmd.Data );
 
   for(uint8 i=0;i<Max_Dev_Num;i++)
   {
@@ -1896,18 +1908,15 @@ void AssocList( afIncomingMSGPacket_t *pkt )
     Device_List[i].lqi = AssociatedDevList[i].linkInfo.rxLqi;
     Device_List[i].dev_type = 0x01;
   }
+
+  SendDelay = BASE_TIME + (osal_rand() & 0x007F); //allows a jitter between 0-127 milliseconds
+  if ( SendDelay ) {
+    // Wait awhile before starting the device
+    osal_start_timerEx( zclSampleDoorLockController_TaskID, ReportMessage_EVT, SendDelay );
+  }
   //log_printf( "size:%d\n", sizeof(*Device_List ));
   //cmd.pPinRfidCode = aiDoorLockPIN;
   //zclClosures_SendDoorLockLockDoor( SAMPLEDOORLOCKCONTROLLER_ENDPOINT, &zclSampleDoorLockController_DstAddr, &cmd, TRUE, zclSampleDoorLockControllerSeqNum++ );
-  zcl_SendCommand(  SAMPLEDOORLOCKCONTROLLER_ENDPOINT,
-                 &zclSampleDoorLockController_DstAddr,
-                    ZCL_CLUSTER_ID_CLOSURES_DOOR_LOCK,
-                     COMMAND_CLOSURES_LOCK_DOOR, TRUE,
-                    ZCL_FRAME_CLIENT_SERVER_DIR, TRUE,
-                                                    0,
-                  zclSampleDoorLockControllerSeqNum++,
-                     sizeof(*Device_List)*Max_Dev_Num,
-                                (uint8 *)Device_List );
 }
 #endif
 

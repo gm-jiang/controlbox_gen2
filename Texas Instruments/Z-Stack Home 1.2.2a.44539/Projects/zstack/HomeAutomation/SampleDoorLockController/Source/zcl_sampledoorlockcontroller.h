@@ -69,7 +69,10 @@ extern "C"
 #define SAMPLEDOORLOCKCONTROLLER_EZMODE_NEXTSTATE_EVT         0x0004
 #define SAMPLEDOORLOCKCONTROLLER_EZMODE_TIMEOUT_EVT           0x0008
 #define SAMPLEDOORLOCKCONTROLLER_MAIN_SCREEN_EVT              0x0010
+#define ReportMessage_EVT                                     0x0020
 
+//Base time with jitter
+#define BASE_TIME               0x000A
 // Application Display Modes
 #define DOORLOCK_MAINMODE         0x00
 #define DOORLOCK_HELPMODE         0x01
