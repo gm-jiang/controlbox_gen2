@@ -80,7 +80,7 @@ static uint8 sbCmnd(void);
 static void sbResp(uint8 rsp, uint8 len);
 static uint16 calcCRC(uint8 * abort);
 static uint16 runPoly(uint16 crc, uint8 val);
-
+extern void print(char *ptr, uint32 len);
 /* ------------------------------------------------------------------------------------------------
  *                                       Externals
  * ------------------------------------------------------------------------------------------------
@@ -257,11 +257,12 @@ uint8 sbImgValid(uint8 * time_spent_validating)
   
   if ((crc[0] != crc[1]) || (crc[0] == 0xFFFF))
   {
+    print("crcnoequ", 8);
     crc[1] = calcCRC(&abort);
     
     if (abort)
     {
-      sbReportState(SB_STATE_VERIFICATION_ABORTED);
+      //sbReportState(SB_STATE_VERIFICATION_ABORTED);
       return FALSE;
     }
     
@@ -278,22 +279,23 @@ uint8 sbImgValid(uint8 * time_spent_validating)
         (uint8 *)crc, sizeof(crc));
       if (crc[0] == crc[1])
       {
-        sbReportState(SB_STATE_VERIFICATION_IMAGE_VALID);
+        //sbReportState(SB_STATE_VERIFICATION_IMAGE_VALID);
       }
       else
       {
-        sbReportState(SB_STATE_VERIFICATION_FAILED);
+        //sbReportState(SB_STATE_VERIFICATION_FAILED);
       }
     }
     else
     {
-      sbReportState(SB_STATE_VERIFICATION_IMAGE_INVALID);
+      //sbReportState(SB_STATE_VERIFICATION_IMAGE_INVALID);
     }
-	
+
     *time_spent_validating = TIME_IT_TAKES_TO_CALC_CRC;
   }
   else
   {
+    print("crcequ", 6);
     *time_spent_validating = 0;
   }
   

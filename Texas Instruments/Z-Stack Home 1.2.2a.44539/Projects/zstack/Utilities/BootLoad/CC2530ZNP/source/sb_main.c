@@ -121,6 +121,8 @@ void vddWait(uint8 vdd);
 static void sblInit(void);
 static void sblExec(void);
 static uint8 sblWait(uint16 sbl_wait_time);
+void uart1Init(void);
+void print(char *ptr, uint32 len);
 
 // Saving code space by not using the _hal_uart.c API and directly including the low level drivers.
 #include "_hal_uart_isr.c"
@@ -142,14 +144,40 @@ static uint8 sblWait(uint16 sbl_wait_time);
  * @return      None.
  **************************************************************************************************
  */
+
+void uart1Init(void)
+{
+  PERCFG |= 0x2;
+  P1SEL  |= 0xc0;
+  U1CSR  |= 0x80;
+  U1UCR  = 0x80;
+
+  U1GCR  |= 11;
+  U1BAUD |= 216;
+  UTX1IF = 0;
+}
+
+void print(char *ptr, uint32 len)
+{
+  int32 i;
+  for(i=0; i<len; i++)
+  {
+    U1DBUF = *ptr;
+    ptr++;
+    while(UTX1IF == 0);
+    UTX1IF = 0;
+  }
+}
+
 void main(void)
 {
   uint8 time_spent_validating;
-  uint8 bootloaderForcedByMainApp = FALSE;
+//  uint8 bootloaderForcedByMainApp = FALSE;
   uint32 mainAppCommandLocal = mainAppCommand;
 
   mainAppCommand = MAIN_APP_CMD_NONE;
-    
+
+#if 0
   if (mainAppCommandLocal == MAIN_APP_CMD_FORCE_BOOTLOADER)
   {
     bootloaderForcedByMainApp = TRUE;
@@ -193,7 +221,19 @@ void main(void)
       HAL_SYSTEM_RESET();
     }
   }
+#endif
+  sblInit();
+  uart1Init();
+  print("sblinit", 7);
 
+  if(sbImgValid(&time_spent_validating))
+  {
+    print("imgvalid", 8);
+    asm("LJMP 0x2000\n");
+    HAL_SYSTEM_RESET();
+  }
+
+  print("sblexec", 7);
   sblExec();
   HAL_SYSTEM_RESET();
 }
@@ -264,7 +304,8 @@ static void sblInit(void)
 #if defined CC2530_MK
   znpCfg1 = ZNP_CFG1_SPI;
 #else
-  znpCfg1 = P2_0;
+//  znpCfg1 = P2_0;
+  znpCfg1 = ZNP_CFG1_UART;
 #endif
   if (znpCfg1 == ZNP_CFG1_SPI)
   {
