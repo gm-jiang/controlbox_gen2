@@ -76,6 +76,10 @@
   #include "hal_flash.h"
   #include "sb_shared.h"
 #endif
+#if defined( ZNP_CC2530 )
+#include "nwk_globals.h"
+#endif
+
 
 /******************************************************************************
  * MACROS
@@ -314,6 +318,7 @@ uint8 MT_SysCommandProcessing(uint8 *pBuf)
     case MT_SYS_RANDOM:
       MT_SysRandom();
       break;
+
 #ifdef ZNP_CC2530
     case MT_SYS_ASSOCDEVLIST_GET:
       MT_AssocDevList();

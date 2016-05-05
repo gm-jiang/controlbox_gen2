@@ -306,6 +306,7 @@
           <state>POWER_SAVING</state>
           <state>TC_LINKKEY_JOIN</state>
           <state>ZNP_ALT</state>
+          <state>ZNP_CC2530</state>
         </option>
         <option>
           <name>CCPreprocFile</name>
