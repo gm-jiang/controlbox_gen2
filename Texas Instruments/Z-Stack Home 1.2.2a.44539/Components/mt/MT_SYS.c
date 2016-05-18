@@ -1463,7 +1463,7 @@ static void MT_AssocDevList()
 
   /* Build and send back the response */
   MT_BuildAndSendZToolResponse( MT_SRSP_SYS, MT_SYS_ASSOCDEVLIST_GET,
-              sizeof(*Device_List)*Max_Dev_Num, (uint8*)Device_List );
+              sizeof(Device_List_t)*Max_Dev_Num, (uint8*)Device_List );
 }
 #endif
 #if !defined( CC26XX )
