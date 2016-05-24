@@ -10,9 +10,9 @@
     <debug>1</debug>
     <settings>
       <name>General</name>
-      <archiveVersion>2</archiveVersion>
+      <archiveVersion>3</archiveVersion>
       <data>
-        <version>7</version>
+        <version>8</version>
         <wantNonLocal>1</wantNonLocal>
         <debug>1</debug>
         <option>
@@ -274,6 +274,10 @@
           <name>UseMDU</name>
           <state></state>
         </option>
+        <option>
+          <name>AdditionalDriver</name>
+          <state></state>
+        </option>
       </data>
     </settings>
     <settings>
@@ -383,7 +387,7 @@
         <option>
           <name>CCAllowList</name>
           <version>1</version>
-          <state>11111</state>
+          <state>10010</state>
         </option>
         <option>
           <name>CCObjUseModuleName</name>
@@ -496,7 +500,7 @@
         </option>
         <option>
           <name>CCOptLevel</name>
-          <state>3</state>
+          <state>2</state>
         </option>
         <option>
           <name>CCOptStrategy</name>
@@ -505,7 +509,7 @@
         </option>
         <option>
           <name>CCOptLevelSlave</name>
-          <state>3</state>
+          <state>2</state>
         </option>
         <option>
           <name>CompilerMisraRules04</name>
@@ -710,6 +714,7 @@
       <data>
         <extensions></extensions>
         <cmdline></cmdline>
+        <hasPrio>0</hasPrio>
       </data>
     </settings>
     <settings>
@@ -722,14 +727,14 @@
       <archiveVersion>1</archiveVersion>
       <data>
         <prebuild></prebuild>
-        <postbuild></postbuild>
+        <postbuild>"$PROJ_DIR$\..\..\..\Tools\CC2530DB\oad.exe" "$PROJ_DIR$\CC2530BL\Exe\boot.sim" "$PROJ_DIR$\CC2530BL\Exe\boot.bin"</postbuild>
       </data>
     </settings>
     <settings>
       <name>XLINK</name>
       <archiveVersion>4</archiveVersion>
       <data>
-        <version>19</version>
+        <version>21</version>
         <wantNonLocal>1</wantNonLocal>
         <debug>1</debug>
         <option>
@@ -936,16 +941,16 @@
         </option>
         <option>
           <name>XExtraOutOverride</name>
-          <state>1</state>
+          <state>0</state>
         </option>
         <option>
           <name>ExtraOutputFile</name>
-          <state>CC2530SB.hex</state>
+          <state>Boot.sim</state>
         </option>
         <option>
           <name>ExtraOutputFormat</name>
           <version>11</version>
-          <state>23</state>
+          <state>60</state>
         </option>
         <option>
           <name>ExtraFormatVariant</name>
@@ -1053,6 +1058,26 @@
           <name>XLink DPC Address</name>
           <state>1</state>
         </option>
+        <option>
+          <name>XlinkLogEnable</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>XlinkLogInputFiles</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>XlinkLogModuleSelection</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>XlinkLogPrintfScanf</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>XlinkLogSegmentSelection</name>
+          <state>0</state>
+        </option>
       </data>
     </settings>
     <settings>
@@ -1094,16 +1119,13 @@
   <group>
     <name>App</name>
     <file>
-      <name>$PROJ_DIR$\..\Source\sb_exec.c</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\Source\sb_exec.h</name>
-    </file>
-    <file>
       <name>$PROJ_DIR$\source\sb_main.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\source\sb_main.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\source\ymodem.c</name>
     </file>
   </group>
   <group>

@@ -467,6 +467,7 @@ extern "C"
 #define MT_APP_USER_TEST                     0x01
 #define MT_APP_PB_ZCL_MSG                    0x02
 #define MT_APP_PB_ZCL_CFG                    0x03
+#define MT_APP_FACTORY_TEST                  0x04  /*Added by yanxianping 20160517*/
 
 /* SRSP */
 #define MT_APP_RSP                           0x80

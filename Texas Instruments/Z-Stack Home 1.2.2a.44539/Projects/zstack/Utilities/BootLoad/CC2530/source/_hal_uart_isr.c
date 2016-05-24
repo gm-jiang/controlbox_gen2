@@ -420,6 +420,13 @@ static void HalUARTPollISR(void)
   while(UTXxIF)  halUartTxIsr();
 }
 
+static void HalUARTPollISR_TX(void)
+{
+  halUartTxIsr();
+  while(UTXxIF != 1);
+}
+
+
 /**************************************************************************************************
  * @fn      HalUARTRxAvailISR()
  *

@@ -54,6 +54,8 @@
  #include "nwk_util.h"
 #endif
 
+#include "lock_router_app.h"
+
 /***************************************************************************************************
  * LOCAL FUNCTIONS
  ***************************************************************************************************/
@@ -99,6 +101,14 @@ uint8 MT_AppCommandProcessing(uint8 *pBuf)
       MT_AppPB_ZCLCfg(pBuf);
       break;
 #endif // MT_APP_PB_ZCL_FUNC
+
+    /*Begin added by yanxianping 20160517*/
+#ifdef ROUTER
+    case MT_APP_FACTORY_TEST:
+      MT_AppFactoryTest(pBuf);
+      break;
+#endif
+    /*End added by yanxianping 20160517*/
 
     default:
       status = MT_RPC_ERR_COMMAND_ID;
