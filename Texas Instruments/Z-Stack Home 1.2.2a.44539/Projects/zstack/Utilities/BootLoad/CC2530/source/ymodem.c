@@ -133,7 +133,7 @@ static int32 YmodemReceiveBytes (uint8 *buff, uint32 len, uint32 timeout)
     HalUARTPollISR();
     cnt += HalUARTReadISR(buff + cnt, len-cnt);
   }
-  
+
   return cnt;
 }
 
@@ -240,14 +240,14 @@ static int32 YmodemDownloading (void)
       YmodemSendByte(CA);
       return RESULT_TOO_MUCH_ERROR;
     }
-    
+
     if (YmodemReceiveBytes(&ch, 1, PACKET_TIMEOUT) != 1)
     {
       YmodemSendByte(CRC16);
       errors++;
       continue;
     }
-    
+
     switch (ch)
     {
       case SOH:
@@ -361,12 +361,12 @@ static int32 YmodemDownloading (void)
         }
         packets_received++;
         break;
-        
+
       case EOT:
         YmodemSendByte(ACK);
         last_packet_flag = 1;
         break;
-        
+
       case CA:
         if ((YmodemReceiveBytes(&ch, 1, PACKET_TIMEOUT) == 1) && (ch == CA))
         {
@@ -378,13 +378,13 @@ static int32 YmodemDownloading (void)
           YmodemSendByte(CRC16);
           break;
         }
-        
+
       case ABORT1:
       case ABORT2:
         YmodemSendByte(CA);
         YmodemSendByte(CA);
         return RESULT_USER_ABORT;
-        
+
       default:
       {
           YmodemSendByte(CRC16);
@@ -440,7 +440,7 @@ static void YModemEnterUpgrade(void)
   uint8 key = 0;
 
   YmodemOutputString("\r\nClick on FileSend button to start downloading image.");
-  
+
   while (1)
   {
     /* '1' start downloading image */
@@ -460,9 +460,9 @@ void YModemUpgrade(void)
   YModemUARTInit();
 
   YmodemOutputString("\r\nStart bootloader.");
-  
+
   YmodemOutputString("\r\nWait for IAP_enable for 3 seconds...");
-  
+
   if(YmodemReceiveBytes(cmd_data, 2, ENTER_UPGRADE_TIMEOUT) == 2)
   {
     if(cmd_data[0]==0x41 && cmd_data[1]==0x35)
@@ -472,7 +472,7 @@ void YModemUpgrade(void)
   }
 
   YmodemOutputString("\r\nStart run application...\r\n");
-  
+
   return ;
 }
 

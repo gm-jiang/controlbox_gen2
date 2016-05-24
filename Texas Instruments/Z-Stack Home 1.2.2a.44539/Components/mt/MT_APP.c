@@ -102,13 +102,11 @@ uint8 MT_AppCommandProcessing(uint8 *pBuf)
       break;
 #endif // MT_APP_PB_ZCL_FUNC
 
-    /*Begin added by yanxianping 20160517*/
 #ifdef ROUTER
     case MT_APP_FACTORY_TEST:
       MT_AppFactoryTest(pBuf);
       break;
 #endif
-    /*End added by yanxianping 20160517*/
 
     default:
       status = MT_RPC_ERR_COMMAND_ID;
