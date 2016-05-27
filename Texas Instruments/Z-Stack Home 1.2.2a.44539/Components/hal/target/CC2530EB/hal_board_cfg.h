@@ -433,9 +433,9 @@ st( \
   /* Mode select UART1 SPI Mode as master. */\
   U1CSR = 0; \
   \
-  /* Setup for 115200 baud. */\
-  U1GCR = 11; \
-  U1BAUD = 216; \
+  /* Setup max baud rate f/16*/\
+  U1GCR = 16; \
+  U1BAUD = 0; \
   \
   /* Set bit order to MSB */\
   U1GCR |= BV(5); \

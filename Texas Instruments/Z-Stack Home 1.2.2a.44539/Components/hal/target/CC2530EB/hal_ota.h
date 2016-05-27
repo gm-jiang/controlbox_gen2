@@ -125,4 +125,9 @@ void HalOTAInvRC(void);
 uint32 HalOTAAvail(void);
 void HalOTARead(uint32 oset, uint8 *pBuf, uint16 len, image_t type);
 void HalOTAWrite(uint32 oset, uint8 *pBuf, uint16 len, image_t type);
+
+void HalSPIRead(uint32 addr, uint8 *pBuf, uint16 len);
+void HalSPIWrite(uint32 addr, uint8 *pBuf, uint16 len);
+void HalSPIEraseSector(uint32 addr);
+
 #endif

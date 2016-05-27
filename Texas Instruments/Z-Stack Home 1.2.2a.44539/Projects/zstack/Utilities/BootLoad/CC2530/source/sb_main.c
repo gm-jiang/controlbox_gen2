@@ -49,7 +49,7 @@
 #include "hal_types.h"
 #include "sb_main.h"
 #include "ymodem.h"
-
+#include "sb_ota.h"
 
 /* ------------------------------------------------------------------------------------------------
  *                                       Local Functions
@@ -84,34 +84,24 @@ static void vddWait(uint8 vdd)
   } while (--cnt);
 }
 
-/**************************************************************************************************
- * @fn          sblInit
- *
- * @brief       SBL initialization.
- *
- * input parameters
- *
- * None.
- *
- * output parameters
- *
- * None.
- *
- * @return      None.
- */
-
-
-
 void main(void)
 {
-  vddWait(VDD_MIN_NV);
-  HAL_BOARD_INIT();
+    vddWait(VDD_MIN_NV);
+    HAL_BOARD_INIT();
 
-  YModemUpgrade();
+    YModemUARTInit();
 
-  asm("LJMP 0x2000\n");  // jump to run-code.
+    YmodemOutputString("\r\nStart bootloader.");
 
-  return ;
+    /*upgrade ota firmware if valid, otherwise try ymodem upgrade*/
+    if (!sb_ota_upgrade())
+        YModemUpgrade();
+
+    YmodemOutputString("\r\nStart run application...\r\n");
+
+    asm("LJMP 0x2000\n");
+
+    return ;
 }
 
 

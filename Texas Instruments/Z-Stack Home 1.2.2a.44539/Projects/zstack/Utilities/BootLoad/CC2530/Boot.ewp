@@ -474,6 +474,7 @@
           <state>$PROJ_DIR$\..\Source</state>
           <state>$PROJ_DIR$\source</state>
           <state>$PROJ_DIR$\..\..\..\..\..\Components\hal\include</state>
+          <state>$PROJ_DIR$\..\..\..\..\..\Components\osal\include</state>
           <state>$PROJ_DIR$\..\..\..\..\..\Components\hal\target\_COMMON\CC2530</state>
           <state>$PROJ_DIR$\..\..\..\..\..\Components\hal\target\CC2530EB</state>
         </option>
@@ -1125,6 +1126,9 @@
       <name>$PROJ_DIR$\source\sb_main.h</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\source\sb_ota.c</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\source\ymodem.c</name>
     </file>
   </group>
@@ -1156,6 +1160,9 @@
           <name>Drivers</name>
           <file>
             <name>$PROJ_DIR$\..\..\..\..\..\Components\hal\target\CC2530EB\hal_flash.c</name>
+          </file>
+          <file>
+            <name>$PROJ_DIR$\..\..\..\..\..\Components\hal\target\CC2530EB\hal_ota.c</name>
           </file>
         </group>
         <group>

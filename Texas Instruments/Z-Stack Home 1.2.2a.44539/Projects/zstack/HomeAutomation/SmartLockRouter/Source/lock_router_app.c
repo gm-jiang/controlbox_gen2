@@ -9,10 +9,12 @@
 #include "OSAL_Nv.h"
 #include "onboard.h"
 #include "hal_led.h"
+#include "hal_ota.h"
 #include <stdlib.h>
 #include <string.h>
 #include "hal_board_cfg.h"
 #include "lock_router_app.h"
+#include "lock_router_ota.h"
 #include "router_print.h"
 #include "zcl.h"
 
@@ -28,14 +30,15 @@ uint8 lock_router_offline_count = 0;
 uint8 flag_deviceid_send_succeed = false;
 uint8 lock_router_app_seq_num = 0;
 uint8 lock_router_app_task_id = 0;
-uint32 tid_report_deviceid = 0;
+uint32 msg_tid = 0;
 uint32 device_id = 0;
+uint8 device_id_report_cnt = 0;
 devStates_t lock_router_nework_state = DEV_INIT;
 afAddrType_t lock_router_app_dest_addr = {0};
 
 SimpleDescriptionFormat_t lock_router_simple_desc =
 {
-    LOCK_END_POINT_NUM,             //  int Endpoint;
+    LOCK_ROUTER_END_POINT_NUM,             //  int Endpoint;
     LOCK_APP_PROFILE_ID,              //  uint16 AppProfId[2];
     LOCK_APP_DEVICE_ID,               //  uint16 AppDeviceId[2];
     0x01,                     //  int   AppDevVer:4;
@@ -48,7 +51,7 @@ SimpleDescriptionFormat_t lock_router_simple_desc =
 
 static endPointDesc_t lock_router_ep =
 {
-    LOCK_END_POINT_NUM,
+    LOCK_ROUTER_END_POINT_NUM,
     &lock_router_app_task_id,
     &lock_router_simple_desc,
     (afNetworkLatencyReq_t)0            // No Network Latency req
@@ -61,7 +64,7 @@ void lock_router_app_Init(uint8 task_id)
 
     // Set destination address to indirect
     lock_router_app_dest_addr.addrMode = (afAddrMode_t)Addr16Bit;
-    lock_router_app_dest_addr.endPoint = LOCK_END_POINT_NUM;
+    lock_router_app_dest_addr.endPoint = LOCK_CENTER_END_POINT_NUM;
     lock_router_app_dest_addr.addr.shortAddr = 0x0000;
 
     // Register the Application to receive the unprocessed Foundation command/response messages
@@ -83,9 +86,13 @@ void lock_router_app_Init(uint8 task_id)
         log_printf( "Error: read device id error.\r\n");
     }
 
+    ota_init();
+
     /*start network indication , led toggle*/
     osal_start_reload_timer(lock_router_app_task_id,
-        LOCK_ROUTER_EVENT_LED_TOGGLE, TIME_INTERVAL_TOGGLE_LED);
+                LOCK_ROUTER_EVENT_LED_TOGGLE, TIME_INTERVAL_TOGGLE_LED);
+
+    log_printf( "start router application.\r\n");
 
     return ;
 }
@@ -124,13 +131,14 @@ uint16 lock_router_app_event_loop( uint8 task_id, uint16 events )
 
                         /*stop toggle led*/
                         osal_stop_timerEx(lock_router_app_task_id, LOCK_ROUTER_EVENT_LED_TOGGLE);
-
+                        SB_TURN_ON_LED1();
 #ifdef ROUTER
                         /*report device id every 5s untile response received*/
                         osal_start_reload_timer(lock_router_app_task_id,
-                            LOCK_ROUTER_EVENT_REPORT_DEVICE_ID, TIME_INTERVAL_REPORT_DEVICEID);
+                                    LOCK_ROUTER_EVENT_REPORT_DEVICE_ID, TIME_INTERVAL_REPORT_DEVICEID);
 
                         /*start offline detection*/
+                        lock_router_offline_count = LOCK_ROUTER_OFFLINE_TIME;
                         osal_start_reload_timer( lock_router_app_task_id,
                             LOCK_ROUTER_EVENT_OFFLINE_DETECT, TIME_INTERVAL_OFFLINE_DETECT);
 #endif
@@ -157,14 +165,11 @@ uint16 lock_router_app_event_loop( uint8 task_id, uint16 events )
 
     if (events & LOCK_ROUTER_EVENT_OFFLINE_DETECT)
     {
-#if 0
         if (0 == lock_router_offline_count--)
         {
-          lock_router_offline_count = LOCK_ROUTER_OFFLINE_TIME;
-          SystemResetSoft();
+            lock_router_offline_count = LOCK_ROUTER_OFFLINE_TIME;
+            SystemResetSoft();
         }
-        log_printf( "lock_router_offline_count:%d.\r\n", lock_router_offline_count );
-#endif
 
         return ( events ^ LOCK_ROUTER_EVENT_OFFLINE_DETECT );
     }
@@ -172,14 +177,41 @@ uint16 lock_router_app_event_loop( uint8 task_id, uint16 events )
 #ifdef ROUTER
     if (events & LOCK_ROUTER_EVENT_REPORT_DEVICE_ID)
     {
-        lock_router_report_device_id();
+        if (device_id_report_cnt == REPORT_DEVICE_ID_MAX_NUM)
+        {
+            log_printf( "report device id timeout, rejoin network.\r\n");
+            SystemResetSoft();
+            device_id_report_cnt = 0;
+        }
+        else
+        {
+            lock_router_report_device_id();
+            device_id_report_cnt++;
+        }
 
         return ( events ^ LOCK_ROUTER_EVENT_REPORT_DEVICE_ID );
+    }
+
+    if (events & LOCK_ROUTER_EVENT_HB_ACK)
+    {
+        log_printf( "Send heart beat ack\r\n");
+        if (ZSuccess != send_msg_to_center((uint8 *)Device_List, sizeof(Device_List_t)*Max_Dev_Num,
+                                MSG_TYPE_HEART_BEAT, msg_tid++))
+            log_printf( "Error: send associated device info failed.\r\n");
+
+        return ( events ^ LOCK_ROUTER_EVENT_HB_ACK );
+    }
+
+    if (events & LOCK_ROUTER_EVENT_OTA_RESET)
+    {
+        SystemResetSoft();
+        return ( events ^ LOCK_ROUTER_EVENT_OTA_RESET );
     }
 #endif
 
     if (events & LOCK_ROUTER_EVENT_LED_TOGGLE)
     {
+        log_printf( "Network status = %d, DEV_ROUTER=%d\n", lock_router_nework_state, DEV_ROUTER);
         SB_TOGGLE_LED1();
         return ( events ^ LOCK_ROUTER_EVENT_LED_TOGGLE );
     }
@@ -211,114 +243,59 @@ uint8 lock_router_factory_test_crc(uint8 *data,uint16 datalen)
 
 void MT_AppFactoryTest(uint8 *pBuf)
 {
-    uint8 dataLen = 0;
-    uint8 datalen_calc = 0;
-    uint8 *SN_data = NULL;
-    uint8 SN_char[SN_BUFFER_LENGTH] = {0};
+    uint8 SN_char[SN_MAX_LEN + 1] = {0};
     uint32 sn_int = 0;
     uint32 sn_int_read = 0;
-    uint8 crc_sn = 0, crc_ver = 0;
-    uint8 ret = RET_SUCCESS;
     uint8 nvret = 0;
 
-    /* parse header */
-    dataLen = pBuf[MT_RPC_POS_LEN];
-    SN_data = pBuf + MT_RPC_FRAME_HDR_SZ;
-
-    datalen_calc = /*4 + SN_data[4] + 2 + */16 + SN_data[16] + 2; /*header+sn_len+sn+sn_check+ver_len+ver+ver_check*/
-    if (datalen_calc !=  dataLen)
+    strncpy((char *)SN_char , (char *)pBuf+MT_RPC_FRAME_HDR_SZ, SN_MAX_LEN);
+    sn_int = atol((const char *)SN_char);
+    nvret = osal_nv_item_init (ZCD_NV_DEVICE_ID, sizeof(uint32), &sn_int );
+    if (nvret != NV_OPER_FAILED )
     {
-        ret = RET_LEN_ERR;
-        log_printf( "Error: data length error! needed %d bytes but only %d bytes data received.\n", dataLen,  datalen_calc);
-    }
-    else if ((SN_data[0] + SN_data[2]) == (SN_data[1] + SN_data[3]))
-    {
-        crc_sn = lock_router_factory_test_crc(&SN_data[4], SN_data[4] + 1);//+1 include the SN length
-        crc_ver = lock_router_factory_test_crc(&SN_data[16], SN_data[16] + 1);
-        if (crc_sn == SN_data[SN_data[4] + 5] && crc_ver == SN_data[SN_data[16]+17])
+        nvret = osal_nv_write(ZCD_NV_DEVICE_ID, 0, sizeof(uint32), &sn_int);
+        if (nvret != SUCCESS)
         {
-            strncpy((char *)SN_char , (char *)&SN_data[5], SN_data[4]);
-            sn_int = atoi((const char *)SN_char);
-            nvret = osal_nv_item_init (ZCD_NV_DEVICE_ID, sizeof(uint32), &sn_int );
-            if (nvret != NV_OPER_FAILED )
-            {
-                nvret = osal_nv_write(ZCD_NV_DEVICE_ID, 0, sizeof(uint32), &sn_int);
-                if (nvret != SUCCESS)
-                {
-                    ret = RET_SAVE_ERR;
-                    log_printf( "Error: save data error! error code is %d .\n", nvret);
-                }
-                else
-                {
-                    nvret = osal_nv_read(ZCD_NV_DEVICE_ID, 0, sizeof(uint32), &sn_int_read);
-                    if (nvret != SUCCESS)
-                    {
-                        ret = RET_VERIFY_ERR;
-                        log_printf( "Error: verification error! error code is %d .\n", nvret);
-                    }
-                    if (sn_int != sn_int_read)
-                    {
-                        ret = RET_VERIFY_ERR;
-                        log_printf( "Error: verification error! write %d but read %d.\n", sn_int, sn_int_read);
-                    }
-                    else
-                    {
-                        device_id = sn_int;
-                        log_printf( "Save SN number successfully. SN = %d.\n", sn_int);
-                    }
-                }
-            }
-            else
-            {
-                ret = RET_SAVE_ERR;
-                log_printf( "Error: save data error! error code is %d .\n", nvret);
-            }
+            log_printf( "Error: save device id error! error code is %d .\n", nvret);
         }
         else
         {
-            ret = RET_CRC_ERR;
-            log_printf( "Error: crc error!\n");
+            nvret = osal_nv_read(ZCD_NV_DEVICE_ID, 0, sizeof(uint32), &sn_int_read);
+            if (nvret != SUCCESS)
+            {
+                log_printf( "Error: read device id error! error code is %d .\n", nvret);
+            }
+            if (sn_int != sn_int_read)
+            {
+                log_printf( "Error: device id verification error! write %d but read %d.\n", sn_int, sn_int_read);
+            }
+            else
+            {
+                device_id = sn_int;
+                osal_memset(SN_char, 0, SN_MAX_LEN + 1);
+                int2str(SN_char, device_id);
+                log_printf( "SN = %s.\n", SN_char); /*print %lu error*/
+            }
         }
     }
     else
     {
-        ret = RET_HEADER_ERR;
-        log_printf( "Error: packet header error! packet header is %d %d %d %d.\n", SN_data[0], SN_data[1], SN_data[2], SN_data[3]);
+        log_printf( "Error: save device id error! error code is %d .\n", nvret);
     }
 
-    ret = ret;
+    save_hw_ver(pBuf+MT_RPC_FRAME_HDR_SZ+SN_MAX_LEN);
+
     return ;
 }
 
+
 void lock_router_report_device_id(void)
 {
-    uint8 buf[10] = {0};
     uint8 ret = 0;
-    uint8 len = 0;
-    buf[0] = 0XAA;
-    buf[1] = 0X55;
-    buf[2] = sizeof(uint32);
-    buf[3] = MSG_TYPE_DEVICE_ID;
-    buf[4] = tid_report_deviceid & 0XFF;
-    buf[5] = (tid_report_deviceid >> 8) & 0X00FF;
-    osal_memcpy(&buf[6], &device_id, sizeof(uint32));
-    len = 6 + sizeof(uint32);
-    tid_report_deviceid++;
 
     log_printf( "report device id %d.\r\n", device_id);
 
-    ret = AF_DataRequest(&lock_router_app_dest_addr,
-                                    &lock_router_ep, 0, len, buf,
-                                    &lock_router_app_seq_num, 0, AF_DEFAULT_RADIUS );
-    /*
-    ret = zcl_SendCommand(LOCK_END_POINT_NUM,
-                    &lock_router_app_dest_addr,
-                    0x0101,
-                    0, TRUE,
-                    0, TRUE,
-                    0,
-                    lock_router_app_seq_num++,
-                    len, buf);*/
+    ret = send_msg_to_center((uint8*)&device_id, sizeof(uint32), MSG_TYPE_DEVICE_ID, msg_tid++);
     if (ret != ZSuccess)
     {
         log_printf( "Error: send device id msg error, error code is %d.\r\n", ret);
@@ -336,13 +313,13 @@ void lock_router_report_device_id(void)
 uint8 lock_router_msg_crc(const void *vptr, int len)
 {
     const uint8 *data = vptr;
-    uint8 crc = 0;
-    int i, j;
+    uint32 crc = 0;
+    int32 i, j;
     for (j = len; j; j--, data++) {
         crc ^= (*data << 8);
         for(i = 8; i; i--) {
             if (crc & 0x8000)
-                crc ^= (0x1070 << 3);
+                crc ^= (uint32)(0x1070 << 3);
             crc <<= 1;
         }
     }
@@ -352,37 +329,24 @@ uint8 lock_router_msg_crc(const void *vptr, int len)
 void lock_router_hb_proc(uint8 *pkt)
 {
     uint16 SendDelay = 0;
-    uint8 ret = 0;
 
     lock_router_offline_count = LOCK_ROUTER_OFFLINE_TIME;
 
-    for(uint8 i=0;i<Max_Dev_Num;i++)
+    for(uint8 i=0; i<Max_Dev_Num; i++)
     {
         Device_List[i].nwkAddr = AssociatedDevList[i].shortAddr;
         Device_List[i].lqi = AssociatedDevList[i].linkInfo.rxLqi;
         Device_List[i].dev_type = 0x01;
     }
 
-    SendDelay = BASE_TIME + (osal_rand() & 0x007F); //allows a jitter between 0-127 milliseconds
-    if ( SendDelay ) {
-        ret = zcl_SendCommand(LOCK_END_POINT_NUM,
-                        &lock_router_app_dest_addr,
-                        0x0101,
-                        0, TRUE,
-                        0, TRUE,
-                        0,
-                        lock_router_app_seq_num++,
-                        sizeof(Device_List_t)*Max_Dev_Num, (uint8 *)Device_List);
-        if (ret != ZSuccess)
-        {
-            log_printf( "Error: send device id msg error, error code is %d.\r\n", ret);
-            return ;
-        }
-    }
+    SendDelay = HB_ACK_DELAY_BASE + osal_rand() & HB_ACK_DELAY_MASK; //allows a jitter of 2 seconds
 
-  return ;
+    log_printf( "Received heart beat package, Ack delay = %d\r\n", SendDelay);
+
+    osal_start_timerEx(lock_router_app_task_id, LOCK_ROUTER_EVENT_HB_ACK, SendDelay);
+
+    return ;
 }
-
 
 void lock_router_msg_proc(afIncomingMSGPacket_t *msg)
 {
@@ -391,12 +355,20 @@ void lock_router_msg_proc(afIncomingMSGPacket_t *msg)
     uint8 *pdata = NULL;
     uint8 crc = 0;
     uint8 crc_cal = 0;
-    uint8 i = 0;
 
     pdata = msg->cmd.Data;
     len = pdata[0];
     type = pdata[1];
     crc = pdata[len];
+
+#ifdef MSG_DEBUG_ON
+    {
+        log_printf("RECEIVED:");
+        for (uint16 i = 0; i < len; i++)
+            log_printf(" %X", pdata[i]);
+        log_printf("\r\n");
+    }
+#endif
 
     crc_cal = lock_router_msg_crc(pdata, len);
     if (crc != crc_cal)
@@ -405,14 +377,9 @@ void lock_router_msg_proc(afIncomingMSGPacket_t *msg)
         return ;
     }
 
-    while(i < len)
-    {
-        log_printf("%x ", pdata[i++]);
-    }
-
     switch (type)
     {
-        case MSG_TYPE_DEVICE_ID_RESPONSE:
+        case MSG_TYPE_DEVICE_ID:
             /*stop report*/
             flag_deviceid_send_succeed = true;
             osal_stop_timerEx(lock_router_app_task_id, LOCK_ROUTER_EVENT_REPORT_DEVICE_ID);
@@ -422,9 +389,19 @@ void lock_router_msg_proc(afIncomingMSGPacket_t *msg)
             break;
 
        case MSG_TYPE_HEART_BEAT:
-#ifdef ROUTER
             lock_router_hb_proc(pdata);
-#endif
+            break;
+
+        case MSG_TYPE_OTA_GET_SW_VER:
+            ota_notify(pdata, len);
+            break;
+
+        case MSG_TYPE_OTA_MSG:
+            ota_msg_proc(pdata, len);
+            break;
+
+        case MSG_TYPE_OTA_CRC_CHK:
+            ota_msg_check_crc(pdata, len);
             break;
 
         default:
@@ -433,6 +410,45 @@ void lock_router_msg_proc(afIncomingMSGPacket_t *msg)
 
     return ;
 }
+
+uint8 send_msg_to_center(uint8 *data, uint8 len, uint8 type, uint16 tid)
+{
+    uint8 buf[64] = {0};
+
+    if (len > (64-6))
+    {
+        log_printf("Error: send message too long, len = %d.\r\n", len);
+        return ZFailure;
+    }
+
+    buf[0] = 0XAA;
+    buf[1] = 0X55;
+    buf[2] = len;
+    buf[3] = type;
+    buf[4] = tid & 0XFF;
+    buf[5] = (tid >> 8) & 0X00FF;
+    osal_memcpy(&buf[6], data, len);
+
+#ifdef MSG_DEBUG_ON
+    {
+        uint8 i;
+        log_printf("SENT:");
+        for (i = 0; i < len + 6; i++)
+            log_printf(" %X", buf[i]);
+        log_printf("\r\n");
+    }
+#endif
+
+    lock_router_app_seq_num++;
+/*
+    return AF_DataRequest(&lock_router_app_dest_addr,
+                                    &lock_router_ep, 0, len + 6, buf,
+                                    &lock_router_app_seq_num, 0, AF_DEFAULT_RADIUS );*/
+    return AF_DataRequest(&lock_router_app_dest_addr,
+            &lock_router_ep, 5, len + 6, buf,
+            &lock_router_app_seq_num, 0, 0xEE );
+}
+
 
 #endif
 

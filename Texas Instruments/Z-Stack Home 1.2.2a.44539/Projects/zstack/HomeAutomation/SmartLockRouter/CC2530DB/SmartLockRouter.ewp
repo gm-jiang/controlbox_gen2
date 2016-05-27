@@ -312,17 +312,17 @@
           <state>MT_APP_FUNC</state>
           <state>MT_SYS_FUNC</state>
           <state>MT_ZDO_FUNC</state>
-          <state>LCD_SUPPORTED=DEBUG</state>
+          <state>xLCD_SUPPORTED=DEBUG</state>
           <state>MULTICAST_ENABLED=FALSE</state>
-          <state>ZCL_READ</state>
-          <state>ZCL_WRITE</state>
-          <state>ZCL_REPORT</state>
-          <state>ZCL_EZMODE</state>
-          <state>ZCL_BASIC</state>
-          <state>ZCL_IDENTIFY</state>
-          <state>ZCL_DOORLOCK</state>
-          <state>ZCL_SCENES</state>
-          <state>ZCL_GROUPS</state>
+          <state>xZCL_READ</state>
+          <state>xZCL_WRITE</state>
+          <state>xZCL_REPORT</state>
+          <state>xZCL_EZMODE</state>
+          <state>xZCL_BASIC</state>
+          <state>xZCL_IDENTIFY</state>
+          <state>xZCL_DOORLOCK</state>
+          <state>xZCL_SCENES</state>
+          <state>xZCL_GROUPS</state>
           <state>PRINT_DEBUG</state>
         </option>
         <option>
@@ -764,7 +764,7 @@
       <archiveVersion>1</archiveVersion>
       <data>
         <prebuild></prebuild>
-        <postbuild></postbuild>
+        <postbuild>"$PROJ_DIR$\..\..\..\Tools\CC2530DB\oad.exe" "$PROJ_DIR$\CoordinatorEB\Exe\SmartLockRouter.sim" "$PROJ_DIR$\CoordinatorEB\Exe\SmartLockRouter.bin"</postbuild>
       </data>
     </settings>
     <settings>
@@ -970,11 +970,11 @@
         </option>
         <option>
           <name>AllowExtraOutput</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>GenerateExtraOutput</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>XExtraOutOverride</name>
@@ -1467,15 +1467,15 @@
           <state>MT_ZDO_FUNC</state>
           <state>xLCD_SUPPORTED=DEBUG</state>
           <state>MULTICAST_ENABLED=FALSE</state>
-          <state>ZCL_READ</state>
-          <state>ZCL_WRITE</state>
-          <state>ZCL_REPORT</state>
-          <state>ZCL_EZMODE</state>
-          <state>ZCL_BASIC</state>
-          <state>ZCL_IDENTIFY</state>
-          <state>ZCL_DOORLOCK</state>
-          <state>ZCL_SCENES</state>
-          <state>ZCL_GROUPS</state>
+          <state>xZCL_READ</state>
+          <state>xZCL_WRITE</state>
+          <state>xZCL_REPORT</state>
+          <state>xZCL_EZMODE</state>
+          <state>xZCL_BASIC</state>
+          <state>xZCL_IDENTIFY</state>
+          <state>xZCL_DOORLOCK</state>
+          <state>xZCL_SCENES</state>
+          <state>xZCL_GROUPS</state>
           <state>PRINT_DEBUG</state>
           <state>ROUTER</state>
         </option>
@@ -2615,23 +2615,24 @@
           <state>xNV_RESTORE</state>
           <state>xPOWER_SAVING</state>
           <state>NWK_AUTO_POLL</state>
-          <state>HOLD_AUTO_START</state>
-          <state>ZTOOL_P1</state>
-          <state>MT_TASK</state>
-          <state>MT_APP_FUNC</state>
-          <state>MT_SYS_FUNC</state>
-          <state>MT_ZDO_FUNC</state>
-          <state>LCD_SUPPORTED=DEBUG</state>
+          <state>xHOLD_AUTO_START</state>
+          <state>xZTOOL_P1</state>
+          <state>xMT_TASK</state>
+          <state>xMT_APP_FUNC</state>
+          <state>xMT_SYS_FUNC</state>
+          <state>xMT_ZDO_FUNC</state>
+          <state>xLCD_SUPPORTED=DEBUG</state>
           <state>MULTICAST_ENABLED=FALSE</state>
-          <state>ZCL_READ</state>
-          <state>ZCL_WRITE</state>
-          <state>ZCL_REPORT</state>
-          <state>ZCL_EZMODE</state>
-          <state>ZCL_BASIC</state>
-          <state>ZCL_IDENTIFY</state>
-          <state>ZCL_DOORLOCK</state>
-          <state>ZCL_SCENES</state>
-          <state>ZCL_GROUPS</state>
+          <state>xZCL_READ</state>
+          <state>xZCL_WRITE</state>
+          <state>xZCL_REPORT</state>
+          <state>xZCL_EZMODE</state>
+          <state>xZCL_BASIC</state>
+          <state>xZCL_IDENTIFY</state>
+          <state>xZCL_DOORLOCK</state>
+          <state>xZCL_SCENES</state>
+          <state>xZCL_GROUPS</state>
+          <state>PRINT_DEBUG</state>
         </option>
         <option>
           <name>CCPreprocFile</name>
@@ -3072,7 +3073,7 @@
       <archiveVersion>1</archiveVersion>
       <data>
         <prebuild></prebuild>
-        <postbuild></postbuild>
+        <postbuild>"$PROJ_DIR$\..\..\..\Tools\CC2530DB\oad.exe" "$PROJ_DIR$\EndDeviceEB\Exe\SmartLockRouter.sim" "$PROJ_DIR$\EndDeviceEB\Exe\SmartLockRouter.bin"</postbuild>
       </data>
     </settings>
     <settings>
@@ -3092,7 +3093,7 @@
         </option>
         <option>
           <name>OutputFile</name>
-          <state>SampleDoorLockController.d51</state>
+          <state>SmartLockRouter.d51</state>
         </option>
         <option>
           <name>OutputFormat</name>
@@ -3278,11 +3279,11 @@
         </option>
         <option>
           <name>AllowExtraOutput</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>GenerateExtraOutput</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>XExtraOutOverride</name>
@@ -3290,7 +3291,7 @@
         </option>
         <option>
           <name>ExtraOutputFile</name>
-          <state>SampleDoorLockController.sim</state>
+          <state>SmartLockRouter.sim</state>
         </option>
         <option>
           <name>ExtraOutputFormat</name>
@@ -3472,6 +3473,9 @@
       <name>$PROJ_DIR$\..\Source\lock_router_osal.c</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\Source\lock_router_ota.c</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\Source\router_print.c</name>
     </file>
     <file>
@@ -3557,6 +3561,9 @@
           </file>
           <file>
             <name>$PROJ_DIR$\..\..\..\..\..\Components\hal\target\CC2530EB\hal_led.c</name>
+          </file>
+          <file>
+            <name>$PROJ_DIR$\..\..\..\..\..\Components\hal\target\CC2530EB\hal_ota.c</name>
           </file>
           <file>
             <name>$PROJ_DIR$\..\..\..\..\..\Components\hal\target\CC2530EB\hal_sleep.c</name>

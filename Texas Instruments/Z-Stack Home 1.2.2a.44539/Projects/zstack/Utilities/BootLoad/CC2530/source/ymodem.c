@@ -157,7 +157,7 @@ static void YmodemSendBytes (uint8 *buff, uint32 len)
 }
 
 
-static void YModemUARTInit(void)
+void YModemUARTInit(void)
 {
   halUARTCfg_t uartConfig = {0};
   /* This is in place of calling HalDmaInit() which would require init of the other 4 DMA
@@ -193,7 +193,7 @@ static int YmodemSaveImage(uint32 address, uint8 *data, uint32 len)
   return 0;
 }
 
-static void YmodemOutputString(uint8 *s)
+void YmodemOutputString(uint8 *s)
 {
   YmodemSendBytes(s, strlen((const char*)s));
   return ;
@@ -457,10 +457,6 @@ void YModemUpgrade(void)
 {
   uint8 cmd_data[2]={0};
 
-  YModemUARTInit();
-
-  YmodemOutputString("\r\nStart bootloader.");
-
   YmodemOutputString("\r\nWait for IAP_enable for 3 seconds...");
 
   if(YmodemReceiveBytes(cmd_data, 2, ENTER_UPGRADE_TIMEOUT) == 2)
@@ -470,8 +466,6 @@ void YModemUpgrade(void)
         YModemEnterUpgrade ();
     }
   }
-
-  YmodemOutputString("\r\nStart run application...\r\n");
 
   return ;
 }

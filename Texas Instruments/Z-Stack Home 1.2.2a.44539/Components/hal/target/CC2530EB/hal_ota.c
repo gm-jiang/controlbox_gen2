@@ -51,7 +51,7 @@
 #include "hal_ota.h"
 #include "hal_types.h"
 
-#include "ota_common.h"
+//#include "ota_common.h"
 
 /******************************************************************************
  * CONSTANTS
@@ -59,8 +59,9 @@
 #if HAL_OTA_XNV_IS_SPI
 #define XNV_STAT_CMD  0x05
 #define XNV_WREN_CMD  0x06
-#define XNV_WRPG_CMD  0x0A
-#define XNV_READ_CMD  0x0B
+#define XNV_WRPG_CMD  0x02
+#define XNV_READ_CMD  0x03
+#define XNV_ERASE_SECTOR_CMD  0x20
 
 #define XNV_STAT_WIP  0x01
 #endif
@@ -86,11 +87,11 @@ halDMADesc_t dmaCh0;
 /******************************************************************************
  * LOCAL FUNCTIONS
  */
-static uint16 runPoly(uint16 crc, uint8 val);
+//static uint16 runPoly(uint16 crc, uint8 val);
 
 #if HAL_OTA_XNV_IS_SPI
-static void HalSPIRead(uint32 addr, uint8 *pBuf, uint16 len);
-static void HalSPIWrite(uint32 addr, uint8 *pBuf, uint16 len);
+void HalSPIRead(uint32 addr, uint8 *pBuf, uint16 len);
+void HalSPIWrite(uint32 addr, uint8 *pBuf, uint16 len);
 static void xnvSPIWrite(uint8 ch);
 #endif
 
@@ -206,7 +207,7 @@ static uint16 crcCalc()
   return crc;
 }
 #endif //HAL_OTA_BOOT_CODE
-
+#if 0
 /******************************************************************************
  * @fn      runPoly
  *
@@ -233,6 +234,7 @@ static uint16 runPoly(uint16 crc, uint8 val)
 
   return crc;
 }
+#endif
 
 /******************************************************************************
  * @fn      HalOTAChkDL
@@ -245,6 +247,7 @@ static uint16 runPoly(uint16 crc, uint8 val)
  */
 uint8 HalOTAChkDL(uint8 dlImagePreambleOffset)
 {
+#if 0
  (void)dlImagePreambleOffset;  // Intentionally unreferenced parameter
 
   uint32 oset;
@@ -283,6 +286,8 @@ uint8 HalOTAChkDL(uint8 dlImagePreambleOffset)
   }
 
   return (crcControl.crc[0] == crc) ? SUCCESS : FAILURE;
+#endif
+  return 0;
 }
 
 /******************************************************************************
@@ -419,7 +424,7 @@ static void xnvSPIWrite(uint8 ch)
  *
  * @return  None.
  *****************************************************************************/
-static void HalSPIRead(uint32 addr, uint8 *pBuf, uint16 len)
+void HalSPIRead(uint32 addr, uint8 *pBuf, uint16 len)
 {
 #if !HAL_OTA_BOOT_CODE
   uint8 shdw = P1DIR;
@@ -441,7 +446,6 @@ static void HalSPIRead(uint32 addr, uint8 *pBuf, uint16 len)
   xnvSPIWrite(addr >> 16);
   xnvSPIWrite(addr >> 8);
   xnvSPIWrite(addr);
-  xnvSPIWrite(0);
 
   while (len--)
   {
@@ -467,7 +471,7 @@ static void HalSPIRead(uint32 addr, uint8 *pBuf, uint16 len)
  *
  * @return  None.
  *****************************************************************************/
-static void HalSPIWrite(uint32 addr, uint8 *pBuf, uint16 len)
+void HalSPIWrite(uint32 addr, uint8 *pBuf, uint16 len)
 {
   uint8 cnt;
 #if !HAL_OTA_BOOT_CODE
@@ -517,6 +521,41 @@ static void HalSPIWrite(uint32 addr, uint8 *pBuf, uint16 len)
     } while (len && cnt);
     XNV_SPI_END();
   }
+
+#if !HAL_OTA_BOOT_CODE
+  P1DIR = shdw;
+  HAL_EXIT_CRITICAL_SECTION(his);
+#endif
+}
+
+void HalSPIEraseSector(uint32 addr)
+{
+#if !HAL_OTA_BOOT_CODE
+  uint8 shdw = P1DIR;
+  halIntState_t his;
+  HAL_ENTER_CRITICAL_SECTION(his);
+  P1DIR |= BV(3);
+#endif
+
+  XNV_SPI_BEGIN();
+  do
+  {
+    xnvSPIWrite(XNV_STAT_CMD);
+  } while (XNV_SPI_RX() & XNV_STAT_WIP);
+  XNV_SPI_END();
+  asm("NOP"); asm("NOP");
+
+  XNV_SPI_BEGIN();
+  xnvSPIWrite(XNV_WREN_CMD);
+  XNV_SPI_END();
+  asm("NOP"); asm("NOP");
+
+  XNV_SPI_BEGIN();
+  xnvSPIWrite(XNV_ERASE_SECTOR_CMD);
+  xnvSPIWrite(addr >> 16);
+  xnvSPIWrite(addr >> 8);
+  xnvSPIWrite(addr);
+  XNV_SPI_END();
 
 #if !HAL_OTA_BOOT_CODE
   P1DIR = shdw;

@@ -74,7 +74,8 @@
 
 #define MAX_ERRORS              (5)
 
-
+void YModemUARTInit(void);
+void YmodemOutputString(uint8 *s);
 void YModemUpgrade(void);
 
 
