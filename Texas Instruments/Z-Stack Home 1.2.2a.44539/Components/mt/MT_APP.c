@@ -53,8 +53,9 @@
  #include "TestProfile2.h"
  #include "nwk_util.h"
 #endif
-
-#include "lock_router_app.h"
+#ifdef ROUTER
+ #include "lock_router_app.h"
+#endif
 
 /***************************************************************************************************
  * LOCAL FUNCTIONS

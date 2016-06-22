@@ -285,7 +285,7 @@ uint32 ZDApp_SavedPollRate = POLL_RATE;
 ZDAppNewDevice_t *ZDApp_NewDeviceList = NULL;
 
 /* "Hold Key" status saved during ZDAppCheckForHoldKey() */
-//static uint8 zdappHoldKeys;
+static uint8 zdappHoldKeys;
 
 /*********************************************************************
  * @fn      ZDApp_Init

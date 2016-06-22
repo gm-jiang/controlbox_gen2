@@ -52,6 +52,9 @@
 #include "ZMAC.h"
 #include "MT_UART.h"
 #include "AssocList.h"
+#ifdef ZNP_CC2530
+ #include "ZDApp.h"
+#endif
 
 #if !defined( CC26XX )
   #include "hal_adc.h"
@@ -495,10 +498,15 @@ static void MT_SysPing(void)
   uint8 retArray[2];
 
   /* Build Capabilities */
+#ifdef ZNP_CC2530
   tmp16 = MT_CAP_SYS | MT_CAP_MAC  | MT_CAP_NWK  | MT_CAP_AF    |
           MT_CAP_ZDO | MT_CAP_SAPI | MT_CAP_UTIL | MT_CAP_DEBUG |
-          MT_CAP_APP | MT_CAP_GP   | MT_CAP_ZOAD;
-
+          MT_CAP_APP | MT_CAP_GP   | MT_CAP_ZOAD | ((uint16)devState<<12);
+#else
+  tmp16 = MT_CAP_SYS | MT_CAP_MAC  | MT_CAP_NWK  | MT_CAP_AF    |
+          MT_CAP_ZDO | MT_CAP_SAPI | MT_CAP_UTIL | MT_CAP_DEBUG |
+          MT_CAP_APP | MT_CAP_GP   | MT_CAP_ZOAD ;
+#endif
   /* Convert to high byte first into temp buffer */
   retArray[0] = LO_UINT16( tmp16 );
   retArray[1] = HI_UINT16( tmp16 );
