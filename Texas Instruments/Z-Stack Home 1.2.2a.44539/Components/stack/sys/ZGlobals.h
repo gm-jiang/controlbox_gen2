@@ -190,7 +190,7 @@ extern "C" {
 
 // Concentrator values
 #if !defined ( CONCENTRATOR_ENABLE )
-  #define CONCENTRATOR_ENABLE          false // true if concentrator is enabled
+  #define CONCENTRATOR_ENABLE          true // true if concentrator is enabled
 #endif
 
 #if !defined ( CONCENTRATOR_DISCOVERY_TIME )
