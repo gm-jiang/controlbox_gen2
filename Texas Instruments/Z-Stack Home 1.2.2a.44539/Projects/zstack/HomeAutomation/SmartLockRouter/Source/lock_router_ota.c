@@ -50,7 +50,6 @@ static const uint32 crc32_table[256]={
    0xb3667a2e, 0xc4614ab8, 0x5d681b02, 0x2a6f2b94, 0xb40bbe37, 0xc30c8ea1, 0x5a05df1b, 0x2d02ef8d
 };
 
-extern uint32 msg_tid;
 extern uint8 lock_router_app_task_id;
 
 void int2str(uint8* str, uint32 intnum)
@@ -122,7 +121,7 @@ uint16 get_version(uint8 *str)
 
     high = (unsigned char)atoi((const char*)ver);
     low = (unsigned char)atoi((const char*)(ver+i+1));
-    version = (high << 8) + low;
+    version = (high << 8) | low;
 
     return version;
 }
@@ -340,7 +339,7 @@ void ota_msg_check_crc(uint8 *pdata, uint32 len)
     uint16 tid = 0;
 
     tid = pdata[3];
-    tid = (tid << 8) + pdata[2];
+    tid = (tid << 8) | pdata[2];
 
     log_printf("--ota msg check crc---\r\n");
 
@@ -402,9 +401,9 @@ void ota_notify(uint8 *pdata, uint32 len)
     }
 
     new_ver = pdata[5];
-    new_ver = (new_ver << 8) + pdata[4];
+    new_ver = (new_ver << 8) | pdata[4];
     tid = pdata[3];
-    tid = (tid << 8) + pdata[2];
+    tid = (tid << 8) | pdata[2];
 
     lock_ver.hw = get_hw_ver();
     lock_ver.sw = get_sw_ver();
@@ -426,13 +425,14 @@ void ota_msg_proc(uint8 *pdata, uint32 len)
     setota_msg_t ota_code = {0};
 
     tid = pdata[3];
-    tid = (tid << 8) + pdata[2];
+    tid = (tid << 8) | pdata[2];
     osal_memcpy(&ota_code, &pdata[4], sizeof(setota_msg_t));
 
     log_printf("ota msg seq=%d, curr_seq=%ld, size=%d, tid=%d.\r\n", ota_code.seq, ota_info.curr_seq, ota_code.size, tid);
 
     if (ota_code.seq == 0)
     {
+        ota_seq[0] = OTA_SUCCEED;
         ota_seq[1] = ota_info.curr_seq;
         send_msg_to_center((uint8*)&ota_seq, sizeof(ota_seq), MSG_TYPE_OTA_MSG, tid);
         return ;

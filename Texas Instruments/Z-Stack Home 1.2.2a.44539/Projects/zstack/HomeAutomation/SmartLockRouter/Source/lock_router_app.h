@@ -31,7 +31,7 @@ extern "C"
 #define TIME_INTERVAL_TOGGLE_LED 1000
 #define TIME_INTERVAL_OFFLINE_DETECT 5000
 
-#define LOCK_ROUTER_OFFLINE_TIME  4  /*4x15s*/
+#define LOCK_ROUTER_OFFLINE_TIME  (60000/TIME_INTERVAL_OFFLINE_DETECT)  /*restart if no heart beat for 60s, that is 4 heart beats*/
 
 #define HB_ACK_DELAY_BASE 10
 #define HB_ACK_DELAY_MASK   0x07FF  /*2 seconds*/
