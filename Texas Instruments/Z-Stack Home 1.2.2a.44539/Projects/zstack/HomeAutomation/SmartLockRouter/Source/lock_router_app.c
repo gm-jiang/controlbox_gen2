@@ -35,6 +35,7 @@ uint32 device_id = 0;
 uint8 device_id_report_cnt = 0;
 devStates_t lock_router_nework_state = DEV_INIT;
 afAddrType_t lock_router_app_dest_addr = {0};
+uint16 hb_tid;
 
 SimpleDescriptionFormat_t lock_router_simple_desc =
 {
@@ -92,7 +93,7 @@ void lock_router_app_Init(uint8 task_id)
     osal_start_reload_timer(lock_router_app_task_id,
                 LOCK_ROUTER_EVENT_LED_TOGGLE, TIME_INTERVAL_TOGGLE_LED);
 
-    log_printf( "start router application.\r\n");
+    log_printf( "start router application, version = %s\r\n", SW_V);
 
     return ;
 }
@@ -132,6 +133,7 @@ uint16 lock_router_app_event_loop( uint8 task_id, uint16 events )
                         /*stop toggle led*/
                         osal_stop_timerEx(lock_router_app_task_id, LOCK_ROUTER_EVENT_LED_TOGGLE);
                         SB_TURN_ON_LED1();
+                        SB_TURN_ON_LED2();
 #ifdef ROUTER
                         /*report device id every 5s untile response received*/
                         osal_start_reload_timer(lock_router_app_task_id,
@@ -171,6 +173,11 @@ uint16 lock_router_app_event_loop( uint8 task_id, uint16 events )
             SystemResetSoft();
         }
 
+        if (lock_router_offline_count == 1)
+        {
+            log_printf( "WARNING: heart beat lost\r\n");
+        }
+
         return ( events ^ LOCK_ROUTER_EVENT_OFFLINE_DETECT );
     }
 
@@ -196,7 +203,7 @@ uint16 lock_router_app_event_loop( uint8 task_id, uint16 events )
     {
         log_printf( "Send heart beat ack\r\n");
         if (ZSuccess != send_msg_to_center((uint8 *)Device_List, sizeof(Device_List_t)*Max_Dev_Num,
-                                MSG_TYPE_HEART_BEAT, msg_tid++))
+                                MSG_TYPE_HEART_BEAT, hb_tid))
             log_printf( "Error: send associated device info failed.\r\n");
 
         return ( events ^ LOCK_ROUTER_EVENT_HB_ACK );
@@ -213,6 +220,7 @@ uint16 lock_router_app_event_loop( uint8 task_id, uint16 events )
     {
         log_printf( "Network status = %d, DEV_ROUTER=%d\n", lock_router_nework_state, DEV_ROUTER);
         SB_TOGGLE_LED1();
+        SB_TOGGLE_LED2();
         return ( events ^ LOCK_ROUTER_EVENT_LED_TOGGLE );
     }
 
@@ -293,9 +301,9 @@ void lock_router_report_device_id(void)
 {
     uint8 ret = 0;
 
-    log_printf( "report device id %d.\r\n", device_id);
+    log_printf( "report device id %ld.\r\n", device_id);
 
-    ret = send_msg_to_center((uint8*)&device_id, sizeof(uint32), MSG_TYPE_DEVICE_ID, msg_tid++);
+    ret = send_msg_to_center((uint8*)&device_id, sizeof(uint32), MSG_TYPE_DEVICE_ID, msg_tid);
     if (ret != ZSuccess)
     {
         log_printf( "Error: send device id msg error, error code is %d.\r\n", ret);
@@ -330,13 +338,22 @@ void lock_router_hb_proc(uint8 *pkt)
 {
     uint16 SendDelay = 0;
 
+    hb_tid = pkt[3];
+    hb_tid = (hb_tid << 8) | pkt[2];
+
     lock_router_offline_count = LOCK_ROUTER_OFFLINE_TIME;
 
+    log_printf( "Associated Devices:\r\n");
     for(uint8 i=0; i<Max_Dev_Num; i++)
     {
         Device_List[i].nwkAddr = AssociatedDevList[i].shortAddr;
         Device_List[i].lqi = AssociatedDevList[i].linkInfo.rxLqi;
         Device_List[i].dev_type = 0x01;
+
+        if (Device_List[i].nwkAddr != 0xFFFF)
+        {
+            log_printf( "index=%d, addr=0x%x, lqi=%d\r\n", i, Device_List[i].nwkAddr, Device_List[i].lqi);
+        }
     }
 
     SendDelay = HB_ACK_DELAY_BASE + osal_rand() & HB_ACK_DELAY_MASK; //allows a jitter of 2 seconds
