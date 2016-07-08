@@ -348,7 +348,7 @@ void lock_router_hb_proc(uint8 *pkt)
     {
         Device_List[i].nwkAddr = AssociatedDevList[i].shortAddr;
         Device_List[i].lqi = AssociatedDevList[i].linkInfo.rxLqi;
-        Device_List[i].dev_type = 0x01;
+//        Device_List[i].dev_type = 0x01;
 
         if (Device_List[i].nwkAddr != 0xFFFF)
         {
@@ -430,9 +430,9 @@ void lock_router_msg_proc(afIncomingMSGPacket_t *msg)
 
 uint8 send_msg_to_center(uint8 *data, uint8 len, uint8 type, uint16 tid)
 {
-    uint8 buf[64] = {0};
+    uint8 buf[96] = {0};
 
-    if (len > (64-6))
+    if (len > (96-6))
     {
         log_printf("Error: send message too long, len = %d.\r\n", len);
         return ZFailure;

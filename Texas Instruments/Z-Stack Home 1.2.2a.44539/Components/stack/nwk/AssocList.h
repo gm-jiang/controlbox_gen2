@@ -116,7 +116,7 @@ typedef struct
 {
   uint16   nwkAddr;
   uint8    lqi;
-  uint8    dev_type;
+//  uint8    dev_type;
 } Device_List_t;
 
 typedef struct
