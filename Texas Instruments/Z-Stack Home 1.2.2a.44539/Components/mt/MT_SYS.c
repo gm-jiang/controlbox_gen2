@@ -1467,6 +1467,7 @@ static void MT_AssocDevList()
   {
     Device_List[i].nwkAddr = AssociatedDevList[i].shortAddr;
     Device_List[i].lqi = AssociatedDevList[i].linkInfo.rxLqi;
+    Device_List[i].nodeRelation = AssociatedDevList[i].nodeRelation;
   }
 
   /* Build and send back the response */

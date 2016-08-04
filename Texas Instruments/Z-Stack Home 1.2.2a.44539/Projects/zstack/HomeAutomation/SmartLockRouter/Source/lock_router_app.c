@@ -349,10 +349,11 @@ void lock_router_hb_proc(uint8 *pkt)
         Device_List[i].nwkAddr = AssociatedDevList[i].shortAddr;
         Device_List[i].lqi = AssociatedDevList[i].linkInfo.rxLqi;
 //        Device_List[i].dev_type = 0x01;
+        Device_List[i].nodeRelation = AssociatedDevList[i].nodeRelation;
 
         if (Device_List[i].nwkAddr != 0xFFFF)
         {
-            log_printf( "index=%d, addr=0x%x, lqi=%d\r\n", i, Device_List[i].nwkAddr, Device_List[i].lqi);
+            log_printf( "index=%d, addr=0x%x, lqi=%d, relation=%d\r\n", i, Device_List[i].nwkAddr, Device_List[i].lqi, Device_List[i].nodeRelation);
         }
     }
 
