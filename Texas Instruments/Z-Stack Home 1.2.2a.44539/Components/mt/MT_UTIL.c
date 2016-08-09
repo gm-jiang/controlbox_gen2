@@ -76,6 +76,7 @@
 #if defined FEATURE_DUAL_MAC
 #include "dmmgr.h"
 #endif
+#include "nwk_util.h"
 
 /***************************************************************************************************
  * CONSTANTS
@@ -124,6 +125,7 @@ static void MT_UtilSrcMatchCheckSrcAddr (uint8 *pBuf);
 static void MT_UtilSrcMatchAckAllPending (uint8 *pBuf);
 static void MT_UtilSrcMatchCheckAllPending (uint8 *pBuf);
 
+static void MT_UtilGetZigbeeInfo(void);
 static void MT_UtilGpioSetDirection(uint8 *pBuf);
 static void MT_UtilGpioRead(uint8 *pBuf);
 static void MT_UtilGpioWrite(uint8 *pBuf);
@@ -191,6 +193,9 @@ uint8 MT_UtilCommandProcessing(uint8 *pBuf)
 
   case MT_UTIL_GET_NV_INFO:
     MT_UtilGetNvInfo();
+    break;
+  case MT_UTIL_GET_ZIGBEE_INFO:
+    MT_UtilGetZigbeeInfo();
     break;
 
   case MT_UTIL_SET_PANID:
@@ -491,6 +496,80 @@ static void MT_UtilSrngGen(void)
   }
 }
 #endif
+
+/***************************************************************************************************
+ * @fn      MT_UtilGetZigbeeInfo
+ *
+ * @brief   The Get NV Info serial message.
+ *
+ * @param   None.
+ *
+ * @return  void
+ ***************************************************************************************************/
+static void MT_UtilGetZigbeeInfo(void)
+{
+  uint8 len;
+  uint8 stat = 0;
+  uint8 *buf;
+  uint8 *pBuf;
+  uint16 tmp16;
+  uint32 tmp32;
+
+  /*
+    Get required length of buffer
+    Status + CurrentChannl + nodeDepth +  ChanList + txFailures  + Transnum
+  */
+  len = 1 + 4 + 1 + 1 + 2 + 2;
+
+  buf = osal_mem_alloc( len );
+  if ( buf )
+  {
+    /* Assume NV not available */
+    osal_memset( buf, 0xFF, len );
+
+    /* Skip over status */
+    pBuf = buf + 1;
+
+    pBuf[0] = _NIB.nwkLogicalChannel;
+    pBuf++;
+
+    pBuf[0] = _NIB.nodeDepth;
+    pBuf++;
+
+    /* Scan channel list (bit mask) */
+    if (  osal_nv_read( ZCD_NV_CHANLIST, 0, sizeof( tmp32 ), &tmp32 ) )
+    {
+      stat |= 0x01;
+    }
+    else
+    {
+      pBuf[0] = BREAK_UINT32( tmp32, 3 );
+      pBuf[1] = BREAK_UINT32( tmp32, 2 );
+      pBuf[2] = BREAK_UINT32( tmp32, 1 );
+      pBuf[3] = BREAK_UINT32( tmp32, 0 );
+    }
+    pBuf += sizeof( tmp32 );
+
+    uint16 txFailures = nwkTransmissionFailures( FALSE );
+
+    pBuf[0] = LO_UINT16( txFailures );
+    pBuf[1] = HI_UINT16( txFailures );
+    pBuf += sizeof( uint16 );
+
+    tmp16 = _NIB.nwkTotalTransmissions;
+    pBuf[0] = LO_UINT16(tmp16);
+    pBuf[1] = HI_UINT16(tmp16);
+    pBuf += sizeof( uint16 );
+
+    /* Status bit mask - bit=1 indicates failure */
+    *buf = stat;
+
+    MT_BuildAndSendZToolResponse(((uint8)MT_RPC_CMD_SRSP | (uint8)MT_RPC_SYS_UTIL), MT_UTIL_GET_ZIGBEE_INFO,
+                                  len, buf );
+
+    osal_mem_free( buf );
+  }
+}
 
 /***************************************************************************************************
  * @fn      MT_UtilGetNvInfo

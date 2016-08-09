@@ -416,6 +416,7 @@ extern "C"
 #define MT_UTIL_GPIO_READ                    0x15
 #define MT_UTIL_GPIO_WRITE                   0x16
 
+#define MT_UTIL_GET_ZIGBEE_INFO              0x17
 #define MT_UTIL_SRC_MATCH_ENABLE             0x20
 #define MT_UTIL_SRC_MATCH_ADD_ENTRY          0x21
 #define MT_UTIL_SRC_MATCH_DEL_ENTRY          0x22

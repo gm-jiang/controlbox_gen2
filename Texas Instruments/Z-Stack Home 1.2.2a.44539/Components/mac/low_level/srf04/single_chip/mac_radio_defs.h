@@ -166,7 +166,7 @@
  *                                    Common Radio Defines
  * ------------------------------------------------------------------------------------------------
  */
-#define MAC_RADIO_CHANNEL_DEFAULT               11
+#define MAC_RADIO_CHANNEL_DEFAULT               26
 #define MAC_RADIO_CHANNEL_INVALID               0xFF
 #define MAC_RADIO_TX_POWER_INVALID              0xFF
 
