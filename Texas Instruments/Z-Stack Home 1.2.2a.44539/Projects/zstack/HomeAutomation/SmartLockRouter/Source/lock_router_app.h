@@ -41,6 +41,7 @@ extern "C"
 #define MSG_TYPE_OTA_GET_SW_VER  31
 #define MSG_TYPE_OTA_MSG  30
 #define MSG_TYPE_OTA_CRC_CHK  32
+#define MSG_TYPE_RESET 65
 
 #define SN_MAX_LEN 10
 

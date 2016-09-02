@@ -422,6 +422,10 @@ void lock_router_msg_proc(afIncomingMSGPacket_t *msg)
             ota_msg_check_crc(pdata, len);
             break;
 
+        case MSG_TYPE_RESET:
+            SystemResetSoft();
+            break;
+
         default:
             break;
     }
