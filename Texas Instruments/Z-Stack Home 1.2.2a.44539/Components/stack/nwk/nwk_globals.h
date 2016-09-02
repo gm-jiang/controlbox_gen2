@@ -65,6 +65,10 @@ extern "C" {
   #define CONFIG_ITEM CONST
 #endif
 
+#if !defined (NWK_MANAGER)
+    #define NWK_MANAGER 1
+#endif
+
 // If ZIGBEEPRO is defined - define all the features for Zigbee Pro
 #if defined ( ZIGBEEPRO )
   #if !defined ( NWK_LINK_STATUS_PERIOD )

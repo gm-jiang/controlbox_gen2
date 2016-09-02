@@ -81,6 +81,7 @@
 #endif
 #if defined( ZNP_CC2530 )
 #include "nwk_globals.h"
+#include "nwk_util.h"
 #endif
 
 
@@ -225,7 +226,9 @@ static void MT_SysOsalStartTimer(uint8 *pBuf);
 static void MT_SysOsalStopTimer(uint8 *pBuf);
 static void MT_SysRandom(void);
 #ifdef ZNP_CC2530
+extern void ZDNwkMgr_ReportChannelInterference( NLME_ChanInterference_t *chanInterference );
 static void MT_AssocDevList(void);
+static void MT_ChangeChannel(void);
 #endif
 static void MT_SysGpio(uint8 *pBuf);
 static void MT_SysStackTune(uint8 *pBuf);
@@ -325,6 +328,9 @@ uint8 MT_SysCommandProcessing(uint8 *pBuf)
 #ifdef ZNP_CC2530
     case MT_SYS_ASSOCDEVLIST_GET:
       MT_AssocDevList();
+      break;
+    case MT_SYS_CHANGECHANNEL:
+      MT_ChangeChannel();
       break;
 #endif
 
@@ -1474,6 +1480,17 @@ static void MT_AssocDevList()
   MT_BuildAndSendZToolResponse( MT_SRSP_SYS, MT_SYS_ASSOCDEVLIST_GET,
               sizeof(Device_List_t)*Max_Dev_Num, (uint8*)Device_List );
 }
+
+static void MT_ChangeChannel(void)
+{
+  NLME_ChanInterference_t data = {1000, 800};
+  uint8 channel = _NIB.nwkLogicalChannel;
+  ZDNwkMgr_ReportChannelInterference(&data);
+
+  /* Build and send back the response */
+  MT_BuildAndSendZToolResponse( MT_SRSP_SYS, MT_SYS_CHANGECHANNEL, 1, &channel);
+}
+
 #endif
 #if !defined( CC26XX )
 /******************************************************************************
