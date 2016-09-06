@@ -104,6 +104,7 @@ extern "C"
 #define MT_SYS_OSAL_NV_READ_EXT              0x1C
 #define MT_SYS_OSAL_NV_WRITE_EXT             0x1D
 #define MT_SYS_ASSOCDEVLIST_GET              0x25
+#define MT_SYS_CHANGECHANNEL                 0x26
 
 /* Extended Non-Vloatile Memory */
 #define MT_SYS_NV_CREATE                     0x30

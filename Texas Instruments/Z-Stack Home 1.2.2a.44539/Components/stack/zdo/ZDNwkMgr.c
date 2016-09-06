@@ -23,7 +23,7 @@
 
   YOU FURTHER ACKNOWLEDGE AND AGREE THAT THE SOFTWARE AND DOCUMENTATION ARE
   PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-  INCLUDING WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, TITLE, 
+  INCLUDING WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, TITLE,
   NON-INFRINGEMENT AND FITNESS FOR A PARTICULAR PURPOSE. IN NO EVENT SHALL
   TEXAS INSTRUMENTS OR ITS LICENSORS BE LIABLE OR OBLIGATED UNDER CONTRACT,
   NEGLIGENCE, STRICT LIABILITY, CONTRIBUTION, BREACH OF WARRANTY, OR OTHER
@@ -34,7 +34,7 @@
   (INCLUDING BUT NOT LIMITED TO ANY DEFENSE THEREOF), OR OTHER SIMILAR COSTS.
 
   Should you have any questions regarding your right to use this Software,
-  contact Texas Instruments Incorporated at www.TI.com. 
+  contact Texas Instruments Incorporated at www.TI.com.
 **************************************************************************************************/
 
 #ifdef __cplusplus
@@ -51,18 +51,19 @@ extern "C"
 #include "ZDObject.h"
 #include "ZGlobals.h"
 #include "ZDNwkMgr.h"
+#include "OSAL_Nv.h"
 
 #if defined( MT_ZDO_FUNC )
   #include "MT_ZDO.h"
 #endif
-  
+
 #if defined ( LCD_SUPPORTED )
   #include "OnBoard.h"
 #endif
 
 /* HAL */
 #include "hal_lcd.h"
-  
+
 /******************************************************************************
  * CONSTANTS
  */
@@ -75,7 +76,7 @@ extern "C"
   const char NwkMgrStr_3[]     = "NM-energy too hi";
   const char NwkMgrStr_4[]     = "NM-energy not up";
 #endif
-  
+
 /******************************************************************************
  * TYPEDEFS
  */
@@ -83,7 +84,7 @@ extern "C"
 /*********************************************************************
  * GLOBAL VARIABLES
  */
-  
+
 // Task ID for internal task/event processing. This variable will be
 // received when ZDNwkMgr_Init() is called.
 uint8 ZDNwkMgr_TaskID = 0;
@@ -102,7 +103,7 @@ uint16 ZDNwkMgr_TotalTransmissions;
 uint16 ZDNwkMgr_TxFailures;
 
 ZDO_MgmtNwkUpdateReq_t ZDNwkMgr_MgmtNwkUpdateReq;
-  
+
 #if defined ( NWK_MANAGER )
 uint16 ZDNwkMgr_UpdateRequestTimer = 0;
 uint8  ZDNwkMgr_LastChannelEnergy = 0;
@@ -193,13 +194,13 @@ void ZDNwkMgr_Init( byte task_id )
   pZDNwkMgr_EDScanConfirmCB = ZDNwkMgr_EDScanConfirmCB;
   pZDNwkMgr_ProcessDataConfirm = ZDNwkMgr_ProcessDataConfirm;
   pZDNwkMgr_ReportChannelInterference = ZDNwkMgr_ReportChannelInterference;
-  
+
   // PAN ID Conflict initialization
 #if defined ( NWK_MANAGER )
   pZDNwkMgr_NetworkReportCB = ZDNwkMgr_NetworkReportCB;
   pZDNwkMgr_NetworkUpdateCB = ZDNwkMgr_NetworkUpdateCB;
 #endif // NWK_MANAGER
-  
+
   ZDNwkMgr_MgmtNwkUpdateNotifyAddr.addrMode = Addr16Bit;
   ZDNwkMgr_MgmtNwkUpdateNotifyAddr.addr.shortAddr = INVALID_NODE_ADDR;
 }
@@ -233,12 +234,12 @@ UINT16 ZDNwkMgr_event_loop( byte task_id, UINT16 events )
           // ZDO sends the message that we registered for
           ZDNwkMgr_ProcessMsgCBs( (zdoIncomingMsg_t *)msgPtr );
           break;
-         
+
         case NM_CHANNEL_INTERFERE:
           // NWK layer sends the message when it detectes Channel Interference
           ZDNwkMgr_ProcessChannelInterference( (ZDNwkMgr_ChanInterference_t *)msgPtr );
           break;
-   
+
         case NM_ED_SCAN_CONFIRM:
           // NWK layer sends the message when it receives an ED scan confirmation
           ZDNwkMgr_ProcessEDScanConfirm( (ZDNwkMgr_EDScanConfirm_t *)msgPtr );
@@ -248,12 +249,12 @@ UINT16 ZDNwkMgr_event_loop( byte task_id, UINT16 events )
           // NWK layer sends this message when it receives a Network Report message
           ZDNwkMgr_ProcessNetworkReport( (ZDNwkMgr_NetworkReport_t *)msgPtr );
           break;
-       
+
         case ZDO_NETWORK_UPDATE:
           // NKW layer sends this message when it receives a Network Update message
           ZDNwkMgr_ProcessNetworkUpdate( (ZDNwkMgr_NetworkUpdate_t *)msgPtr );
           break;
-#endif // NWK_MANAGER         
+#endif // NWK_MANAGER
         default:
           break;
       }
@@ -264,24 +265,24 @@ UINT16 ZDNwkMgr_event_loop( byte task_id, UINT16 events )
       // Next
       msgPtr = (osal_event_hdr_t *)osal_msg_receive( ZDNwkMgr_TaskID );
     }
-    
+
     // Return unprocessed events
     return (events ^ SYS_EVENT_MSG);
   }
 
   if ( events & ZDNWKMGR_CHANNEL_CHANGE_EVT )
-  {       
+  {
     // Switch channel
     _NIB.nwkLogicalChannel = ZDNwkMgr_NewChannel;
     ZMacSetReq( ZMacChannel, &ZDNwkMgr_NewChannel );
- 
+
     // Our Channel has been changed -- notify to save info into NV
     ZDApp_NwkStateUpdateCB();
-    
+
     // Reset the total transmit count and the transmit failure counters
     _NIB.nwkTotalTransmissions = 0;
     nwkTransmissionFailures( TRUE );
-    
+
     return ( events ^ ZDNWKMGR_CHANNEL_CHANGE_EVT );
   }
 
@@ -297,10 +298,10 @@ UINT16 ZDNwkMgr_event_loop( byte task_id, UINT16 events )
     {
       ZDNwkMgr_NumUpdateNotifySent = 0;
     }
-    
+
     return ( events ^ ZDNWKMGR_UPDATE_NOTIFY_EVT );
   }
-  
+
 #if defined ( NWK_MANAGER )
   if ( events & ZDNWKMGR_UPDATE_REQUEST_EVT )
   {
@@ -310,25 +311,25 @@ UINT16 ZDNwkMgr_event_loop( byte task_id, UINT16 events )
       ZDNwkMgr_UpdateRequestTimer--;
       osal_start_timerEx( ZDNwkMgr_TaskID, ZDNWKMGR_UPDATE_REQUEST_EVT, ONE_MINUTE );
     }
-    
+
     return ( events ^ ZDNWKMGR_UPDATE_REQUEST_EVT );
   }
 #endif // NWK_MANAGER
-  
+
   if ( events & ZDNWKMGR_SCAN_REQUEST_EVT )
-  {  
+  {
     if ( ZDNwkMgr_MgmtNwkUpdateReq.scanCount > 0 )
     {
-      if (  NLME_EDScanRequest( ZDNwkMgr_MgmtNwkUpdateReq.channelMask, 
+      if (  NLME_EDScanRequest( ZDNwkMgr_MgmtNwkUpdateReq.channelMask,
                                 ZDNwkMgr_MgmtNwkUpdateReq.scanDuration ) == ZSuccess )
       {
         ZDNwkMgr_MgmtNwkUpdateReq.scanCount--;
       }
     }
-      
+
     return ( events ^ ZDNWKMGR_SCAN_REQUEST_EVT );
   }
-  
+
   // Discard or make more handlers
   return 0;
 }
@@ -345,11 +346,11 @@ UINT16 ZDNwkMgr_event_loop( byte task_id, UINT16 events )
 static void ZDNwkMgr_ProcessMsgCBs( zdoIncomingMsg_t *inMsg )
 {
   switch ( inMsg->clusterID )
-  {   
+  {
     case Mgmt_NWK_Update_req:
       ZDNwkMgr_ProcessMgmtNwkUpdateReq( inMsg );
-      break;    
-#if defined ( NWK_MANAGER )  
+      break;
+#if defined ( NWK_MANAGER )
     case Mgmt_NWK_Update_notify:
       ZDNwkMgr_ProcessMgmtNwkUpdateNotify( inMsg );
       break;
@@ -357,7 +358,7 @@ static void ZDNwkMgr_ProcessMsgCBs( zdoIncomingMsg_t *inMsg )
     case Server_Discovery_rsp:
       ZDNwkMgr_ProcessServerDiscRsp( inMsg );
       break;
-      
+
     default:
       // Unknown message
       break;
@@ -382,7 +383,7 @@ static void ZDNwkMgr_ProcessMgmtNwkUpdateNotify( zdoIncomingMsg_t *inMsg )
 {
   if ( zgNwkMgrMode == ZDNWKMGR_ENABLE )
   {
-    ZDO_MgmtNwkUpdateNotify_t *pNotify = ZDO_ParseMgmtNwkUpdateNotify( inMsg ); 
+    ZDO_MgmtNwkUpdateNotify_t *pNotify = ZDO_ParseMgmtNwkUpdateNotify( inMsg );
     if ( pNotify )
     {
       ZDNwkMgr_CheckForChannelChange( pNotify );
@@ -409,9 +410,10 @@ static void ZDNwkMgr_CheckForChannelChange( ZDO_MgmtNwkUpdateNotify_t *pNotify )
   uint16 failureRate;
   uint8  lowestEnergyIndex;
   uint8  lowestEnergyValue = 0xFF;
-      
+
   // If any device has more than 50% transmission failures, a channel
   // change should be considered
+  #if 0
   failureRate = ( pNotify->transmissionFailures * 100 ) / pNotify->totalTransmissions;
   if ( failureRate < ZDNWKMGR_CC_TX_FAILURE )
   {
@@ -428,14 +430,14 @@ static void ZDNwkMgr_CheckForChannelChange( ZDO_MgmtNwkUpdateNotify_t *pNotify )
   {
 #if defined ( LCD_SUPPORTED )
     HalLcdWriteString( (char*)NwkMgrStr_2, HAL_LCD_LINE_1 );
-    HalLcdWriteStringValueValue( ": ", failureRate, 10, 
+    HalLcdWriteStringValueValue( ": ", failureRate, 10,
                                  ZDNwkMgr_LastChannelFailureRate, 10, HAL_LCD_LINE_2 );
 #endif
     return;
   }
-  
+  #endif
   // Select a single channel based on the Mgmt_NWK_Update_notify based on
-  // the lowest energy. This is the proposed new channel. 
+  // the lowest energy. This is the proposed new channel.
   for ( i = 0; i < pNotify->listCount; i++ )
   {
     if ( pNotify->energyValues[i] < lowestEnergyValue )
@@ -444,19 +446,20 @@ static void ZDNwkMgr_CheckForChannelChange( ZDO_MgmtNwkUpdateNotify_t *pNotify )
       lowestEnergyValue = pNotify->energyValues[i];
     }
   }
-      
+
   // If this new channel does not have an energy level below an acceptable
   // threshold, a channel change should not be done.
+  #if 0
   if ( lowestEnergyValue > ZDNWKMGR_ACCEPTABLE_ENERGY_LEVEL )
   {
 #if defined ( LCD_SUPPORTED )
     HalLcdWriteString( (char*)NwkMgrStr_3, HAL_LCD_LINE_1 );
-    HalLcdWriteStringValueValue( ": ", lowestEnergyValue, 10, 
+    HalLcdWriteStringValueValue( ": ", lowestEnergyValue, 10,
                                  ZDNWKMGR_ACCEPTABLE_ENERGY_LEVEL, 10, HAL_LCD_LINE_2 );
 #endif
     return;
   }
-
+  #endif
   // Channel change should be done -- find out the new active channel
   for ( i = 0; i < ED_SCAN_MAXCHANNELS; i++ )
   {
@@ -467,49 +470,49 @@ static void ZDNwkMgr_CheckForChannelChange( ZDO_MgmtNwkUpdateNotify_t *pNotify )
       lowestEnergyIndex--;
     }
   }
-  
+
   if ( ( _NIB.nwkLogicalChannel != i ) && ( ZDNwkMgr_UpdateRequestTimer == 0 ) )
   {
     uint32 channelMask;
     zAddrType_t dstAddr;
-    
+
     // The new channel
     ZDNwkMgr_NewChannel = i;
-        
-    // Prior to changing channels, the network manager should store the 
-    // energy scan value as the last energy scan value and the failure 
-    // rate from the existing channel as the last failure rate.  These 
+
+    // Prior to changing channels, the network manager should store the
+    // energy scan value as the last energy scan value and the failure
+    // rate from the existing channel as the last failure rate.  These
     // values are useful to allow comparison of the failure rate and energy
     // level on the previous channel to evaluate if the network is causing
     // its own interference.
     ZDNwkMgr_LastChannelEnergy = lowestEnergyValue;
     ZDNwkMgr_LastChannelFailureRate = failureRate;
-       
+
     // The network manager should broadcast a Mgmt_NWK_Update_req notifying
-    // devices of the new channel.  The broadcast shall be to all routers 
+    // devices of the new channel.  The broadcast shall be to all routers
     // and coordinator.
     dstAddr.addrMode = AddrBroadcast;
     dstAddr.addr.shortAddr = NWK_BROADCAST_SHORTADDR_DEVRXON;
     channelMask = (uint32)1 << i;
-        
+
     // Increment the nwkUpdateId parameter and set the updateID in the beacon
-    NLME_SetUpdateID(_NIB.nwkUpdateId + 1); 
-    
+    NLME_SetUpdateID(_NIB.nwkUpdateId + 1);
+
     ZDP_MgmtNwkUpdateReq( &dstAddr, channelMask, 0xfe, 0, _NIB.nwkUpdateId, 0 );
-        
-    // The network manager shall set a timer based on the value of 
-    // apsChannelTimer upon issue of a Mgmt_NWK_Update_req that changes 
-    // channels and shall not issue another such command until this 
-    // timer expires.  
+
+    // The network manager shall set a timer based on the value of
+    // apsChannelTimer upon issue of a Mgmt_NWK_Update_req that changes
+    // channels and shall not issue another such command until this
+    // timer expires.
     ZDNwkMgr_UpdateRequestTimer = ZDNWKMGR_UPDATE_REQUEST_TIMER;
     osal_start_timerEx( ZDNwkMgr_TaskID, ZDNWKMGR_UPDATE_REQUEST_EVT, ONE_MINUTE );
-                  
-    // Upon receipt of a Mgmt_NWK_Update_req with a change of channels, 
-    // the local network manager shall set a timer equal to the 
-    // nwkNetworkBroadcastDeliveryTime and shall switch channels upon 
+
+    // Upon receipt of a Mgmt_NWK_Update_req with a change of channels,
+    // the local network manager shall set a timer equal to the
+    // nwkNetworkBroadcastDeliveryTime and shall switch channels upon
     // expiration of this timer.  NOTE: since we won't recevied our own
-    // broadcasted Update Request, we start the channel change timer here.  
-    osal_start_timerEx( ZDNwkMgr_TaskID, ZDNWKMGR_CHANNEL_CHANGE_EVT, 
+    // broadcasted Update Request, we start the channel change timer here.
+    osal_start_timerEx( ZDNwkMgr_TaskID, ZDNWKMGR_CHANNEL_CHANGE_EVT,
                         ZDNWKMGR_BCAST_DELIVERY_TIME );
   }
 }
@@ -528,14 +531,14 @@ static void ZDNwkMgr_CheckForChannelChange( ZDO_MgmtNwkUpdateNotify_t *pNotify )
 static void ZDNwkMgr_ProcessMgmtNwkUpdateReq( zdoIncomingMsg_t *inMsg )
 {
   ZDO_MgmtNwkUpdateReq_t Req;
-  
+
   ZDO_ParseMgmtNwkUpdateReq( inMsg, &Req );
-   
+
   if ( Req.scanDuration <= 0x05 )
   {
-    // Request is to scan over channelMask. The result will be reported by Confirm   
-    if ( ( !inMsg->wasBroadcast )                     && 
-         ( Req.scanCount >  ZDNWKMGR_MIN_SCAN_COUNT ) && 
+    // Request is to scan over channelMask. The result will be reported by Confirm
+    if ( ( !inMsg->wasBroadcast )                     &&
+         ( Req.scanCount >  ZDNWKMGR_MIN_SCAN_COUNT ) &&
          ( Req.scanCount <= ZDNWKMGR_MAX_SCAN_COUNT ) )
     {
       if ( NLME_EDScanRequest( Req.channelMask, Req.scanDuration ) == ZSuccess )
@@ -543,9 +546,9 @@ static void ZDNwkMgr_ProcessMgmtNwkUpdateReq( zdoIncomingMsg_t *inMsg )
         // Save off the information to be used for the notify
         ZDNwkMgr_MgmtNwkUpdateNotifyTransSeq            = inMsg->TransSeq;
         ZDNwkMgr_MgmtNwkUpdateNotifyAddr.addr.shortAddr = inMsg->srcAddr.addr.shortAddr;
-        
+
         Req.scanCount--;
-        
+
         // Save off scan info for the subsequent scans
         ZDNwkMgr_MgmtNwkUpdateReq = Req;
       }
@@ -558,10 +561,10 @@ static void ZDNwkMgr_ProcessMgmtNwkUpdateReq( zdoIncomingMsg_t *inMsg )
     if ( Req.nwkUpdateId > _NIB.nwkUpdateId )
     {
       uint8 i;
-      
+
       // Set update ID in the Beacon
-      NLME_SetUpdateID(Req.nwkUpdateId); 
-      
+      NLME_SetUpdateID(Req.nwkUpdateId);
+
       // Find out the new active channel
       for ( i = 0; i < ED_SCAN_MAXCHANNELS; i++ )
       {
@@ -574,14 +577,14 @@ static void ZDNwkMgr_ProcessMgmtNwkUpdateReq( zdoIncomingMsg_t *inMsg )
       if ( _NIB.nwkLogicalChannel != i )
       {
         ZDNwkMgr_NewChannel = i;
-          
-        // Upon receipt of a Mgmt_NWK_Update_req with a change of channels, 
-        // the local network manager shall set a timer equal to the 
-        // nwkNetworkBroadcastDeliveryTime and shall switch channels upon 
-        // expiration of this timer.  Each node shall also increment the 
-        // nwkUpdateId parameter and also reset the total transmit count 
-        // and the transmit failure counters.  
-        osal_start_timerEx( ZDNwkMgr_TaskID, ZDNWKMGR_CHANNEL_CHANGE_EVT, 
+
+        // Upon receipt of a Mgmt_NWK_Update_req with a change of channels,
+        // the local network manager shall set a timer equal to the
+        // nwkNetworkBroadcastDeliveryTime and shall switch channels upon
+        // expiration of this timer.  Each node shall also increment the
+        // nwkUpdateId parameter and also reset the total transmit count
+        // and the transmit failure counters.
+        osal_start_timerEx( ZDNwkMgr_TaskID, ZDNWKMGR_CHANNEL_CHANGE_EVT,
                             ZDNWKMGR_BCAST_DELIVERY_TIME );
       }
     }
@@ -592,15 +595,15 @@ static void ZDNwkMgr_ProcessMgmtNwkUpdateReq( zdoIncomingMsg_t *inMsg )
     if ( Req.nwkUpdateId > _NIB.nwkUpdateId )
     {
       NLME_SetUpdateID(Req.nwkUpdateId); // Set the updateID in the beacon
-       
+
       if ( ( Req.channelMask != 0 ) && ( _NIB.channelList != Req.channelMask ) )
       {
         _NIB.channelList = Req.channelMask;
-      
+
         // Our Channel List has been changed -- notify to save info into NV
         ZDApp_NwkStateUpdateCB();
       }
-    
+
       ZDNwkMgr_SetNwkManagerAddr( Req.nwkManagerAddr );
     }
   }
@@ -628,9 +631,9 @@ static void ZDNwkMgr_ProcessMgmtNwkUpdateReq( zdoIncomingMsg_t *inMsg )
 void ZDNwkMgr_ProcessServerDiscRsp( zdoIncomingMsg_t *inMsg )
 {
   ZDO_ServerDiscRsp_t Rsp;
-  
+
   ZDO_ParseServerDiscRsp( inMsg, &Rsp );
-  
+
   if ( Rsp.status == ZSuccess )
   {
     // Is the Network Manager bit set in the response?
@@ -654,20 +657,33 @@ void ZDNwkMgr_ProcessServerDiscRsp( zdoIncomingMsg_t *inMsg )
  */
 static void ZDNwkMgr_ProcessChannelInterference( ZDNwkMgr_ChanInterference_t *pChanInterference )
 {
-  // To avoid a device with communication problems from constantly 
-  // sending reports to the network manager, the device should not 
+  uint32 channelList;
+  static uint32 last4timelist = 0;
+  // To avoid a device with communication problems from constantly
+  // sending reports to the network manager, the device should not
   // send a Mgmt_NWK_Update_notify more than 4 times per hour.
   if ( ZDNwkMgr_NumUpdateNotifySent < 4 )
   {
     // Conduct an energy scan on all channels.
-    if ( NLME_EDScanRequest( MAX_CHANNELS_24GHZ, _NIB.scanDuration ) == ZSuccess )
+    //modify by whb, change all channels to channelmask
+    if (!osal_nv_read(ZCD_NV_CHANLIST, 0, sizeof( channelList ), &channelList))
     {
-      // Save the counters for the Update Notify message to be sent
-      ZDNwkMgr_TotalTransmissions = pChanInterference->totalTransmissions;
-      ZDNwkMgr_TxFailures = pChanInterference->txFailures;
+        last4timelist = last4timelist | (((uint32)1) << _NIB.nwkLogicalChannel);
+        if(last4timelist == channelList)
+        {
+            last4timelist = (((uint32)1) << _NIB.nwkLogicalChannel);
+        }
+        //channelList = channelList & (~(((uint32)1) << _NIB.nwkLogicalChannel));
+        channelList = channelList & (~last4timelist);
+        if ( NLME_EDScanRequest( channelList, _NIB.scanDuration ) == ZSuccess )
+        {
+          // Save the counters for the Update Notify message to be sent
+          ZDNwkMgr_TotalTransmissions = pChanInterference->totalTransmissions;
+          ZDNwkMgr_TxFailures = pChanInterference->txFailures;
 
-      // Mark scan as channel inetrference check
-      ZDNwkMgr_MgmtNwkUpdateReq.scanCount = 0xFF;
+          // Mark scan as channel inetrference check
+          ZDNwkMgr_MgmtNwkUpdateReq.scanCount = 0xFF;
+        }
     }
   }
 }
@@ -683,22 +699,22 @@ static void ZDNwkMgr_ProcessChannelInterference( ZDNwkMgr_ChanInterference_t *pC
  * @return      none
  */
 static void ZDNwkMgr_ProcessEDScanConfirm( ZDNwkMgr_EDScanConfirm_t *pEDScanConfirm )
-{ 
+{
   if ( ZDNwkMgr_MgmtNwkUpdateReq.scanCount == 0xFF )
   {
     // Confirm to scan all channels for channel interference check
-    ZDNwkMgr_CheckForChannelInterference( pEDScanConfirm ); 
-    
+    ZDNwkMgr_CheckForChannelInterference( pEDScanConfirm );
+
     ZDNwkMgr_MgmtNwkUpdateReq.scanCount = 0;
   }
   else
   {
     // Confirm to the requested scan
     uint16 txFailures = nwkTransmissionFailures( FALSE );
-    
+
     ZDNwkMgr_BuildAndSendUpdateNotify( ZDNwkMgr_MgmtNwkUpdateNotifyTransSeq,
-                                       &ZDNwkMgr_MgmtNwkUpdateNotifyAddr, 
-                                       _NIB.nwkTotalTransmissions, txFailures, 
+                                       &ZDNwkMgr_MgmtNwkUpdateNotifyAddr,
+                                       _NIB.nwkTotalTransmissions, txFailures,
                                        pEDScanConfirm, AF_TX_OPTIONS_NONE );
     // More scans needed?
     if ( ZDNwkMgr_MgmtNwkUpdateReq.scanCount > 0 )
@@ -722,46 +738,47 @@ static void ZDNwkMgr_CheckForChannelInterference( ZDNwkMgr_EDScanConfirm_t *pEDS
 {
   uint8 i;
   uint8 channelEnergy = 0;
-  uint8 energyIncreased = FALSE;
-    
+  uint8 energyIncreased = TRUE;
   // Get the current channel energy
+  /*no need to check the energy, added by whb*/
+  #if 0
   if ( ( (uint32)1 << _NIB.nwkLogicalChannel ) & pEDScanConfirm->scannedChannels )
   {
     channelEnergy = pEDScanConfirm->energyDetectList[_NIB.nwkLogicalChannel];
   }
-    
-  // If this energy scan does not indicate higher energy on the current 
-  // channel then other channels, no action is taken. The device should 
+
+  // If this energy scan does not indicate higher energy on the current
+  // channel then other channels, no action is taken. The device should
   // continue to operate as normal and the message counters are not reset.
   for ( i = 0; i < ED_SCAN_MAXCHANNELS; i++ )
   {
-    if ( ( ( (uint32)1 << i ) & pEDScanConfirm->scannedChannels ) && 
+    if ( ( ( (uint32)1 << i ) & pEDScanConfirm->scannedChannels ) &&
          ( channelEnergy > pEDScanConfirm->energyDetectList[i] ) )
     {
       energyIncreased = TRUE;
       break;
     }
   }
-    
+  #endif
   // If the energy scan does indicate increased energy on the channel
-  // in use, a Mgmt_NWK_Update_notify should be sent to the Network 
+  // in use, a Mgmt_NWK_Update_notify should be sent to the Network
   // Manager to indicate interference is present.
   if ( energyIncreased )
   {
     // Send a Management Network Update notify to the Network Manager
     ZDNwkMgr_MgmtNwkUpdateNotifyAddr.addr.shortAddr = _NIB.nwkManagerAddr;
-    ZDNwkMgr_BuildAndSendUpdateNotify( 0, &ZDNwkMgr_MgmtNwkUpdateNotifyAddr, 
+    ZDNwkMgr_BuildAndSendUpdateNotify( 0, &ZDNwkMgr_MgmtNwkUpdateNotifyAddr,
                                        ZDNwkMgr_TotalTransmissions, ZDNwkMgr_TxFailures,
                                        pEDScanConfirm, AF_MSG_ACK_REQUEST );
     ZDNwkMgr_WaitingForNotifyConfirm = TRUE; // Confirm will clear the counters
-      
+
     if ( ZDNwkMgr_NumUpdateNotifySent == 0 )
     {
       // First notify message sent within this hour. Start the Update Notify timer.
       ZDNwkMgr_UpdateNotifyTimer = ZDNWKMGR_UPDATE_NOTIFY_TIMER;
       osal_start_timerEx( ZDNwkMgr_TaskID, ZDNWKMGR_UPDATE_NOTIFY_EVT, ONE_MINUTE );
     }
-    
+
     ZDNwkMgr_NumUpdateNotifySent++;
   }
 #if defined ( LCD_SUPPORTED )
@@ -793,14 +810,14 @@ static void ZDNwkMgr_BuildAndSendUpdateNotify( uint8 TransSeq, zAddrType_t *dstA
   uint8 i;
   uint8 listCount = 0;
   uint8 *energyValues = NULL;
-  
+
   // Count number of energy detects
   for ( i = 0; i < ED_SCAN_MAXCHANNELS; i++ )
   {
     if ( ( (uint32)1 << i ) & pEDScanConfirm->scannedChannels )
       listCount++;
   }
-  
+
   if ( listCount > 0 )
   {
     energyValues = (uint8 *)osal_mem_alloc( listCount );
@@ -815,9 +832,9 @@ static void ZDNwkMgr_BuildAndSendUpdateNotify( uint8 TransSeq, zAddrType_t *dstA
       }
     }
   }
-    
+
   // Send a Management Network Update notify back
-  ZDP_MgmtNwkUpdateNotify( TransSeq, dstAddr, pEDScanConfirm->status, 
+  ZDP_MgmtNwkUpdateNotify( TransSeq, dstAddr, pEDScanConfirm->status,
                            pEDScanConfirm->scannedChannels,
                            totalTransmissions, txFailures,
                            listCount, energyValues, txOptions, false );
@@ -841,7 +858,7 @@ void NwkMgr_SetNwkManager( void )
   {
     // We're the Network Manager. Set our address as the Network Manager Address
     ZDNwkMgr_SetNwkManagerAddr( _NIB.nwkDevAddress );
-    
+
     // Set the Network Manager bit of the Server Mask
     ZDO_Config_Node_Descriptor.ServerMask |= NETWORK_MANAGER;
   }
@@ -863,7 +880,7 @@ void ZDNwkMgr_SetNwkManagerAddr( uint16 nwkManagerAddr )
   {
     // Update the Network Manager Address
     _NIB.nwkManagerAddr = nwkManagerAddr;
-  
+
     // Our Network Manger Address has been changed -- notify to save info into NV
     ZDApp_NwkStateUpdateCB();
   }
@@ -888,11 +905,15 @@ void ZDNwkMgr_ReportChannelInterference(  NLME_ChanInterference_t *chanInterfere
   if ( pChanInterference )
   {
     pChanInterference->hdr.event = NM_CHANNEL_INTERFERE;
-      
+
     // Build the structure
     pChanInterference->totalTransmissions = chanInterference->totalTransmissions;
     pChanInterference->txFailures = chanInterference->txFailures;
-              
+    /*add by whb*/
+    if((pChanInterference->totalTransmissions != 1000) && (pChanInterference->txFailures != 800))
+    {
+        return;
+    }
     osal_msg_send( ZDNwkMgr_TaskID, (uint8 *)pChanInterference );
   }
 }
@@ -916,12 +937,12 @@ void ZDNwkMgr_EDScanConfirmCB( NLME_EDScanConfirm_t *EDScanConfirm )
   if ( pEDScanConfirm )
   {
     pEDScanConfirm->hdr.event = NM_ED_SCAN_CONFIRM;
-      
+
     // Build the structure
     pEDScanConfirm->status = EDScanConfirm->status;
     pEDScanConfirm->scannedChannels = EDScanConfirm->scannedChannels;
     osal_memcpy( pEDScanConfirm->energyDetectList, EDScanConfirm->energyDetectList, ED_SCAN_MAXCHANNELS );
-      
+
     osal_msg_send( ZDNwkMgr_TaskID, (uint8 *)pEDScanConfirm );
   }
 }
@@ -937,16 +958,16 @@ void ZDNwkMgr_EDScanConfirmCB( NLME_EDScanConfirm_t *EDScanConfirm )
  */
 void ZDNwkMgr_ProcessDataConfirm( afDataConfirm_t *afDataConfirm )
 {
-  if (   ZDNwkMgr_WaitingForNotifyConfirm  && 
-       ( afDataConfirm->transID == 0 )     && 
+  if (   ZDNwkMgr_WaitingForNotifyConfirm  &&
+       ( afDataConfirm->transID == 0 )     &&
        ( afDataConfirm->hdr.status == ZSuccess ) )
   {
-    // The Mgmt NWK Update Notify was sent as an APS Unicast with  
-    // acknowledgement and once the acknowledgment is received the 
-    // total transmit and transmit failure counters are reset to zero.  
+    // The Mgmt NWK Update Notify was sent as an APS Unicast with
+    // acknowledgement and once the acknowledgment is received the
+    // total transmit and transmit failure counters are reset to zero.
     _NIB.nwkTotalTransmissions = 0;
     nwkTransmissionFailures( TRUE );
-    
+
     ZDNwkMgr_WaitingForNotifyConfirm = FALSE;
   }
 }
@@ -968,7 +989,7 @@ void ZDNwkMgr_ProcessDataConfirm( afDataConfirm_t *afDataConfirm )
  * @return      none
  */
 void ZDNwkMgr_NetworkReportCB( ZDNwkMgr_NetworkReport_t *pReport )
-{ 
+{
   // Send Network Report message to the Network Manager task
   osal_msg_send( ZDNwkMgr_TaskID, (uint8 *)pReport );
 }
@@ -1014,9 +1035,9 @@ void ZDNwkMgr_ProcessNetworkReport( ZDNwkMgr_NetworkReport_t *pNetworkReport )
       {
         // select a new PAN ID
         newPID = (uint16)osal_rand();
-      
+
         // Make sure that the chosen PAN ID is not already in use in the
-        // local neighborhood and also not contained within the Report 
+        // local neighborhood and also not contained within the Report
         // Information field of the Network Report Command frame
         for ( i = 0; i < pNetworkReport->reportInfoCnt; i++ )
         {
@@ -1027,11 +1048,11 @@ void ZDNwkMgr_ProcessNetworkReport( ZDNwkMgr_NetworkReport_t *pNetworkReport )
           }
         }
       } while ( !unique );
-         
+
       // Send out a Network Update command.
       NLME_SendNetworkUpdate( NWK_BROADCAST_SHORTADDR, NWKUPDATE_PANID_UPDATE,
                               _NIB.extendedPANID, _NIB.nwkUpdateId+1, newPID );
-    
+
       ZDNwkMgr_PanIdUpdateInProgress = TRUE;
     }
   }
@@ -1049,10 +1070,10 @@ void ZDNwkMgr_ProcessNetworkReport( ZDNwkMgr_NetworkReport_t *pNetworkReport )
 void ZDNwkMgr_ProcessNetworkUpdate( ZDNwkMgr_NetworkUpdate_t *pNetworkUpdate )
 {
   if ( pNetworkUpdate->updateType == NWKUPDATE_PANID_UPDATE )
-  { 
+  {
     // Our PAN ID has been changed -- notify to save info into NV
     ZDApp_NwkStateUpdateCB();
-    
+
     ZDNwkMgr_PanIdUpdateInProgress = FALSE;
   }
 }
