@@ -83,6 +83,7 @@
 #include "nwk_globals.h"
 #include "nwk_util.h"
 #endif
+#include "mac_api.h"
 
 
 /******************************************************************************
@@ -213,6 +214,9 @@ static uint32 jammerDetectPeriodTime = JAMMER_DETECT_PERIOD_TIME;
 static uint8 sniffer = FALSE;
 #endif
 
+#ifdef ZNP_CC2530
+uint8 g_Router_Channel;
+#endif
 /******************************************************************************
  * LOCAL FUNCTIONS
  *****************************************************************************/
@@ -228,7 +232,7 @@ static void MT_SysRandom(void);
 #ifdef ZNP_CC2530
 extern void ZDNwkMgr_ReportChannelInterference( NLME_ChanInterference_t *chanInterference );
 static void MT_AssocDevList(void);
-static void MT_ChangeChannel(void);
+static void MT_ChangeChannel(uint8 *pBuf);
 #endif
 static void MT_SysGpio(uint8 *pBuf);
 static void MT_SysStackTune(uint8 *pBuf);
@@ -330,7 +334,7 @@ uint8 MT_SysCommandProcessing(uint8 *pBuf)
       MT_AssocDevList();
       break;
     case MT_SYS_CHANGECHANNEL:
-      MT_ChangeChannel();
+      MT_ChangeChannel(pBuf);
       break;
 #endif
 
@@ -1469,22 +1473,30 @@ static void MT_SysRandom()
  *****************************************************************************/
 static void MT_AssocDevList()
 {
+  int num = 0;
   for(uint8 i=0;i<Max_Dev_Num;i++)
   {
-    Device_List[i].nwkAddr = AssociatedDevList[i].shortAddr;
-    Device_List[i].lqi = AssociatedDevList[i].linkInfo.rxLqi;
-    Device_List[i].nodeRelation = AssociatedDevList[i].nodeRelation;
+    if(MAC_SHORT_ADDR_NONE == AssociatedDevList[i].shortAddr)
+    {
+        continue;
+    }
+    Device_List[num].nwkAddr = AssociatedDevList[i].shortAddr;
+    Device_List[num].lqi = AssociatedDevList[i].linkInfo.rxLqi;
+    Device_List[num].nodeRelation = AssociatedDevList[i].nodeRelation;
+    num++;
   }
 
   /* Build and send back the response */
   MT_BuildAndSendZToolResponse( MT_SRSP_SYS, MT_SYS_ASSOCDEVLIST_GET,
-              sizeof(Device_List_t)*Max_Dev_Num, (uint8*)Device_List );
+              sizeof(Device_List_t)*num, (uint8*)Device_List );
 }
 
-static void MT_ChangeChannel(void)
+static void MT_ChangeChannel(uint8 *pBuf)
 {
   NLME_ChanInterference_t data = {1000, 800};
   uint8 channel = _NIB.nwkLogicalChannel;
+
+  g_Router_Channel = pBuf[MT_RPC_POS_DAT0];
   ZDNwkMgr_ReportChannelInterference(&data);
 
   /* Build and send back the response */
