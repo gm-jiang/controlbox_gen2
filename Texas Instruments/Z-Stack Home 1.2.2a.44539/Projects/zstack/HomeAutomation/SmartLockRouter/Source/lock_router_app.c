@@ -36,7 +36,7 @@ uint8 device_id_report_cnt = 0;
 devStates_t lock_router_nework_state = DEV_INIT;
 afAddrType_t lock_router_app_dest_addr = {0};
 uint16 hb_tid;
-
+uint8 valid_asso_num = 0;
 SimpleDescriptionFormat_t lock_router_simple_desc =
 {
     LOCK_ROUTER_END_POINT_NUM,             //  int Endpoint;
@@ -202,7 +202,7 @@ uint16 lock_router_app_event_loop( uint8 task_id, uint16 events )
     if (events & LOCK_ROUTER_EVENT_HB_ACK)
     {
         log_printf( "Send heart beat ack\r\n");
-        if (ZSuccess != send_msg_to_center((uint8 *)Device_List, sizeof(Device_List_t)*Max_Dev_Num,
+        if (ZSuccess != send_msg_to_center((uint8 *)Device_List, sizeof(Device_List_t)*valid_asso_num,
                                 MSG_TYPE_HEART_BEAT, hb_tid))
             log_printf( "Error: send associated device info failed.\r\n");
 
@@ -337,7 +337,7 @@ uint8 lock_router_msg_crc(const void *vptr, int len)
 void lock_router_hb_proc(uint8 *pkt)
 {
     uint16 SendDelay = 0;
-
+    uint8 num = 0;
     hb_tid = pkt[3];
     hb_tid = (hb_tid << 8) | pkt[2];
 
@@ -346,10 +346,14 @@ void lock_router_hb_proc(uint8 *pkt)
     log_printf( "Associated Devices:\r\n");
     for(uint8 i=0; i<Max_Dev_Num; i++)
     {
-        Device_List[i].nwkAddr = AssociatedDevList[i].shortAddr;
-        Device_List[i].lqi = AssociatedDevList[i].linkInfo.rxLqi;
-//        Device_List[i].dev_type = 0x01;
-        Device_List[i].nodeRelation = AssociatedDevList[i].nodeRelation;
+        if(MAC_SHORT_ADDR_NONE == AssociatedDevList[i].shortAddr)
+        {
+            continue;
+        }
+        Device_List[num].nwkAddr = AssociatedDevList[i].shortAddr;
+        Device_List[num].lqi = AssociatedDevList[i].linkInfo.rxLqi;
+        Device_List[num].nodeRelation = AssociatedDevList[i].nodeRelation;
+        num++;
 
         if (Device_List[i].nwkAddr != 0xFFFF)
         {
@@ -360,7 +364,7 @@ void lock_router_hb_proc(uint8 *pkt)
     SendDelay = HB_ACK_DELAY_BASE + osal_rand() & HB_ACK_DELAY_MASK; //allows a jitter of 2 seconds
 
     log_printf( "Received heart beat package, Ack delay = %d\r\n", SendDelay);
-
+    valid_asso_num = num;
     osal_start_timerEx(lock_router_app_task_id, LOCK_ROUTER_EVENT_HB_ACK, SendDelay);
 
     return ;

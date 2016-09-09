@@ -89,6 +89,10 @@ extern "C"
 // received when ZDNwkMgr_Init() is called.
 uint8 ZDNwkMgr_TaskID = 0;
 
+#ifdef ZNP_CC2530
+extern uint8 g_Router_Channel;
+#endif
+
 /******************************************************************************
  * LOCAL VARIABLES
  */
@@ -645,6 +649,26 @@ void ZDNwkMgr_ProcessServerDiscRsp( zdoIncomingMsg_t *inMsg )
   }
 }
 
+static uint8 UmaskRouterChannel(uint32 *channellist, uint8 routerchannel)
+{
+    uint8 umaskchannel = 0;
+    if((3 == routerchannel) || (4 == routerchannel))
+    {
+        umaskchannel = 15;
+    }
+    else if((8 == routerchannel) || (9 == routerchannel))
+    {
+        umaskchannel = 20;
+    }
+    else
+    {
+        return -1;
+    }
+
+    *channellist = *channellist & (~(((uint32)1) << umaskchannel));
+    return 0;
+}
+
 /*********************************************************************
  * @fn          ZDNwkMgr_ProcessChannelInterference
  *
@@ -658,7 +682,10 @@ void ZDNwkMgr_ProcessServerDiscRsp( zdoIncomingMsg_t *inMsg )
 static void ZDNwkMgr_ProcessChannelInterference( ZDNwkMgr_ChanInterference_t *pChanInterference )
 {
   uint32 channelList;
+#ifdef ZNP_CC2530
   static uint32 last4timelist = 0;
+  uint32 tmplist = 0;
+#endif
   // To avoid a device with communication problems from constantly
   // sending reports to the network manager, the device should not
   // send a Mgmt_NWK_Update_notify more than 4 times per hour.
@@ -668,13 +695,18 @@ static void ZDNwkMgr_ProcessChannelInterference( ZDNwkMgr_ChanInterference_t *pC
     //modify by whb, change all channels to channelmask
     if (!osal_nv_read(ZCD_NV_CHANLIST, 0, sizeof( channelList ), &channelList))
     {
+
+#ifdef ZNP_CC2530
+        UmaskRouterChannel(&channelList, g_Router_Channel);
+        tmplist = channelList;
         last4timelist = last4timelist | (((uint32)1) << _NIB.nwkLogicalChannel);
-        if(last4timelist == channelList)
+        channelList = channelList & (~last4timelist);
+        if(0 == channelList)
         {
             last4timelist = (((uint32)1) << _NIB.nwkLogicalChannel);
+            channelList = tmplist & (~last4timelist);
         }
-        //channelList = channelList & (~(((uint32)1) << _NIB.nwkLogicalChannel));
-        channelList = channelList & (~last4timelist);
+#endif
         if ( NLME_EDScanRequest( channelList, _NIB.scanDuration ) == ZSuccess )
         {
           // Save the counters for the Update Notify message to be sent
