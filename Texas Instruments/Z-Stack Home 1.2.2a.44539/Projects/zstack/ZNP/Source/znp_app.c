@@ -66,7 +66,7 @@
 #if defined ( TC_LINKKEY_JOIN ) || defined ( ZCL_KEY_ESTABLISH )
   #include "zcl.h"
 #endif
-
+#include "AddrMgr.h"
 /* ------------------------------------------------------------------------------------------------
  *                                           Local Functions
  * ------------------------------------------------------------------------------------------------
@@ -134,6 +134,7 @@ void znpInit(uint8 taskId)
   znpBasicRspRate = ZNP_BASIC_RSP_RATE;
   (void)osal_start_reload_timer(taskId, ZNP_BASIC_RSP_EVENT, ZNP_BASIC_RSP_RATE);
 #endif
+  osal_start_reload_timer(znpTaskId, ZNP_EVENT_LINK_STATUS, TIME_INTERVAL_LINK_STATUS);
 }
 
 /**************************************************************************************************
@@ -160,7 +161,11 @@ uint16 znpEventLoop(uint8 taskId, uint16 events)
 #if !defined CC2531ZNP
   uint8 *pBuf;
 #endif
-
+  if (events & ZNP_EVENT_LINK_STATUS)
+  {
+        CleanAssociatedDevList();
+        return ( events ^ ZNP_EVENT_LINK_STATUS );
+  }
   if (events & SYS_EVENT_MSG)
   {
     while ((pMsg = (osal_event_hdr_t *) osal_msg_receive(znpTaskId)) != NULL)
@@ -730,3 +735,40 @@ bool npSpiReadyCallback(void)
 
 /**************************************************************************************************
 */
+static void RemoveStaleNode(uint16 nwkaddr)
+{
+    NLME_LeaveReq_t req;
+    uint8 extAddr[Z_EXTADDR_LEN];
+
+    if (AddrMgrExtAddrLookup(nwkaddr,extAddr))
+    {
+        // Remove device
+        req.extAddr = extAddr;
+        req.removeChildren = FALSE;
+        req.rejoin = TRUE;
+        req.silent = FALSE;
+
+        NLME_LeaveReq(&req);
+    }
+}
+
+static void CleanAssociatedDevList(void)
+{
+    uint8 _nodeCounter;
+    for (_nodeCounter = 0; _nodeCounter < NWK_MAX_DEVICES; _nodeCounter++ )
+    {
+        if ((AssociatedDevList[_nodeCounter].shortAddr != INVALID_ADDR0)&&
+            (AssociatedDevList[_nodeCounter].shortAddr != INVALID_ADDR1))
+        {
+            if ((AssociatedDevList[_nodeCounter].nodeRelation == CHILD_FFD_RX_IDLE )||
+                (AssociatedDevList[_nodeCounter].nodeRelation == CHILD_FFD))
+            {
+              if ((AssociatedDevList[_nodeCounter].age !=0xFF)&&
+                  (AssociatedDevList[_nodeCounter].age >= AGE_LIMIT))
+              {
+                  RemoveStaleNode(AssociatedDevList[_nodeCounter].shortAddr);
+              }
+            }
+        }
+    }
+}

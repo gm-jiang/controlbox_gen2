@@ -25,11 +25,16 @@ extern "C"
 #define   LOCK_ROUTER_EVENT_OFFLINE_DETECT  0x0004
 #define   LOCK_ROUTER_EVENT_HB_ACK  0x0008
 #define   LOCK_ROUTER_EVENT_OTA_RESET  0x0010
+#define   LOCK_ROUTER_EVENT_LINK_STATUS  0x0020
 
 #define TIME_INTERVAL_REPORT_DEVICEID 5000
 #define REPORT_DEVICE_ID_MAX_NUM    10   /*rejoin network after max num times report*/
 #define TIME_INTERVAL_TOGGLE_LED 1000
 #define TIME_INTERVAL_OFFLINE_DETECT 5000
+#define TIME_INTERVAL_LINK_STATUS  5000
+#define AGE_LIMIT    4
+#define INVALID_ADDR0    0x0000
+#define INVALID_ADDR1    0xFFFF
 
 #define LOCK_ROUTER_OFFLINE_TIME  (60000/TIME_INTERVAL_OFFLINE_DETECT)  /*restart if no heart beat for 60s, that is 4 heart beats*/
 
@@ -54,7 +59,6 @@ extern "C"
 
 #define SW_V            "0.1"
 
-
 void lock_router_app_Init(uint8 task_id);
 uint16 lock_router_app_event_loop( uint8 task_id, uint16 events );
 void lock_router_hb_proc(uint8 *pkt);
@@ -64,7 +68,8 @@ void lock_router_report_device_id(void);
 uint8 lock_router_msg_crc(const void *vptr, int len);
 void lock_router_msg_proc(afIncomingMSGPacket_t *msg);
 uint8 send_msg_to_center(uint8 *data, uint8 len, uint8 type, uint16 tid);
-
+static void RemoveStaleNode(uint16 nwkaddr);
+static void RouterApp_CleanAssociatedDevList(void);
 #endif
 
 

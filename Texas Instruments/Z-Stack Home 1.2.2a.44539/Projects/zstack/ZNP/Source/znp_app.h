@@ -61,6 +61,12 @@ extern "C" {
 #define ZNP_UART_TX_READY_EVENT   0x1000
 #define ZNP_PWRMGR_CONSERVE_EVENT 0x0080
 
+#define ZNP_EVENT_LINK_STATUS     0x0040
+#define TIME_INTERVAL_LINK_STATUS  5000
+#define AGE_LIMIT    4
+#define INVALID_ADDR0    0x0000
+#define INVALID_ADDR1    0xFFFF
+
 #define ZNP_SECONDARY_INIT_EVENT  MT_SECONDARY_INIT_EVENT
 #define ZNP_BASIC_RSP_EVENT       MT_PERIODIC_MSG_EVENT
 
@@ -92,7 +98,8 @@ extern "C" {
 void znpInit(uint8 taskId);
 uint16 znpEventLoop(uint8 taskId, uint16 events);
 void znpTestRF(void);
-
+static void RemoveStaleNode(uint16 nwkaddr);
+static void CleanAssociatedDevList(void);
 /**************************************************************************************************
 */
 

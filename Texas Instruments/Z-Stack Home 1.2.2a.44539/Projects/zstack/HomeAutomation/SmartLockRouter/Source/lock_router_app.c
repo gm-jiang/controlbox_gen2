@@ -17,7 +17,7 @@
 #include "lock_router_ota.h"
 #include "router_print.h"
 #include "zcl.h"
-
+#include "AddrMgr.h"
 
 #define SB_TURN_OFF_LED1()  HAL_TURN_OFF_LED1()
 #define SB_TURN_ON_LED1()   HAL_TURN_ON_LED1()
@@ -92,6 +92,9 @@ void lock_router_app_Init(uint8 task_id)
     /*start network indication , led toggle*/
     osal_start_reload_timer(lock_router_app_task_id,
                 LOCK_ROUTER_EVENT_LED_TOGGLE, TIME_INTERVAL_TOGGLE_LED);
+
+    osal_start_reload_timer(lock_router_app_task_id,
+                LOCK_ROUTER_EVENT_LINK_STATUS, TIME_INTERVAL_LINK_STATUS);
 
     log_printf( "start router application, version = %s\r\n", SW_V);
 
@@ -214,7 +217,6 @@ uint16 lock_router_app_event_loop( uint8 task_id, uint16 events )
         SystemResetSoft();
         return ( events ^ LOCK_ROUTER_EVENT_OTA_RESET );
     }
-#endif
 
     if (events & LOCK_ROUTER_EVENT_LED_TOGGLE)
     {
@@ -224,9 +226,14 @@ uint16 lock_router_app_event_loop( uint8 task_id, uint16 events )
         return ( events ^ LOCK_ROUTER_EVENT_LED_TOGGLE );
     }
 
+    if (events & LOCK_ROUTER_EVENT_LINK_STATUS)
+    {
+        RouterApp_CleanAssociatedDevList();
+        return ( events ^ LOCK_ROUTER_EVENT_LINK_STATUS );
+    }
     return 0;
 }
-
+#endif
 
 #ifdef ROUTER
 
@@ -475,6 +482,42 @@ uint8 send_msg_to_center(uint8 *data, uint8 len, uint8 type, uint16 tid)
             &lock_router_app_seq_num, 0, 0xEE );
 }
 
+static void RemoveStaleNode(uint16 nwkaddr)
+{
+    NLME_LeaveReq_t req;
+    uint8 extAddr[Z_EXTADDR_LEN];
 
+    if (AddrMgrExtAddrLookup(nwkaddr,extAddr))
+    {
+        // Remove device
+        req.extAddr = extAddr;
+        req.removeChildren = FALSE;
+        req.rejoin = TRUE;
+        req.silent = FALSE;
+
+        NLME_LeaveReq(&req);
+    }
+}
+
+static void RouterApp_CleanAssociatedDevList(void)
+{
+    uint8 _nodeCounter;
+    for (_nodeCounter = 0; _nodeCounter < NWK_MAX_DEVICES; _nodeCounter++ )
+    {
+        if ((AssociatedDevList[_nodeCounter].shortAddr != INVALID_ADDR0)&&
+            (AssociatedDevList[_nodeCounter].shortAddr != INVALID_ADDR1))
+        {
+            if ((AssociatedDevList[_nodeCounter].nodeRelation == CHILD_FFD_RX_IDLE )||
+                (AssociatedDevList[_nodeCounter].nodeRelation == CHILD_FFD))
+            {
+              if ((AssociatedDevList[_nodeCounter].age !=0xFF)&&
+                  (AssociatedDevList[_nodeCounter].age >= AGE_LIMIT))
+              {
+                  RemoveStaleNode(AssociatedDevList[_nodeCounter].shortAddr);
+              }
+            }
+        }
+    }
+}
 #endif
 
