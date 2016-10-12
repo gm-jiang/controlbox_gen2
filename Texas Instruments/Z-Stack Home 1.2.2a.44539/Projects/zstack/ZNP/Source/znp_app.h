@@ -55,6 +55,9 @@ extern "C" {
  *                                          Constants
  * ------------------------------------------------------------------------------------------------
  */
+#define LOCK_APP_PROFILE_ID  0x0104 /*app profile, use manufacturer-specific profile*/
+#define LOCK_END_POINT_NUM  0x01
+#define LOCK_APP_DEVICE_ID  0x0100
 
 #define ZNP_SPI_RX_AREQ_EVENT     0x4000
 #define ZNP_SPI_RX_SREQ_EVENT     0x2000

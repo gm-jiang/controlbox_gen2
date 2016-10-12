@@ -504,22 +504,10 @@ void MT_SysReset( uint8 *pBuf )
  *****************************************************************************/
 static void MT_SysPing(void)
 {
-  uint16 tmp16;
-  uint8 retArray[2];
+  uint8 retArray[2] = {0};
 
-  /* Build Capabilities */
-#ifdef ZNP_CC2530
-  tmp16 = MT_CAP_SYS | MT_CAP_MAC  | MT_CAP_NWK  | MT_CAP_AF    |
-          MT_CAP_ZDO | MT_CAP_SAPI | MT_CAP_UTIL | MT_CAP_DEBUG |
-          MT_CAP_APP | MT_CAP_GP   | MT_CAP_ZOAD | ((uint16)devState<<12);
-#else
-  tmp16 = MT_CAP_SYS | MT_CAP_MAC  | MT_CAP_NWK  | MT_CAP_AF    |
-          MT_CAP_ZDO | MT_CAP_SAPI | MT_CAP_UTIL | MT_CAP_DEBUG |
-          MT_CAP_APP | MT_CAP_GP   | MT_CAP_ZOAD ;
-#endif
-  /* Convert to high byte first into temp buffer */
-  retArray[0] = LO_UINT16( tmp16 );
-  retArray[1] = HI_UINT16( tmp16 );
+  retArray[0] = 0x00;
+  retArray[1] = devState;
 
   /* Build and send back the response */
   MT_BuildAndSendZToolResponse( MT_SRSP_SYS, MT_SYS_PING,
