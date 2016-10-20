@@ -705,6 +705,10 @@ static void ZDNwkMgr_ProcessChannelInterference( ZDNwkMgr_ChanInterference_t *pC
         {
             last4timelist = (((uint32)1) << _NIB.nwkLogicalChannel);
             channelList = tmplist & (~last4timelist);
+            if(0 == channelList)  /*when the channelList is only one channel,it will be zero*/
+            {
+                channelList = last4timelist;
+            }
         }
 #endif
         if ( NLME_EDScanRequest( channelList, _NIB.scanDuration ) == ZSuccess )
