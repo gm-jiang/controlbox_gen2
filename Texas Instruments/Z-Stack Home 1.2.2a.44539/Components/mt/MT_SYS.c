@@ -505,9 +505,10 @@ void MT_SysReset( uint8 *pBuf )
 static void MT_SysPing(void)
 {
   uint8 retArray[2] = {0};
-
+#ifdef ZNP_CC2530
   retArray[0] = 0x00;
   retArray[1] = devState;
+#endif
 
   /* Build and send back the response */
   MT_BuildAndSendZToolResponse( MT_SRSP_SYS, MT_SYS_PING,
