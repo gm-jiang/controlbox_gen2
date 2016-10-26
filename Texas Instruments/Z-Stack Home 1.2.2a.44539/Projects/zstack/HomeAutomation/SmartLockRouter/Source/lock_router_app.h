@@ -47,6 +47,8 @@ extern "C"
 #define MSG_TYPE_OTA_MSG  30
 #define MSG_TYPE_OTA_CRC_CHK  32
 #define MSG_TYPE_RESET 65
+#define GET_RSSI_BYLOCK 70
+
 
 #define SN_MAX_LEN 10
 
@@ -56,6 +58,8 @@ extern "C"
 #define RET_HEADER_ERR 3
 #define RET_CRC_ERR 4
 #define RET_VERIFY_ERR 5
+#define ACK_FROM_ROUTER 11
+
 
 #define SW_V            "0.1"
 

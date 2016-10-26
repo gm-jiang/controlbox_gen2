@@ -320,7 +320,6 @@ void lock_router_report_device_id(void)
     return ;
 }
 
-
 /**
  * Return CRC-8 of the data, using x^8 + x^2 + x + 1 polynomial.  A table-based
  * algorithm would be faster, but for only a few bytes it isn't worth the code
@@ -384,6 +383,7 @@ void lock_router_msg_proc(afIncomingMSGPacket_t *msg)
     uint8 *pdata = NULL;
     uint8 crc = 0;
     uint8 crc_cal = 0;
+    uint16 tid = 0;
 
     pdata = msg->cmd.Data;
     len = pdata[0];
@@ -435,6 +435,11 @@ void lock_router_msg_proc(afIncomingMSGPacket_t *msg)
 
         case MSG_TYPE_RESET:
             SystemResetSoft();
+            break;
+        case GET_RSSI_BYLOCK:
+            tid = pdata[3];
+            tid = (tid << 8) | pdata[2];
+            send_msg_to_center((uint8 *)&(msg->LinkQuality), 1, ACK_FROM_ROUTER, tid);
             break;
 
         default:
