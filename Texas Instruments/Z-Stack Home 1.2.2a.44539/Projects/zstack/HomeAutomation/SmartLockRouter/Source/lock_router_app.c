@@ -218,6 +218,12 @@ uint16 lock_router_app_event_loop( uint8 task_id, uint16 events )
         return ( events ^ LOCK_ROUTER_EVENT_OTA_RESET );
     }
 
+    if (events & LOCK_ROUTER_EVENT_REPORT_VER)
+    {
+        lock_router_report_version();
+        return ( events ^ LOCK_ROUTER_EVENT_REPORT_VER );
+    }
+
     if (events & LOCK_ROUTER_EVENT_LED_TOGGLE)
     {
         log_printf( "Network status = %d, DEV_ROUTER=%d\n", lock_router_nework_state, DEV_ROUTER);
@@ -316,7 +322,34 @@ void lock_router_report_device_id(void)
         log_printf( "Error: send device id msg error, error code is %d.\r\n", ret);
         return ;
     }
+    osal_start_timerEx(lock_router_app_task_id, LOCK_ROUTER_EVENT_REPORT_VER, 10000);
 
+    return ;
+}
+
+void lock_router_report_version(void)
+{
+    static uint8 send_num = 0;
+    ota_ver_msg_t lock_ver = {0};
+    uint8 ret = 0;
+
+    lock_ver.hw = get_hw_ver();
+    lock_ver.sw = get_sw_ver();
+    lock_ver.odd_or_even = 2;  /*always even*/
+    lock_ver.dev_type = 5;     /*router device type*/
+
+    log_printf("report router version hw = %d, sw = %d.\r\n", lock_ver.hw, lock_ver.sw);
+
+    send_msg_to_center((uint8 *)&lock_ver, sizeof(ota_ver_msg_t), MSG_TYPE_ZNP_VERSION, msg_tid);
+    if (ret != ZSuccess)
+    {
+        log_printf( "Error: report router version msg error, error code is %d.\r\n", ret);
+        return ;
+    }
+    if(++send_num < 5)
+    {
+        osal_start_timerEx(lock_router_app_task_id, LOCK_ROUTER_EVENT_REPORT_VER, 2000);
+    }
     return ;
 }
 
@@ -427,10 +460,6 @@ void lock_router_msg_proc(afIncomingMSGPacket_t *msg)
 
         case MSG_TYPE_OTA_MSG:
             ota_msg_proc(pdata, len);
-            break;
-
-        case MSG_TYPE_OTA_CRC_CHK:
-            ota_msg_check_crc(pdata, len);
             break;
 
         case MSG_TYPE_RESET:

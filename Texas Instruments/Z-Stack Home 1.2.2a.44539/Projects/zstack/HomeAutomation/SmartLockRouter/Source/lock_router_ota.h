@@ -23,6 +23,7 @@ typedef struct {
     uint16 sw;
     uint16 hw;
     uint8 odd_or_even;
+    uint8 dev_type;
 }ota_ver_msg_t;
 
 typedef enum ota_reply {
@@ -77,7 +78,7 @@ uint16 ota_save_image_data(uint8 size, uint8 *data);
 uint16 ota_save_image_info(uint32 validflag);
 uint16 ota_param_msg_proc(uint8 size, uint8 *msg);
 uint16 ota_data_msg_proc(uint32 recv_seq, uint8 size, uint8 *msg);
-void ota_msg_check_crc(uint8 *pdata, uint32 len);
+void ota_msg_check_crc(void);
 void ota_notify(uint8 *pdata, uint32 len);
 void ota_msg_proc(uint8 *pdata, uint32 len);
 void int2str(uint8* str, uint32 intnum);

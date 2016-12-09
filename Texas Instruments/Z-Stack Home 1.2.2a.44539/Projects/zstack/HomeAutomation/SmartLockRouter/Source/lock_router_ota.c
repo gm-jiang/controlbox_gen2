@@ -77,13 +77,14 @@ void int2str(uint8* str, uint32 intnum)
 
 uint16 get_hw_ver(void)
 {
-    return ((ota_info.hw_ver[0]<<8)+ota_info.hw_ver[1]);
+    return (((ota_info.hw_ver[0] - 0x30)<<8) + (ota_info.hw_ver[1] - 0x30));
 }
 
 void save_hw_ver(uint8 *hw_ver)
 {
     uint8 hd_ver[3] = {0};
     ota_nv_info_t ota_info_read = {0};
+    log_printf( "save_hw_ver %x, %x\n", hw_ver[0], hw_ver[1]);
 
     osal_memcpy(&ota_info.hw_ver, hw_ver, 2);
     ota_info_save();
@@ -316,6 +317,7 @@ uint16 ota_data_msg_proc(uint32 recv_seq, uint8 size, uint8 *msg)
         {
             log_printf("---ota receive image complete---\r\n");
             flag_crc_checked = false;
+            ota_msg_check_crc();
             return OTA_SUCCEED;
         }
     }
@@ -333,13 +335,9 @@ uint16 ota_data_msg_proc(uint32 recv_seq, uint8 size, uint8 *msg)
     return OTA_SUCCEED;
 }
 
-void ota_msg_check_crc(uint8 *pdata, uint32 len)
+void ota_msg_check_crc(void)
 {
     uint16 ota_ret = 0;
-    uint16 tid = 0;
-
-    tid = pdata[3];
-    tid = (tid << 8) | pdata[2];
 
     log_printf("--ota msg check crc---\r\n");
 
@@ -380,8 +378,6 @@ void ota_msg_check_crc(uint8 *pdata, uint32 len)
     }
 
     log_printf("--ota msg check crc ota_ret = %d---\r\n", ota_ret);
-    if (ota_ret == OTA_SUCCEED || ota_ret == OTA_CHECK_FAIL)
-        send_msg_to_center((uint8*)&ota_ret, sizeof(uint16), MSG_TYPE_OTA_CRC_CHK, tid);
 
     return ;
 }
@@ -391,6 +387,7 @@ void ota_notify(uint8 *pdata, uint32 len)
     uint16 new_ver = 0;
     uint16 tid = 0;
     ota_ver_msg_t lock_ver = {0};
+    uint8  type;
 
     log_printf("--------- get ota version ----------.\r\n");
 
@@ -404,14 +401,16 @@ void ota_notify(uint8 *pdata, uint32 len)
     new_ver = (new_ver << 8) | pdata[4];
     tid = pdata[3];
     tid = (tid << 8) | pdata[2];
+    type = pdata[6];
 
     lock_ver.hw = get_hw_ver();
     lock_ver.sw = get_sw_ver();
-    lock_ver.odd_or_even = 0;
+    lock_ver.odd_or_even = 2;  /*always even*/
+    lock_ver.dev_type = type;
     //if (new_ver != ota_info.sw_ver)
         ota_info_reset();
 
-    log_printf("lock hw = %d, sw = %d.\r\n", lock_ver.hw, lock_ver.sw);
+    log_printf("lock hw = %d, sw = %d, type = %d.\r\n", lock_ver.hw, lock_ver.sw, lock_ver.dev_type);
     log_printf("last_ver = %d, new_ver = %d\r\n", ota_info.sw_ver, new_ver);
 
     send_msg_to_center((uint8 *)&lock_ver, sizeof(ota_ver_msg_t), MSG_TYPE_OTA_GET_SW_VER, tid);
