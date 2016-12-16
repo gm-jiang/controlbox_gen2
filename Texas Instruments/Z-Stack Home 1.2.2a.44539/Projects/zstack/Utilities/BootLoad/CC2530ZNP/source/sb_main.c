@@ -53,6 +53,7 @@
 #include "sb_exec_v2.h"
 #include "sb_main.h"
 #include "sb_shared.h"
+#include "ymodem.h"
 
 /* ------------------------------------------------------------------------------------------------
  *                                          Constants
@@ -93,7 +94,7 @@ __root const uint8 CODE boot_image_lockbits = 0xF0; //mark the boot image pages 
  * ------------------------------------------------------------------------------------------------
  */
 
-halDMADesc_t dmaCh0;
+//halDMADesc_t dmaCh0;
 
 /* ------------------------------------------------------------------------------------------------
  *                                       Local Variables
@@ -109,8 +110,8 @@ halDMADesc_t dmaCh0;
 #pragma location="SB_MAGIC_SPACE"
 volatile __no_init uint8 magicByte;
 uint8 znpCfg1;
-static uint8 spiPoll;
-uint8 sbStateReportingEnabled = FALSE;
+//static uint8 spiPoll;
+//uint8 sbStateReportingEnabled = FALSE;
 
 /* ------------------------------------------------------------------------------------------------
  *                                       Local Functions
@@ -118,15 +119,16 @@ uint8 sbStateReportingEnabled = FALSE;
  */
 
 void vddWait(uint8 vdd);
-static void sblInit(void);
-static void sblExec(void);
-static uint8 sblWait(uint16 sbl_wait_time);
+//static void sblInit(void);
+//static void sblExec(void);
+//static uint8 sblWait(uint16 sbl_wait_time);
 void uart1Init(void);
+void uart0Init(void);
 void print(char *ptr, uint32 len);
 
 // Saving code space by not using the _hal_uart.c API and directly including the low level drivers.
-#include "_hal_uart_isr.c"
-#include "_hal_uart_spi.c"
+//#include "_hal_uart_isr.c"
+//#include "_hal_uart_spi.c"
 
 /**************************************************************************************************
  * @fn          main
@@ -157,6 +159,18 @@ void uart1Init(void)
   UTX1IF = 0;
 }
 
+void uart0Init(void)
+{
+  PERCFG |= 0x1;
+  P1SEL  |= 0x30;
+  U0CSR  |= 0x80;
+  U0UCR  = 0x80;
+
+  U0GCR  |= 11;
+  U0BAUD |= 216;
+  UTX0IF = 0;
+}
+
 void print(char *ptr, uint32 len)
 {
   int32 i;
@@ -171,13 +185,13 @@ void print(char *ptr, uint32 len)
 
 void main(void)
 {
+#if 0
   uint8 time_spent_validating;
-//  uint8 bootloaderForcedByMainApp = FALSE;
+  uint8 bootloaderForcedByMainApp = FALSE;
   uint32 mainAppCommandLocal = mainAppCommand;
 
   mainAppCommand = MAIN_APP_CMD_NONE;
 
-#if 0
   if (mainAppCommandLocal == MAIN_APP_CMD_FORCE_BOOTLOADER)
   {
     bootloaderForcedByMainApp = TRUE;
@@ -204,12 +218,12 @@ void main(void)
       else
       {
         sbReportState(SB_STATE_EXECUTING_IMAGE);
-		
+
         while(sblIsUartTxPending())
         {
           sbUartPoll();
         }
-        
+
         SLEEP(0x2600); //Give the last bytes in the HW TX fifo (if any) enough time to be transmitted
 
         HalUARTUnInitISR();
@@ -222,20 +236,37 @@ void main(void)
     }
   }
 #endif
+#if 0
   sblInit();
   uart1Init();
-  print("sblinit", 7);
+  print("init\n", 5);
 
-  if(sbImgValid(&time_spent_validating))
+  if(SB1_PRESS && sbImgValid(&time_spent_validating))
   {
-    print("imgvalid", 8);
+    print("imgok\n", 6);
     asm("LJMP 0x2000\n");
     HAL_SYSTEM_RESET();
   }
 
-  print("sblexec", 7);
+  print("exec\n", 5);
   sblExec();
   HAL_SYSTEM_RESET();
+#endif
+    vddWait(VDD_MIN_NV);
+    HAL_BOARD_INIT();
+
+    uart1Init();
+
+    YModemUARTInit();
+
+    YmodemOutputString("\r\nStart bootloader.");
+
+    YModemUpgrade();
+
+    YmodemOutputString("\r\nStart run application...\r\n");
+
+    asm("LJMP 0x2000\n");
+
 }
 
 /**************************************************************************************************
@@ -263,7 +294,7 @@ void vddWait(uint8 vdd)
   {
     return;
   }
-  
+
   do {
     do {
       ADCCON3 = 0x0F;
@@ -274,6 +305,7 @@ void vddWait(uint8 vdd)
   max_verified_voltage = vdd;
 }
 
+#if 0
 /**************************************************************************************************
  * @fn          sblInit
  *
@@ -368,7 +400,7 @@ static void sblExec(void)
   {
     URX0IE = 1;
     HAL_ENABLE_INTERRUPTS();
-	
+
     sbReportState(SB_STATE_BOOTLOADER_ACTIVE);
   }
   else
@@ -681,6 +713,6 @@ HAL_ISR_FUNCTION( halUart0TxIsr, UTX0_VECTOR )
     asm("NOP");  // Not expected.
   }
 }
-
+#endif
 /**************************************************************************************************
 */
