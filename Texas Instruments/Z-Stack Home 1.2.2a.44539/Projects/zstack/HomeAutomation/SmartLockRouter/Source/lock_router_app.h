@@ -27,6 +27,7 @@ extern "C"
 #define   LOCK_ROUTER_EVENT_OTA_RESET  0x0010
 #define   LOCK_ROUTER_EVENT_LINK_STATUS  0x0020
 #define   LOCK_ROUTER_EVENT_REPORT_VER   0X0040
+#define   LOCK_ROUTER_EVENT_PERIOD_MSG   0X0080
 
 #define TIME_INTERVAL_REPORT_DEVICEID 5000
 #define REPORT_DEVICE_ID_MAX_NUM    10   /*rejoin network after max num times report*/
@@ -48,6 +49,8 @@ extern "C"
 #define MSG_TYPE_OTA_MSG  30
 #define MSG_TYPE_OTA_CRC_CHK  32
 #define MSG_TYPE_ZNP_VERSION  55
+#define MSG_TYPE_ROUTER_PERIOD 56
+
 #define MSG_TYPE_RESET 65
 #define GET_RSSI_BYLOCK 70
 
@@ -65,6 +68,12 @@ extern "C"
 
 #define SW_V            "1.01"
 
+typedef struct {
+    uint16 sw;
+    uint16 hw;
+    uint16 reboot_count;
+}router_period_msg_t;
+
 void lock_router_app_Init(uint8 task_id);
 uint16 lock_router_app_event_loop( uint8 task_id, uint16 events );
 void lock_router_hb_proc(uint8 *pkt);
@@ -72,6 +81,7 @@ uint8 lock_router_factory_test_crc(uint8 *data,uint16 datalen);
 void MT_AppFactoryTest(uint8 *pBuf);
 void lock_router_report_device_id(void);
 void lock_router_report_version(void);
+void lock_router_period_msg(void);
 uint8 lock_router_msg_crc(const void *vptr, int len);
 void lock_router_msg_proc(afIncomingMSGPacket_t *msg);
 uint8 send_msg_to_center(uint8 *data, uint8 len, uint8 type, uint16 tid);

@@ -559,7 +559,7 @@ static uint8 zgItemInit( uint16 id, uint16 len, void *buf, uint8 setDefault )
  */
 uint8 zgInit( void )
 {
-  uint8  setDefault = FALSE;
+  uint8  setDefault = TRUE;
 
   // Do we want to default the Config state values
   if ( zgReadStartupOptions() & ZCD_STARTOPT_DEFAULT_CONFIG_STATE )

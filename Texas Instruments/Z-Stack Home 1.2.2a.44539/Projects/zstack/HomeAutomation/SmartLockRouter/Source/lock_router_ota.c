@@ -122,7 +122,7 @@ uint16 get_version(uint8 *str)
 
     high = (unsigned char)atoi((const char*)ver);
     low = (unsigned char)atoi((const char*)(ver+i+1));
-    version = (high << 8) | low;
+    version = ((uint16)high << 8) | low;
 
     return version;
 }
@@ -171,7 +171,6 @@ void ota_info_reset(void)
     ota_info.curr_size = 0;
     ota_info.total_size = 0;
     osal_nv_write(ZCD_NV_OTA_INFO, 0, sizeof(ota_nv_info_t), &ota_info);
-
     return ;
 }
 

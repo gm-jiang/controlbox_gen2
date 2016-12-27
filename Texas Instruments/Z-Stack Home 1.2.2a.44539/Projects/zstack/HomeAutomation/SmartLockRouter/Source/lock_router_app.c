@@ -37,6 +37,7 @@ devStates_t lock_router_nework_state = DEV_INIT;
 afAddrType_t lock_router_app_dest_addr = {0};
 uint16 hb_tid;
 uint8 valid_asso_num = 0;
+uint8 g_ota_stat = 0;
 SimpleDescriptionFormat_t lock_router_simple_desc =
 {
     LOCK_ROUTER_END_POINT_NUM,             //  int Endpoint;
@@ -220,8 +221,15 @@ uint16 lock_router_app_event_loop( uint8 task_id, uint16 events )
 
     if (events & LOCK_ROUTER_EVENT_REPORT_VER)
     {
-        lock_router_report_version();
+        if(g_ota_stat == 0)
+            lock_router_report_version();
+
         return ( events ^ LOCK_ROUTER_EVENT_REPORT_VER );
+    }
+    if (events & LOCK_ROUTER_EVENT_PERIOD_MSG)
+    {
+        lock_router_period_msg();
+        return ( events ^ LOCK_ROUTER_EVENT_PERIOD_MSG );
     }
 
     if (events & LOCK_ROUTER_EVENT_LED_TOGGLE)
@@ -323,6 +331,7 @@ void lock_router_report_device_id(void)
         return ;
     }
     osal_start_timerEx(lock_router_app_task_id, LOCK_ROUTER_EVENT_REPORT_VER, 10000);
+    osal_start_timerEx(lock_router_app_task_id, LOCK_ROUTER_EVENT_PERIOD_MSG, 15000);
 
     return ;
 }
@@ -350,6 +359,27 @@ void lock_router_report_version(void)
     {
         osal_start_timerEx(lock_router_app_task_id, LOCK_ROUTER_EVENT_REPORT_VER, 2000);
     }
+    return ;
+}
+
+void lock_router_period_msg(void)
+{
+    router_period_msg_t msg_P = {0};
+    uint8 ret = 0;
+
+    msg_P.hw = get_hw_ver();
+    msg_P.sw = get_sw_ver();
+    msg_P.reboot_count = 0;
+
+    log_printf("router period hw = %d, sw = %d.\r\n", msg_P.hw, msg_P.sw);
+
+    send_msg_to_center((uint8 *)&msg_P, sizeof(router_period_msg_t), MSG_TYPE_ROUTER_PERIOD, msg_tid);
+    if (ret != ZSuccess)
+    {
+        log_printf( "Error: report router period report, error code is %d.\r\n", ret);
+        return ;
+    }
+    osal_start_timerEx(lock_router_app_task_id, LOCK_ROUTER_EVENT_PERIOD_MSG, 60*60*1000);
     return ;
 }
 
@@ -455,6 +485,7 @@ void lock_router_msg_proc(afIncomingMSGPacket_t *msg)
             break;
 
         case MSG_TYPE_OTA_GET_SW_VER:
+            g_ota_stat = 1;
             ota_notify(pdata, len);
             break;
 

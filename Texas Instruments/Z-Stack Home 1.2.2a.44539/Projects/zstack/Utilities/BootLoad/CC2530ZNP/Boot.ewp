@@ -1135,6 +1135,9 @@
     <file>
       <name>$PROJ_DIR$\source\sb_main.h</name>
     </file>
+    <file>
+      <name>$PROJ_DIR$\source\ymodem.c</name>
+    </file>
   </group>
   <group>
     <name>HAL</name>

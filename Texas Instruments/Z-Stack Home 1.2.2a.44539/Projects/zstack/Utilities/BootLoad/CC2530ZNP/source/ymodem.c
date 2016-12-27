@@ -226,7 +226,7 @@ static uint16 YmodemCalCRC(uint8 *buf, uint32 len)
 uint8 buf[1024] = {0};
 static int32 YmodemDownloading (void)
 {
-  int32 i,j = 0;
+  int32 i = 0;
   uint8 ch = 0;
   uint8 *file_ptr = NULL;
   uint16 packet_size = 0;
