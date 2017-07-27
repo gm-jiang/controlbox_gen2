@@ -473,7 +473,11 @@ static void HalUARTOpenDMA(halUARTCfg_t *config)
   }
   else
   {
+#ifdef HUMAN_DETECT
+    UxUCR = UCR_D9 | UCR_BIT9 | UCR_PARITY | UCR_STOP;
+#else
     UxUCR = UCR_STOP;
+#endif
   }
 
   dmaCfg.rxBuf[0] = *(volatile uint8 *)DMA_UDBUF;  // Clear the DMA Rx trigger.

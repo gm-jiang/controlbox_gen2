@@ -47,6 +47,9 @@
 #include "MT_UART.h"
 #include "OSAL_Memory.h"
 
+#ifdef HUMAN_DETECT
+#include "panasonic_sensor.h"
+#endif
 
 /***************************************************************************************************
  * MACROS
@@ -118,6 +121,10 @@ void MT_UartInit ()
   uartConfig.callBackFunc         = MT_UartProcessZAppData;
 #else
   uartConfig.callBackFunc         = NULL;
+#endif
+
+#ifdef HUMAN_DETECT
+   uartConfig.callBackFunc         = panasonic_uart_cb;
 #endif
 
   /* Start UART */
