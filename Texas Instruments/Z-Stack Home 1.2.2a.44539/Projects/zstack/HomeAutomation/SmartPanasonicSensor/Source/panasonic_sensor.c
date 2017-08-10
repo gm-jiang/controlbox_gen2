@@ -21,7 +21,6 @@ uint8 report_infrare_count = 0;
 uint8 report_dev_meta_success = false;
 uint8 dev_meta_report_cn = 0;
 
-
 extern uint8 send_msg_to_center(uint8 *data, uint8 len, uint8 type, uint16 tid);
 extern uint8 sensor_heartbeat_lost;
 
@@ -29,8 +28,9 @@ void panasonic_sensor_init(void)
 {
     uint8 cmd_start[] = {0xAA, 0x10, 0x02, 0x00, 0x02, 0xAA, 0x68};
     uint8 cmd_stop[]  = {0xAA, 0x10, 0x02, 0x00, 0x03, 0xAA, 0x69};
+
     HalUARTWrite(HAL_UART_PORT_0, cmd_stop, sizeof(cmd_stop));
-    HalUARTWrite(HAL_UART_PORT_0, cmd_start, sizeof(cmd_stop));
+    HalUARTWrite(HAL_UART_PORT_0, cmd_start, sizeof(cmd_start));
 }
 
 void infrare_report(int8 infrared_status)
@@ -48,10 +48,12 @@ void infrare_report(int8 infrared_status)
     return;
 }
 
+extern uint32 device_id;
 static uint32 get_dev_devid(void)
 {
     uint32 dev_id = 0;
-    dev_id = 1111100000;
+    //dev_id = 1111100000;  //Notice: for debug!!!
+    dev_id = device_id;
     return dev_id;
 }
 
@@ -156,12 +158,12 @@ void panasonic_uart_cb ( uint8 port, uint8 event )
                     if (human)
                     {
                         osal_set_event (lock_router_app_task_id, HUMAN_DETECT_EVENT_SOMEONE);
-                        P1_4 = 1;
+                        DETECT_LED = 1;
                     }
                     else
                     {
                         osal_set_event (lock_router_app_task_id, HUMAN_DETECT_EVENT_NOBODY);
-                        P1_4 = 0;
+                        DETECT_LED = 0;
                     }
                 }
             }
@@ -173,5 +175,18 @@ void panasonic_uart_cb ( uint8 port, uint8 event )
             break;
         }
     }
+}
+
+void panasonic_sensor_power_pin_init(void)
+{
+    SENSOR_POWER_PORT_SEL &= ~BV(5); //as gpio function
+    SENSOR_POWER_PORT_DIR |= BV(5);  //output, default pullup
+}
+
+void panasonic_sensor_reset(void)
+{
+    SENSOR_POWER = 0;
+    MicroWait(100);
+    SENSOR_POWER = 1;
 }
 

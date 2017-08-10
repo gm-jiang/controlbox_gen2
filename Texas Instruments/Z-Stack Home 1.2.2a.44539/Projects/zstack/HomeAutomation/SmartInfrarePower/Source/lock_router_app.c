@@ -18,8 +18,8 @@
 #include "router_print.h"
 #include "zcl.h"
 #include "AddrMgr.h"
+#include "infrare_power.h"
 
-#include "panasonic_sensor.h"
 
 #define SB_TURN_OFF_LED1()  HAL_TURN_OFF_LED1()
 #define SB_TURN_ON_LED1()   HAL_TURN_ON_LED1()
@@ -43,8 +43,6 @@ afAddrType_t lock_router_app_dest_addr = {0};
 uint16 hb_tid;
 uint8 valid_asso_num = 0;
 uint8 g_ota_stat = 0;
-uint8 sensor_heartbeat_lost = 0;
-
 SimpleDescriptionFormat_t lock_router_simple_desc =
 {
     LOCK_ROUTER_END_POINT_NUM,             //  int Endpoint;
@@ -76,6 +74,9 @@ void lock_router_app_Init(uint8 task_id)
     lock_router_app_dest_addr.endPoint = LOCK_CENTER_END_POINT_NUM;
     lock_router_app_dest_addr.addr.shortAddr = 0x0000;
 
+    // Register the Application to receive the unprocessed Foundation command/response messages
+    //zcl_registerForMsg( zclSampleDoorLockController_TaskID );
+
     // Register endpoint
     afRegister(&lock_router_ep);
 
@@ -93,8 +94,12 @@ void lock_router_app_Init(uint8 task_id)
     }
 
     ota_init();
-    panasonic_sensor_power_pin_init();
-    panasonic_sensor_init();
+
+    smartpower_init();
+
+    //infrare_detect_init();
+    //power_control_init();
+    //power_key_init();
 
     /*start network indication , led toggle*/
     osal_start_reload_timer(lock_router_app_task_id,
@@ -103,8 +108,13 @@ void lock_router_app_Init(uint8 task_id)
     osal_start_reload_timer(lock_router_app_task_id,
                 LOCK_ROUTER_EVENT_LINK_STATUS, TIME_INTERVAL_LINK_STATUS);
 
+    //osal_start_timerEx(lock_router_app_task_id, INFRARE_DETECT_EVENT,
+      //          DETECT_INFRARE_PERIOD );
     osal_start_reload_timer(lock_router_app_task_id,
-                EVENT_SENSOR_HEARTBRAT, SENSOR_HEARTBEAT_PERIOD );
+                INFRARE_DETECT_EVENT, DETECT_INFRARE_PERIOD );
+
+    osal_start_reload_timer(lock_router_app_task_id,
+                EVENT_PRESS_KEY_SCAN, KEY_DETECT_PERIOD );
 
     log_printf( "start router application, version = %s\r\n", SW_V);
 
@@ -114,6 +124,8 @@ void lock_router_app_Init(uint8 task_id)
 uint16 lock_router_app_event_loop( uint8 task_id, uint16 events )
 {
     afIncomingMSGPacket_t *MSGpkt;
+    static int8 infrare_status = -1;
+    uint32 now;
 
     (void)task_id;  // Intentionally unreferenced parameter
 
@@ -147,10 +159,24 @@ uint16 lock_router_app_event_loop( uint8 task_id, uint16 events )
                         osal_stop_timerEx(lock_router_app_task_id, LOCK_ROUTER_EVENT_LED_TOGGLE);
                         SB_TURN_ON_LED1();
                         SB_TURN_ON_LED2();
+#ifdef ROUTER
+                        /*report device id every 5s untile response received*/
+                        #if 0
+                        osal_start_reload_timer(lock_router_app_task_id,
+                                    LOCK_ROUTER_EVENT_REPORT_DEVICE_ID, TIME_INTERVAL_REPORT_DEVICEID);
+                        #endif
+
+                        /*start offline detection*/
+                        lock_router_offline_count = LOCK_ROUTER_OFFLINE_TIME;
+                        osal_start_reload_timer( lock_router_app_task_id,
+                            LOCK_ROUTER_EVENT_OFFLINE_DETECT, TIME_INTERVAL_OFFLINE_DETECT);
+#endif
 
 #ifdef ROUTER
+                        osal_start_timerEx(lock_router_app_task_id, EVENT_REPORT_DEV_META,
+                            REPORT_DEV_META_PERIOD );//    REPORT_DEV_META_PERIOD
                         osal_start_reload_timer( lock_router_app_task_id,
-                                    EVENT_REPORT_DEV_META, REPORT_DEV_META_PERIOD);
+                            EVENT_REPORT_DEV_META, REPORT_DEV_META_PERIOD);
 #endif
                     }
                     break;
@@ -173,18 +199,43 @@ uint16 lock_router_app_event_loop( uint8 task_id, uint16 events )
         return (events ^ SYS_EVENT_MSG);
     }
 
-    if (events & EVENT_SENSOR_HEARTBRAT)
+    if (events & LOCK_ROUTER_EVENT_OFFLINE_DETECT)
     {
-        if (10 == sensor_heartbeat_lost++)
+#if 0
+        if (0 == lock_router_offline_count--)
         {
-          sensor_heartbeat_lost = 0;
-          panasonic_sensor_reset();
-          panasonic_sensor_init();
+            lock_router_offline_count = LOCK_ROUTER_OFFLINE_TIME;
+            SystemResetSoft();
         }
-        return ( events ^ EVENT_SENSOR_HEARTBRAT );
+
+        if (lock_router_offline_count == 1)
+        {
+            log_printf( "WARNING: heart beat lost\r\n");
+        }
+#endif
+        return ( events ^ LOCK_ROUTER_EVENT_OFFLINE_DETECT );
     }
 
 #ifdef ROUTER
+
+#if 0
+    if (events & LOCK_ROUTER_EVENT_REPORT_DEVICE_ID)
+    {
+        if (device_id_report_cnt == REPORT_DEVICE_ID_MAX_NUM)
+        {
+            log_printf( "report device id timeout, rejoin network.\r\n");
+            SystemResetSoft();
+            device_id_report_cnt = 0;
+        }
+        else
+        {
+            lock_router_report_device_id();
+            device_id_report_cnt++;
+        }
+
+        return ( events ^ LOCK_ROUTER_EVENT_REPORT_DEVICE_ID );
+    }
+#endif
 
     if (events & EVENT_REPORT_DEV_META)
     {
@@ -196,7 +247,7 @@ uint16 lock_router_app_event_loop( uint8 task_id, uint16 events )
         }
         else
         {
-            report_dev_meta_info(0);
+            report_dev_meta_info(0); //
             osal_start_timerEx(lock_router_app_task_id, LOCK_ROUTER_EVENT_REPORT_VER, 10000);
             osal_start_timerEx(lock_router_app_task_id, LOCK_ROUTER_EVENT_PERIOD_MSG, 15000);
             dev_meta_report_cn++;
@@ -228,7 +279,6 @@ uint16 lock_router_app_event_loop( uint8 task_id, uint16 events )
 
         return ( events ^ LOCK_ROUTER_EVENT_REPORT_VER );
     }
-
     if (events & LOCK_ROUTER_EVENT_PERIOD_MSG)
     {
         lock_router_period_msg();
@@ -250,23 +300,56 @@ uint16 lock_router_app_event_loop( uint8 task_id, uint16 events )
         return ( events ^ LOCK_ROUTER_EVENT_LINK_STATUS );
     }
 
-    if (events & HUMAN_DETECT_EVENT_SOMEONE)
+    if (events & INFRARE_DETECT_EVENT)
     {
-        infrare_report(EXIST_SOMEONE);
-        return ( events ^ HUMAN_DETECT_EVENT_SOMEONE );
+
+        log_printf( "---detect body processing...\r\n");
+        infrare_status = infrare_event_process();
+
+        if (infrare_status >= 0)
+        {
+           infrare_report(infrare_status);
+            osal_start_timerEx(lock_router_app_task_id, EVENT_REPORT_INFRARE, REPORT_INFRARE_PERIOD);
+            g_infrare_reporting = TRUE;
+            report_infrare_count = 0;
+        }
+
+        events &= ~INFRARE_DETECT_EVENT;
     }
 
-    if (events & HUMAN_DETECT_EVENT_NOBODY)
+    if (events & EVENT_PRESS_KEY_SCAN)
     {
-        infrare_report(NO_BODY);
-        return ( events ^ HUMAN_DETECT_EVENT_NOBODY );
+        power_key_switch();
+        return (events ^ EVENT_PRESS_KEY_SCAN);
     }
+
+    if (events & EVENT_REPORT_INFRARE)
+    {
+        events &= ~EVENT_REPORT_INFRARE;
+        if (!report_infrare_success)
+        {
+           report_infrare_count++;
+           if (report_infrare_count > MAX_REPORT_COUNT)
+           {
+               osal_stop_timerEx(lock_router_app_task_id, EVENT_REPORT_INFRARE);
+               g_infrare_reporting = FALSE;
+               log_printf("report_infrare error\r\n");
+           }
+           else
+           {
+               log_printf("report_infrare.\r\n");
+               infrare_report(infrare_status);
+           }
+        }
+    }
+    #endif
 
     return 0;
 }
-#endif
+
 
 #ifdef ROUTER
+
 uint8 lock_router_factory_test_crc(uint8 *data,uint16 datalen)
 {
     uint8 crc=0;
@@ -338,7 +421,7 @@ void lock_router_report_device_id(void)
 {
     uint8 ret = 0;
 
-    //device_id = 1111122222; //Notice: for debug!!!
+    device_id = 1111122222;
     log_printf( "report device id %ld.\r\n", device_id);
 
     ret = send_msg_to_center((uint8*)&device_id, sizeof(uint32), MSG_TYPE_DEVICE_ID, msg_tid);
@@ -347,6 +430,8 @@ void lock_router_report_device_id(void)
         log_printf( "Error: send device id msg error, error code is %d.\r\n", ret);
         return ;
     }
+    //osal_start_timerEx(lock_router_app_task_id, LOCK_ROUTER_EVENT_REPORT_VER, 10000);
+    //osal_start_timerEx(lock_router_app_task_id, LOCK_ROUTER_EVENT_PERIOD_MSG, 15000);
 
     return ;
 }
@@ -512,6 +597,11 @@ void lock_router_msg_proc(afIncomingMSGPacket_t *msg)
 
             break;
 
+       case MSG_TYPE_SWITCH:
+            power_switch_proc(pdata);
+
+            break;
+
        case MSG_TYPE_HEART_BEAT:
             lock_router_hb_proc(pdata);
             break;
@@ -598,6 +688,7 @@ static void RemoveStaleNode(uint16 nwkaddr)
 
 static void RouterApp_CleanAssociatedDevList(void)
 {
+#if 1
     uint8 _nodeCounter;
     for (_nodeCounter = 0; _nodeCounter < NWK_MAX_DEVICES; _nodeCounter++ )
     {
@@ -615,6 +706,7 @@ static void RouterApp_CleanAssociatedDevList(void)
             }
         }
     }
+#endif
 }
 #endif
 

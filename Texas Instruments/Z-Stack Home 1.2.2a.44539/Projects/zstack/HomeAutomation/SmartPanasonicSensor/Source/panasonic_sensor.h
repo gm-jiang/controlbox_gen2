@@ -76,10 +76,17 @@ void report_dev_meta_info(short tid);
 #define DATA     4
 #define FCS      5
 
+#define DETECT_LED    P1_4
+#define SENSOR_POWER  P0_5
+#define SENSOR_POWER_PORT_SEL P0SEL
+#define SENSOR_POWER_PORT_DIR P0DIR
+
+
 #define PANASONIC_USART_PORT HAL_UART_PORT_1
 
 void panasonic_sensor_init (void);
 void panasonic_uart_cb ( uint8 port, uint8 event );
-
+void panasonic_sensor_reset(void);
+void panasonic_sensor_power_pin_init(void);
 
 #endif

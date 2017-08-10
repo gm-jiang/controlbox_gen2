@@ -77,15 +77,15 @@ void int2str(uint8* str, uint32 intnum)
 
 uint16 get_hw_ver(void)
 {
-    return (((ota_info.hw_ver[0] - 0x30)<<8) + (ota_info.hw_ver[1] - 0x30));
-    //return ((('2' - 0x30)<<8) + ('0' - 0x30)); //Noitce: for debug!!!
+    //return (((ota_info.hw_ver[0] - 0x30)<<8) + (ota_info.hw_ver[1] - 0x30));
+    return 513;
 }
 
 void save_hw_ver(uint8 *hw_ver)
 {
     uint8 hd_ver[3] = {0};
     ota_nv_info_t ota_info_read = {0};
-    log_printf( "save_hw_ver %x, %x\n", hw_ver[0], hw_ver[1]);
+    log_printf( "save_hw_ver %x, %x\r\n", hw_ver[0], hw_ver[1]);
 
     osal_memcpy(&ota_info.hw_ver, hw_ver, 2);
     ota_info_save();
@@ -94,11 +94,11 @@ void save_hw_ver(uint8 *hw_ver)
     if (osal_memcmp(&ota_info, &ota_info_read, sizeof(ota_nv_info_t)))
     {
         osal_memcpy(hd_ver, ota_info.hw_ver, 2);
-        log_printf( "Hardware version = %s.\n", hd_ver);
+        log_printf( "Hardware version = %s.\r\n", hd_ver);
     }
     else
     {
-        log_printf( "Error: save hardware version error!\n");
+        log_printf( "Error: save hardware version error!\r\n");
     }
 
     return ;
